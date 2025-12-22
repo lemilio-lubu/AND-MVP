@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Calculator } from "./components/Calculator";
 
 export default function Home() {
@@ -7,30 +8,34 @@ export default function Home() {
         Facturación local para tu pauta digital
       </h1>
 
-      <p style={{
-        marginTop: 12,
-        maxWidth: 600,
-        color: "var(--gray)"
-      }}>
+      <p
+        style={{
+          marginTop: 12,
+          maxWidth: 600,
+          color: "var(--gray)",
+        }}
+      >
         Con AND puedes facturar localmente tu inversión en publicidad,
         ahorrar impuestos y deducir gastos legalmente.
       </p>
 
       <Calculator />
 
-      <a href="/login">
+      <Link href="/login">
         <button
           style={{
             marginTop: 24,
             padding: "12px 20px",
             border: "1px solid var(--green)",
             color: "var(--green)",
-            borderRadius: 6
+            borderRadius: 6,
+            background: "transparent",
+            cursor: "pointer",
           }}
         >
           Usar facturación local
         </button>
-      </a>
+      </Link>
     </main>
   );
 }

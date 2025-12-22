@@ -9,9 +9,9 @@ export default function InfluencerRegistro() {
     <main style={{ padding: 40, maxWidth: 420, margin: "0 auto" }}>
       <h2>Registro de Influencer</h2>
 
-      <input placeholder="Nombre" style={{ marginTop: 12, width: "100%", padding: 10 }} />
-      <input placeholder="Email" style={{ marginTop: 12, width: "100%", padding: 10 }} />
-      <input placeholder="Instagram / TikTok" style={{ marginTop: 12, width: "100%", padding: 10 }} />
+      <input placeholder="Nombre" style={input} />
+      <input placeholder="Email" style={input} />
+      <input placeholder="Instagram / TikTok" style={input} />
 
       <label style={{ marginTop: 16, display: "block", fontSize: 14 }}>
         <input
@@ -37,3 +37,9 @@ export default function InfluencerRegistro() {
     </main>
   );
 }
+
+const input = {
+  marginTop: 12,
+  width: "100%",
+  padding: 10
+};

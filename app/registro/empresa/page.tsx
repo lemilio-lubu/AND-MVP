@@ -11,9 +11,9 @@ export default function EmpresaRegistro() {
     <main style={{ padding: 40, maxWidth: 420, margin: "0 auto" }}>
       <h2>Registro de Empresa</h2>
 
-      <input placeholder="Nombre de la empresa" style={{ marginTop: 12, width: "100%", padding: 10 }} />
-      <input placeholder="Email" style={{ marginTop: 12, width: "100%", padding: 10 }} />
-      <input placeholder="RUC / Identificación" style={{ marginTop: 12, width: "100%", padding: 10 }} />
+      <input placeholder="Nombre de la empresa" style={input} />
+      <input placeholder="Email" style={input} />
+      <input placeholder="RUC / Identificación" style={input} />
 
       <label style={{ marginTop: 16, display: "block", fontSize: 14 }}>
         <input
@@ -40,3 +40,9 @@ export default function EmpresaRegistro() {
     </main>
   );
 }
+
+const input = {
+  marginTop: 12,
+  width: "100%",
+  padding: 10
+};

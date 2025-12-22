@@ -4,70 +4,112 @@ import { useState } from "react";
 import { calculateSavings } from "@/lib/calculator";
 
 export function Calculator() {
-  const [amount, setAmount] = useState(0);
-  const [result, setResult] = useState<null | ReturnType<typeof calculateSavings>>(null);
+  const [amount, setAmount] = useState<number>(800);
+  const [result, setResult] = useState<ReturnType<typeof calculateSavings> | null>(null);
 
-  const handleCalculate = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (amount <= 0) return;
     setResult(calculateSavings(amount));
   };
 
   return (
-    <div style={{
-      marginTop: 40,
-      padding: 24,
-      border: "1px solid #e5e7eb",
-      borderRadius: 8,
-      maxWidth: 420
-    }}>
-      <h3 style={{ marginBottom: 12 }}>
-        Calcula tu ahorro
-      </h3>
-
-      <p style={{ color: "var(--gray)", fontSize: 14 }}>
-        Ingresa cuánto planeas invertir en publicidad digital
-      </p>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        marginTop: 40,
+        padding: 32,
+        border: "1px solid #eaeaea",
+        borderRadius: 12,
+        maxWidth: 720,
+        background: "#fff",
+      }}
+    >
+      <h3 style={{ marginBottom: 16 }}>Calcula tu ahorro</h3>
 
       <input
         type="number"
-        placeholder="$800"
-        style={{
-          marginTop: 12,
-          padding: 10,
-          width: "100%",
-          border: "1px solid #d1d5db",
-          borderRadius: 6
-        }}
+        value={amount}
         onChange={(e) => setAmount(Number(e.target.value))}
+        placeholder="Monto a invertir (USD)"
+        style={{
+          width: "100%",
+          padding: 12,
+          borderRadius: 8,
+          border: "1px solid #ccc",
+          marginBottom: 20,
+        }}
       />
 
       <button
-        onClick={handleCalculate}
+        type="submit"
         style={{
-          marginTop: 12,
           width: "100%",
-          padding: 10,
+          padding: 14,
           background: "var(--green)",
           color: "white",
-          borderRadius: 6
+          border: "none",
+          borderRadius: 8,
+          fontSize: 16,
+          cursor: "pointer",
         }}
       >
-        Ver ahorro
+        Calcular ahorro
       </button>
 
       {result && (
-        <div style={{
-          marginTop: 16,
-          padding: 12,
-          background: "#f0fdf4",
-          borderRadius: 6
-        }}>
-          <p>Pago con tarjeta: <strong>${result.creditCardCost.toFixed(2)}</strong></p>
-          <p>Facturación local AND: <strong>${result.localBillingCost.toFixed(2)}</strong></p>
-          <p style={{ color: "var(--green)", marginTop: 8 }}>
-            Ahorras <strong>${result.savings.toFixed(2)}</strong>
-          </p>
-        </div>
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 24,
+              marginTop: 32,
+            }}
+          >
+            {/* Escenario A */}
+            <div
+              style={{
+                padding: 20,
+                borderRadius: 8,
+                background: "#f7f7f7",
+              }}
+            >
+              <h4>Pago con tarjeta</h4>
+              <p style={{ marginTop: 8 }}>
+                Total a pagar:
+                <br />
+                <b>${(amount + result.creditCardTotal).toFixed(2)}</b>
+              </p>
+              <small>Incluye ISD + IVA + no deducible</small>
+            </div>
+
+            {/* Escenario B */}
+            <div
+              style={{
+                padding: 20,
+                borderRadius: 8,
+                background: "#ecfdf3",
+                border: "1px solid var(--green)",
+              }}
+            >
+              <h4 style={{ color: "var(--green)" }}>Con AND</h4>
+              <p style={{ marginTop: 8 }}>
+                Total a pagar:
+                <br />
+                <b>${(amount + result.localBillingTotal).toFixed(2)}</b>
+              </p>
+              <small>IVA deducible · Sin ISD</small>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ color: "var(--green)" }}>
+              Ahorro estimado: ${result.savings.toFixed(2)}
+            </h3>
+          </div>
+        </>
       )}
-    </div>
+    </form>
   );
 }
