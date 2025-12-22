@@ -1,17 +1,17 @@
-import { calculateSavings } from "@/lib/calculator";
-import Image from "next/image";
+import { Calculator } from "./components/Calculator";
 
 export default function Home() {
   return (
     <main style={{ padding: 40 }}>
-      <h1>AND – Facturación local para pauta digital</h1>
+      <h1>AND – Facturación local</h1>
       <p>
-        Ahorra impuestos y deduce tu inversión en publicidad digital usando
-        facturación local.
+        Visualiza cuánto ahorras usando facturación local.
       </p>
 
-      <button>
-        Calcular ahorro
+      <Calculator />
+
+      <button style={{ marginTop: 20 }}>
+        Usar facturación local
       </button>
     </main>
   );
