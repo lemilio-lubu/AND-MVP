@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, useInView, MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Warning, ShieldCheck, CheckCircle, FileText, Check, ArrowRight, Buildings, VideoCamera } from "@phosphor-icons/react";
 
 export default function LandingPage() {
@@ -38,9 +39,9 @@ export default function LandingPage() {
 // Sticky Navigation Indicator
 function StickyNavigation({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
   const zone = useTransform(scrollProgress, (latest: number) => {
-    if (latest < 0.15) return "intro";
-    if (latest < 0.5) return "companies";
-    if (latest < 0.85) return "influencers";
+    if (latest < 0.1) return "intro";
+    if (latest < 0.6) return "companies";
+    if (latest < 0.9) return "influencers";
     return "footer";
   });
 
@@ -234,6 +235,8 @@ function TrustedBySection() {
 
 // Smart Selector: Bento Grid Style
 function SmartSelector() {
+  const router = useRouter();
+
   return (
     <section className="py-32 bg-black">
       <div className="container mx-auto px-4">
@@ -262,7 +265,7 @@ function SmartSelector() {
               
               <div className="mt-8">
                 <button 
-                  onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => router.push('/registro/empresa')}
                   className="inline-flex items-center gap-2 text-blue-400 font-medium border-b border-blue-500/30 pb-1 group-hover:border-blue-400 transition-colors"
                 >
                   Soluciones Corporativas <span className="text-xl">→</span>
@@ -298,7 +301,7 @@ function SmartSelector() {
               
               <div className="mt-8">
                 <button 
-                  onClick={() => document.getElementById('influencers')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => router.push('/registro/influencer')}
                   className="inline-flex items-center gap-2 text-purple-400 font-medium border-b border-purple-500/30 pb-1 group-hover:border-purple-400 transition-colors"
                 >
                   Unirse al Ecosystem <span className="text-xl">→</span>
@@ -337,17 +340,19 @@ function CompaniesSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-32">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-bold text-white tracking-tight"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Eficiencia. <span className="text-slate-500">Fiscal.</span>
-          </motion.h2>
-          <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
-            Maximiza el ROI de tu pauta publicitaria con una estructura diseñada para la deducibilidad total.
-          </p>
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
+              Eficiencia. <span className="text-slate-500">Fiscal.</span>
+            </h2>
+            <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
+              Maximiza el ROI de tu pauta publicitaria con una estructura diseñada para la deducibilidad total.
+            </p>
+          </motion.div>
         </div>
 
         {/* ROI Calculator - Glassmorphism Style */}
@@ -430,8 +435,17 @@ function ROICalculator() {
             </div>
           </div>
           <div className="text-right">
-            <span className="block text-sm text-slate-400 mb-1">Inversión Seleccionada</span>
-            <span className="text-4xl font-bold text-white">${investment.toLocaleString("en-US")}</span>
+            <label htmlFor="investment-input" className="block text-sm text-slate-400 mb-1">Inversión Seleccionada</label>
+            <div className="flex items-center justify-end">
+              <span className="text-4xl font-bold text-white mr-1">$</span>
+              <input
+                id="investment-input"
+                type="number"
+                value={investment}
+                onChange={(e) => setInvestment(Number(e.target.value))}
+                className="bg-transparent text-4xl font-bold text-white w-48 text-right border-b border-white/20 focus:border-white outline-none transition-colors [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
           </div>
         </div>
 
@@ -517,7 +531,7 @@ function BillingFlowAnimation() {
       animate={isInView ? { opacity: 1 } : {}}
       className="max-w-5xl mx-auto mb-32"
     >
-      <div className="text-center mb-16">
+      <div className="text-center mb-20">
         <h3 className="text-3xl font-bold text-white mb-6">
           Gestión Administrativa Centralizada
         </h3>
@@ -526,34 +540,85 @@ function BillingFlowAnimation() {
         </p>
       </div>
 
-      <div className="flex items-center justify-center gap-8 md:gap-24">
-        {/* Chaos State */}
-        <div className="text-center opacity-80 grayscale hover:opacity-100 transition-opacity">
-          <div className="mb-6 relative h-24 w-24 mx-auto">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="absolute inset-0 border border-slate-500 bg-slate-800 rounded-xl transform rotate-3 translate-x-2" style={{ transform: `rotate(${i * 5}deg)` }} />
+      <div className="flex items-center justify-center gap-4 md:gap-16 relative h-64">
+        
+        {/* Left Side: Chaos */}
+        <div className="relative w-40 h-40 flex items-center justify-center">
+            <p className="absolute -top-12 text-sm font-medium text-slate-500">Múltiples Proveedores</p>
+            {[0, 1, 2, 3].map((i) => (
+                <motion.div
+                    key={i}
+                    initial={{ x: 0, y: 0, rotate: i * 10 - 15, opacity: 1 }}
+                    animate={isInView ? { 
+                        x: 150, // Move right
+                        y: 0, 
+                        opacity: 0,
+                        scale: 0.2,
+                        rotate: 0
+                    } : {}}
+                    transition={{ 
+                        duration: 0.8, 
+                        delay: i * 0.4, // Sequential
+                        ease: "easeInOut",
+                        repeat: Infinity,
+                        repeatDelay: 2
+                    }}
+                    className="absolute w-20 h-24 bg-slate-800 border border-slate-600 rounded-lg shadow-xl flex flex-col gap-2 p-2"
+                    style={{ zIndex: 10 - i }}
+                >
+                    <div className="w-8 h-1 bg-slate-600 rounded-full" />
+                    <div className="w-12 h-1 bg-slate-700 rounded-full" />
+                    <div className="w-10 h-1 bg-slate-700 rounded-full" />
+                </motion.div>
             ))}
-          </div>
-          <p className="text-sm font-medium text-slate-400">Múltiples Proveedores</p>
         </div>
 
-        {/* Transformation Arrow */}
-        <div className="text-slate-600">
-          <ArrowRight size={32} />
+        {/* Arrow Indicator */}
+        <div className="text-slate-700">
+            <ArrowRight size={32} weight="bold" />
         </div>
 
-        {/* Order State */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={isInView ? { scale: 1, opacity: 1 } : {}}
-          transition={{ delay: 0.3 }}
-          className="text-center"
-        >
-          <div className="mb-6 h-24 w-24 mx-auto bg-white/10 border border-white/30 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.2)] text-white">
-            <FileText size={40} weight="fill" />
-          </div>
-          <p className="text-sm font-bold text-white">Una Factura Consolidada</p>
-        </motion.div>
+        {/* Right Side: Order */}
+        <div className="relative w-40 h-40 flex items-center justify-center">
+            <p className="absolute -top-12 text-sm font-bold text-white">Una Factura Consolidada</p>
+            
+            {/* The Main Invoice */}
+            <motion.div
+                initial={{ scale: 0.8, opacity: 0.5 }}
+                animate={isInView ? { 
+                    scale: [1, 1.05, 1], // Gentle pulse
+                    opacity: 1 
+                } : {}}
+                transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+                className="relative z-10 w-28 h-36 bg-gradient-to-b from-blue-600 to-blue-900 rounded-xl border border-blue-400 shadow-[0_0_50px_rgba(37,99,235,0.4)] flex flex-col items-center justify-center"
+            >
+                <FileText size={48} weight="fill" className="text-white mb-2" />
+                <div className="w-16 h-2 bg-white/20 rounded-full mb-1" />
+                <div className="w-10 h-2 bg-white/20 rounded-full" />
+                
+                {/* Success Badge */}
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={isInView ? { scale: 1 } : {}}
+                    transition={{ delay: 0.5, type: "spring" }}
+                    className="absolute -bottom-3 -right-3 bg-green-500 text-white p-1.5 rounded-full shadow-lg border-2 border-black"
+                >
+                    <Check size={20} weight="bold" />
+                </motion.div>
+            </motion.div>
+
+            {/* Background Glow */}
+            <motion.div 
+                animate={isInView ? { opacity: [0.2, 0.6, 0.2] } : {}}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full -z-10"
+            />
+        </div>
+
       </div>
     </motion.div>
   );
@@ -571,17 +636,19 @@ function InfluencersSection() {
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-32">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-bold text-white tracking-tight"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Tu Talento. <span className="text-amber-500/80">Tu Empresa.</span>
-          </motion.h2>
-          <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
-            Profesionaliza tu carrera con herramientas financieras de nivel corporativo.
-          </p>
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
+              Tu Talento. <span className="text-amber-500/80">Tu Empresa.</span>
+            </h2>
+            <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
+              Profesionaliza tu carrera con herramientas financieras de nivel corporativo.
+            </p>
+          </motion.div>
         </div>
 
         {/* Brand Radar */}
@@ -595,6 +662,7 @@ function InfluencersSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.8 }}
           className="text-center mt-32"
         >
           <motion.button
@@ -703,7 +771,7 @@ function BrandRadar() {
 // Career Path (Formerly Gamification)
 function CareerPath() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
 
   const steps = [
     { title: "Verificación", desc: "Validación de identidad y audiencia" },
@@ -716,6 +784,7 @@ function CareerPath() {
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, ease: "easeOut" }}
       className="max-w-5xl mx-auto"
     >
       <h3 className="text-3xl font-bold text-center text-white mb-16">
@@ -724,7 +793,13 @@ function CareerPath() {
 
       <div className="grid md:grid-cols-3 gap-8">
         {steps.map((step, i) => (
-          <div key={i} className="bg-white/10 border border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:bg-white/20 transition-colors">
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: i * 0.2 }}
+            className="bg-white/10 border border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:bg-white/20 transition-colors"
+          >
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />
             
             <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold text-sm mb-6">
@@ -732,7 +807,7 @@ function CareerPath() {
             </div>
             <h4 className="text-xl font-semibold text-white mt-2 mb-3">{step.title}</h4>
             <p className="text-slate-400 leading-relaxed">{step.desc}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
