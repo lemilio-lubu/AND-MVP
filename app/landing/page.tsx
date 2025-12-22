@@ -24,7 +24,7 @@ export default function LandingPage() {
 
   // Background color transitions based on scroll
   const bgColors = (mounted && theme === 'light') 
-    ? ["#f8fafc", "#e0f2fe", "#e0e7ff", "#f8fafc", "#f8fafc"]
+    ? ["#ffffff", "#f0f9ff", "#eef2ff", "#f8fafc", "#ffffff"]
     : ["#0f172a", "#0c4a6e", "#1e1b4b", "#0f172a", "#0f172a"];
 
   const backgroundColor = useTransform(
@@ -132,12 +132,12 @@ function HeroSection() {
     <section
       id="hero"
       ref={ref}
-      className="relative h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-black transition-colors duration-500"
+      className="relative h-screen flex items-center justify-center overflow-hidden dark:bg-black transition-colors duration-500"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Background Video - UHD Flow */}
-        <div className="absolute inset-0 z-0 opacity-80">
+        <div className="absolute inset-0 z-0 opacity-75">
           <video 
             autoPlay 
             loop 
@@ -191,9 +191,9 @@ function HeroSection() {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="text-5xl md:text-8xl font-bold mb-8 leading-tight tracking-tight"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">Infraestructura.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Infraestructura.</span>
             <br />
-            <span className="text-white">Financiera.</span>
+            <span className="text-slate-900 dark:text-white">Financiera.</span>
           </motion.h1>
 
           <motion.p 
@@ -202,7 +202,7 @@ function HeroSection() {
             transition={{ duration: 1, delay: 0.8 }}
             className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
           >
-            La plataforma que automatiza pagos, contratos y facturación entre Marcas y Creadores. <span className="text-white font-medium">Eficiencia fiscal</span> y <span className="text-white font-medium">cumplimiento normativo</span> en un solo lugar.
+            La plataforma que automatiza pagos, contratos y facturación entre Marcas y Creadores. <span className="text-slate-900 dark:text-white font-medium">Eficiencia fiscal</span> y <span className="text-slate-900 dark:text-white font-medium">cumplimiento normativo</span> en un solo lugar.
           </motion.p>
 
           <motion.div
@@ -238,7 +238,7 @@ function HeroSection() {
 // Trusted By Section
 function TrustedBySection() {
   return (
-    <section className="py-12 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-black transition-colors duration-500">
+    <section className="py-12 border-b border-slate-200 dark:border-white/5 dark:bg-black transition-colors duration-500">
       <div className="container mx-auto px-4">
         <p className="text-center text-sm font-medium text-slate-500 uppercase tracking-widest mb-8">
           Empresas que confían en AND Ecosystem
@@ -261,7 +261,7 @@ function SmartSelector() {
   const router = useRouter();
 
   return (
-    <section className="py-32 bg-white dark:bg-black transition-colors duration-500">
+    <section className="py-32 dark:bg-black transition-colors duration-500">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Company Card */}
@@ -270,16 +270,16 @@ function SmartSelector() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-slate-50 dark:bg-slate-900/50 border border-blue-200 dark:border-blue-500/20 shadow-[0_0_40px_rgba(56,189,248,0.1)] hover:shadow-[0_0_60px_rgba(56,189,248,0.2)] transition-all duration-500"
+            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-blue-200 dark:border-blue-500/20 shadow-[0_0_40px_rgba(56,189,248,0.1)] hover:shadow-[0_0_60px_rgba(56,189,248,0.2)] transition-all duration-500"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
             <div className="relative h-full flex flex-col justify-between p-12">
               <div>
-                <div className="mb-6 inline-flex p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(56,189,248,0.1)]">
+                <div className="mb-6 inline-flex p-3 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(56,189,248,0.1)]">
                   <Buildings size={32} weight="duotone" />
                 </div>
-                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-4">Para Empresas</h3>
+                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4">Para Empresas</h3>
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Control Total.</h2>
                 <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
                   Centraliza pagos, deduce impuestos y elimina el riesgo operativo de trabajar con múltiples proveedores informales.
@@ -289,7 +289,7 @@ function SmartSelector() {
               <div className="mt-8">
                 <button 
                   onClick={() => router.push('/registro/empresa')}
-                  className="inline-flex items-center gap-2 text-blue-400 font-medium border-b border-blue-500/30 pb-1 group-hover:border-blue-400 transition-colors"
+                  className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium border-b border-blue-500/30 pb-1 group-hover:border-blue-600 dark:group-hover:border-blue-400 transition-colors"
                 >
                   Soluciones Corporativas <span className="text-xl">→</span>
                 </button>
@@ -306,16 +306,16 @@ function SmartSelector() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-slate-50 dark:bg-slate-900/50 border border-purple-200 dark:border-purple-500/20 shadow-[0_0_40px_rgba(168,85,247,0.1)] hover:shadow-[0_0_60px_rgba(168,85,247,0.2)] transition-all duration-500"
+            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-purple-200 dark:border-purple-500/20 shadow-[0_0_40px_rgba(168,85,247,0.1)] hover:shadow-[0_0_60px_rgba(168,85,247,0.2)] transition-all duration-500"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
             <div className="relative h-full flex flex-col justify-between p-12">
               <div>
-                <div className="mb-6 inline-flex p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                <div className="mb-6 inline-flex p-3 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
                   <VideoCamera size={32} weight="duotone" />
                 </div>
-                <h3 className="text-sm font-semibold text-purple-400 uppercase tracking-widest mb-4">Para Creadores</h3>
+                <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-4">Para Creadores</h3>
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Carrera Pro.</h2>
                 <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
                   Accede a contratos de grandes marcas, garantiza tus pagos y construye un historial financiero sólido.
@@ -325,7 +325,7 @@ function SmartSelector() {
               <div className="mt-8">
                 <button 
                   onClick={() => router.push('/registro/influencer')}
-                  className="inline-flex items-center gap-2 text-purple-400 font-medium border-b border-purple-500/30 pb-1 group-hover:border-purple-400 transition-colors"
+                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium border-b border-purple-500/30 pb-1 group-hover:border-purple-600 dark:group-hover:border-purple-400 transition-colors"
                 >
                   Unirse al Ecosystem <span className="text-xl">→</span>
                 </button>
@@ -349,7 +349,7 @@ function CompaniesSection() {
     <section
       id="companies"
       ref={ref}
-      className="relative min-h-screen py-32 bg-white dark:bg-black overflow-hidden transition-colors duration-500"
+      className="relative min-h-screen py-32 dark:bg-black overflow-hidden transition-colors duration-500"
     >
       {/* Titanium Texture - Image 2 */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -359,7 +359,7 @@ function CompaniesSection() {
               className="w-full h-full object-cover grayscale contrast-125"
           />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white dark:from-black dark:via-transparent dark:to-black pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-32">
@@ -369,10 +369,10 @@ function CompaniesSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
+            <h2 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight">
               Eficiencia. <span className="text-slate-500">Fiscal.</span>
             </h2>
-            <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-600 dark:text-slate-300 mt-6 max-w-2xl mx-auto">
               Maximiza el ROI de tu pauta publicitaria con una estructura diseñada para la deducibilidad total.
             </p>
           </motion.div>
@@ -506,7 +506,7 @@ function ROICalculator() {
           </div>
 
           {/* GOOD Scenario */}
-          <div className="bg-sky-50 dark:bg-sky-900/10 rounded-2xl p-8 border border-sky-200 dark:border-sky-500/30 relative overflow-hidden">
+          <div className="bg-white dark:bg-sky-900/10 rounded-2xl p-8 border border-sky-200 dark:border-sky-500/30 relative overflow-hidden">
              <div className="absolute top-0 right-0 p-4 opacity-10 text-sky-400">
               <ShieldCheck size={64} weight="fill" />
             </div>
@@ -655,7 +655,7 @@ function InfluencersSection() {
     <section
       id="influencers"
       ref={ref}
-      className="relative min-h-screen py-32 bg-white dark:bg-black transition-colors duration-500"
+      className="relative min-h-screen py-32 dark:bg-black transition-colors duration-500"
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-32">
@@ -713,7 +713,7 @@ function BrandRadar() {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       className="max-w-5xl mx-auto mb-32"
     >
-      <div className="bg-slate-100 dark:bg-white/10 rounded-3xl p-10 border border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-16">
+      <div className="bg-white dark:bg-white/10 rounded-3xl p-10 border border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-16">
         <div className="flex-1">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
             Visibilidad Premium
@@ -821,7 +821,7 @@ function CareerPath() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: i * 0.2 }}
-            className="bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
+            className="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:bg-slate-50 dark:hover:bg-white/20 transition-colors"
           >
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-slate-200/50 dark:bg-white/5 rounded-full blur-2xl group-hover:bg-slate-300/50 dark:group-hover:bg-white/10 transition-colors" />
             
@@ -842,7 +842,7 @@ function UnifiedFooter() {
   return (
     <footer
       id="footer"
-      className="relative py-24 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 transition-colors duration-500"
+      className="relative py-24 dark:bg-black border-t border-slate-200 dark:border-white/10 transition-colors duration-500"
     >
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8 tracking-tight">
