@@ -3,26 +3,92 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --green: #16a34a; /* verde sobrio */
+  --green: #16a34a;
   --gray: #6b7280;
+  
+  /* LocalAds Suite Color Palette - Corporate Fintech */
+  --deep-black: #0f172a; /* Slate 900 */
+  --gold: #f59e0b; /* Amber 500 - Wealth/Value */
+  
+  /* Companies Theme - Trust & Tech */
+  --cyber-blue: #38bdf8; /* Sky 400 */
+  --cyber-blue-dark: #0284c7; /* Sky 600 */
+  --steel: #64748b; /* Slate 500 */
+  --steel-light: #94a3b8; /* Slate 400 */
+  
+  /* Influencers Theme - Professional Creative */
+  --neon-purple: #818cf8; /* Indigo 400 */
+  --neon-purple-dark: #4f46e5; /* Indigo 600 */
+  --neon-pink: #f472b6; /* Pink 400 - Accent */
+  --rgb-glow: #818cf8;
+  
+  /* Unified */
+  --gradient-start: #38bdf8;
+  --gradient-end: #818cf8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #f8fafc;
   }
 }
 
 body {
-  background: white;
-  color: #111827;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Scrollytelling Utilities - Refined Glows */
+.text-gradient-titanium {
+  background: linear-gradient(to bottom right, #ffffff 0%, #94a3b8 50%, #475569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(to bottom right, #fcd34d 0%, #d97706 50%, #78350f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-glass-apple {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-blue {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3), 0 0 30px rgba(2, 132, 199, 0.1);
+}
+
+.glow-purple {
+  box-shadow: 0 0 15px rgba(129, 140, 248, 0.3), 0 0 30px rgba(79, 70, 229, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3), 0 0 30px rgba(245, 158, 11, 0.1);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 20px rgba(129, 140, 248, 0.5);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
 }
