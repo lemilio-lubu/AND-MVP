@@ -14,13 +14,13 @@ export function InputGroup({ label, icon, theme = 'blue', className = "", ...pro
 
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-slate-400 ml-1">{label}</label>
+      <label className="text-xs font-medium text-slate-600 dark:text-slate-400 ml-1">{label}</label>
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 flex items-center gap-1 pointer-events-none">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 flex items-center gap-1 pointer-events-none">
           {icon}
         </div>
         <input
-          className={`w-full bg-slate-950/50 border border-slate-800 rounded-lg py-3 pr-4 text-white placeholder-slate-600 focus:ring-1 outline-none transition-all text-sm ${basePadding} ${focusColor} ${className}`}
+          className={`w-full bg-white dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-lg py-3 pr-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:ring-1 outline-none transition-all text-sm ${basePadding} ${focusColor} ${className}`}
           {...props}
         />
       </div>

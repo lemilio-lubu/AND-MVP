@@ -22,10 +22,10 @@ export function Checkbox({ checked, onChange, children, theme = 'blue' }: Checkb
           onChange={(e) => onChange(e.target.checked)}
           className="peer sr-only"
         />
-        <div className={`w-5 h-5 border-2 border-slate-600 rounded transition-colors peer-focus:ring-2 ${activeColor}`} />
+        <div className={`w-5 h-5 border-2 border-slate-300 dark:border-slate-600 rounded transition-colors peer-focus:ring-2 ${activeColor}`} />
         <Check className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity pointer-events-none" weight="bold" />
       </div>
-      <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors select-none">
+      <span className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-300 transition-colors select-none">
         {children}
       </span>
     </label>

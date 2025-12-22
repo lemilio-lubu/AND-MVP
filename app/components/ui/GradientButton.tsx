@@ -11,7 +11,7 @@ export function GradientButton({ children, theme = 'blue', disabled, className =
   const purpleTheme = "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02]";
   
   const activeClass = theme === 'blue' ? blueTheme : purpleTheme;
-  const disabledClass = "bg-slate-800 text-slate-500 cursor-not-allowed";
+  const disabledClass = "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed";
 
   return (
     <button

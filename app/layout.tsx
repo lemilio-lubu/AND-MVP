@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -23,9 +24,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className="scroll-smooth">
-      <body className={`${montserrat.variable} ${geistMono.variable} antialiased bg-slate-950 text-slate-100 font-sans`}>
-        {children}
+    <html lang="es" className="scroll-smooth" suppressHydrationWarning>
+      <body className={`${montserrat.variable} ${geistMono.variable} antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
