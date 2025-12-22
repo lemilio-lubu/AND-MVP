@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Warning, ShieldCheck, CheckCircle, FileText, Check, ArrowRight, Buildings, VideoCamera } from "@phosphor-icons/react";
 
 export default function LandingPage() {
+  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -25,6 +26,14 @@ export default function LandingPage() {
       style={{ backgroundColor }}
       className="relative w-full text-slate-100"
     >
+      <div className="fixed top-6 right-8 z-50 mix-blend-difference">
+        <button 
+          onClick={() => router.push('/login')}
+          className="px-6 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
+        >
+          Iniciar Sesión
+        </button>
+      </div>
       <StickyNavigation scrollProgress={scrollYProgress} />
       <HeroSection />
       <TrustedBySection />
