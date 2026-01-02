@@ -29,11 +29,27 @@
   --gradient-end: #818cf8;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
+
+  /* Fibonacci Spacing System */
+  --spacing-fib-1: 13px;
+  --spacing-fib-2: 21px;
+  --spacing-fib-3: 34px;
+  --spacing-fib-4: 55px;
+  --spacing-fib-5: 89px;
+  --spacing-fib-6: 144px;
+
+  /* Fibonacci Radius System */
+  --radius-fib-1: 13px;
+  --radius-fib-2: 21px;
+  --radius-fib-3: 34px;
+  --radius-fib-4: 55px;
+  --radius-fib-5: 89px;
+  --radius-fib-6: 144px;
 }
 
 .dark {

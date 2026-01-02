@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion, useScroll, useTransform, useInView, MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
@@ -39,11 +39,11 @@ export default function LandingPage() {
       style={{ backgroundColor }}
       className="relative w-full text-slate-900 dark:text-slate-100 transition-colors duration-500"
     >
-      <div className="fixed top-6 right-8 z-50 flex items-center gap-4 mix-blend-difference">
+      <div className="fixed top-fib-2 right-fib-3 z-50 flex items-center gap-fib-1 mix-blend-difference">
         <ThemeToggle />
         <button 
           onClick={() => router.push('/login')}
-          className="px-6 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
+          className="px-fib-2 py-[8px] rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-sm font-medium text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
         >
           Iniciar Sesión
         </button>
@@ -79,7 +79,7 @@ function StickyNavigation({ scrollProgress }: { scrollProgress: MotionValue<numb
   };
 
   return (
-    <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6 items-end mix-blend-difference">
+    <div className="fixed right-fib-3 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-fib-2 items-end mix-blend-difference">
       <NavDot active={currentZone === "intro"} label="Inicio" onClick={() => scrollTo('hero')} />
       <NavDot active={currentZone === "companies"} label="Empresas" onClick={() => scrollTo('companies')} />
       <NavDot active={currentZone === "influencers"} label="Creadores" onClick={() => scrollTo('influencers')} />
@@ -100,7 +100,7 @@ function NavDot({
   return (
     <button 
       onClick={onClick}
-      className="group flex items-center gap-4 flex-row-reverse focus:outline-none"
+      className="group flex items-center gap-fib-1 flex-row-reverse focus:outline-none"
     >
       <div className={`relative flex items-center justify-center transition-all duration-500 ${active ? 'w-4 h-4' : 'w-2 h-2'}`}>
         {/* Active Ring */}
@@ -180,7 +180,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-xl md:text-2xl font-medium text-slate-400 mb-6 tracking-widest uppercase"
+            className="text-xl md:text-2xl font-medium text-slate-400 mb-fib-2 tracking-widest uppercase"
           >
             AND Ecosystem
           </motion.h2>
@@ -189,11 +189,11 @@ function HeroSection() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="text-5xl md:text-8xl font-bold mb-8 leading-tight tracking-tight"
+            className="text-5xl md:text-8xl font-bold mb-fib-3 leading-tight tracking-tight"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Infraestructura.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Gestión.</span>
             <br />
-            <span className="text-slate-900 dark:text-white">Financiera.</span>
+            <span className="text-slate-900 dark:text-white">Inteligente.</span>
           </motion.h1>
 
           <motion.p 
@@ -202,24 +202,24 @@ function HeroSection() {
             transition={{ duration: 1, delay: 0.8 }}
             className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
           >
-            La plataforma que automatiza pagos, contratos y facturación entre Marcas y Creadores. <span className="text-slate-900 dark:text-white font-medium">Eficiencia fiscal</span> y <span className="text-slate-900 dark:text-white font-medium">cumplimiento normativo</span> en un solo lugar.
+            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-slate-900 dark:text-white font-medium">crear</span> y <span className="text-slate-900 dark:text-white font-medium">crecer</span>.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.2 }}
-            className="mt-12 flex flex-col md:flex-row gap-6 justify-center"
+            className="mt-fib-4 flex flex-col md:flex-row gap-fib-2 justify-center"
           >
             <button 
               onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 rounded-full bg-white text-black font-semibold text-lg hover:bg-slate-200 transition-colors min-w-[200px]"
+              className="px-fib-3 py-fib-1 rounded-full bg-white text-black font-semibold text-lg hover:bg-slate-200 transition-colors min-w-[200px]"
             >
               Soy Empresa
             </button>
             <button 
               onClick={() => document.getElementById('influencers')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 rounded-full border border-slate-700 text-white font-semibold text-lg hover:bg-slate-900 transition-colors min-w-[200px]"
+              className="px-fib-3 py-fib-1 rounded-full border border-slate-700 text-white font-semibold text-lg hover:bg-slate-900 transition-colors min-w-[200px]"
             >
               Soy Creador
             </button>
@@ -238,15 +238,15 @@ function HeroSection() {
 // Trusted By Section
 function TrustedBySection() {
   return (
-    <section className="py-12 border-b border-slate-200 dark:border-white/5 dark:bg-black transition-colors duration-500">
+    <section className="py-fib-4 border-b border-slate-200 dark:border-white/5 dark:bg-black transition-colors duration-500">
       <div className="container mx-auto px-4">
-        <p className="text-center text-sm font-medium text-slate-500 uppercase tracking-widest mb-8">
-          Empresas que confían en AND Ecosystem
+        <p className="text-center text-sm font-medium text-slate-500 uppercase tracking-widest mb-fib-3">
+          Integrado con las plataformas líderes
         </p>
-        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+        <div className="flex flex-wrap justify-center items-center gap-fib-4 md:gap-fib-5 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
            {/* Placeholders for Logos - Using Text for now */}
-           {["TechCorp", "MediaHouse", "CreatorFund", "GlobalBrand", "FutureNet"].map((brand) => (
-             <span key={brand} className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-serif italic">
+           {["Facebook", "Instagram", "TikTok", "Google", "YouTube"].map((brand) => (
+             <span key={brand} className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white font-serif italic tracking-tight">
                {brand}
              </span>
            ))}
@@ -261,38 +261,38 @@ function SmartSelector() {
   const router = useRouter();
 
   return (
-    <section className="py-32 dark:bg-black transition-colors duration-500">
+    <section className="py-fib-6 dark:bg-black transition-colors duration-500">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-fib-3 max-w-6xl mx-auto">
           {/* Company Card */}
           <motion.div 
+            onClick={() => router.push('/registro/empresa')}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-blue-200 dark:border-blue-500/20 shadow-[0_0_40px_rgba(56,189,248,0.1)] hover:shadow-[0_0_60px_rgba(56,189,248,0.2)] transition-all duration-500"
+            className="cursor-pointer group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-blue-200 dark:border-blue-500/20 shadow-[0_0_40px_rgba(56,189,248,0.1)] hover:shadow-[0_0_60px_rgba(56,189,248,0.2)] transition-all duration-500"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
-            <div className="relative h-full flex flex-col justify-between p-12">
+            <div className="relative h-full flex flex-col justify-between p-fib-4">
               <div>
-                <div className="mb-6 inline-flex p-3 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(56,189,248,0.1)]">
+                <div className="mb-fib-2 inline-flex p-fib-1 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(56,189,248,0.1)]">
                   <Buildings size={32} weight="duotone" />
                 </div>
-                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4">Para Empresas</h3>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Control Total.</h2>
+                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-fib-1">Para Empresas</h3>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-fib-2">Todo bajo control.</h2>
                 <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Centraliza pagos, deduce impuestos y elimina el riesgo operativo de trabajar con múltiples proveedores informales.
+                  Un solo lugar para pagar a todos, deducir impuestos y eliminar los riesgos de la informalidad.
                 </p>
               </div>
               
-              <div className="mt-8">
-                <button 
-                  onClick={() => router.push('/registro/empresa')}
-                  className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium border-b border-blue-500/30 pb-1 group-hover:border-blue-600 dark:group-hover:border-blue-400 transition-colors"
+              <div className="mt-fib-3">
+                <div 
+                  className="inline-flex items-center gap-[8px] text-blue-600 dark:text-blue-400 font-medium border-b border-blue-500/30 pb-1 group-hover:border-blue-600 dark:group-hover:border-blue-400 transition-colors"
                 >
                   Soluciones Corporativas <span className="text-xl">→</span>
-                </button>
+                </div>
               </div>
             </div>
             
@@ -302,33 +302,33 @@ function SmartSelector() {
 
           {/* Creator Card */}
           <motion.div 
+            onClick={() => router.push('/registro/influencer')}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-purple-200 dark:border-purple-500/20 shadow-[0_0_40px_rgba(168,85,247,0.1)] hover:shadow-[0_0_60px_rgba(168,85,247,0.2)] transition-all duration-500"
+            className="cursor-pointer group relative h-[600px] rounded-[40px] overflow-hidden bg-white dark:bg-slate-900/50 border border-purple-200 dark:border-purple-500/20 shadow-[0_0_40px_rgba(168,85,247,0.1)] hover:shadow-[0_0_60px_rgba(168,85,247,0.2)] transition-all duration-500"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             
-            <div className="relative h-full flex flex-col justify-between p-12">
+            <div className="relative h-full flex flex-col justify-between p-fib-4">
               <div>
-                <div className="mb-6 inline-flex p-3 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                <div className="mb-fib-2 inline-flex p-fib-1 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
                   <VideoCamera size={32} weight="duotone" />
                 </div>
-                <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-4">Para Creadores</h3>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Carrera Pro.</h2>
+                <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-fib-1">Para Creadores</h3>
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-fib-2">Sube de nivel.</h2>
                 <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Accede a contratos de grandes marcas, garantiza tus pagos y construye un historial financiero sólido.
+                  Trabaja con grandes marcas, asegura tu pago siempre y construye tu futuro financiero.
                 </p>
               </div>
               
-              <div className="mt-8">
-                <button 
-                  onClick={() => router.push('/registro/influencer')}
-                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium border-b border-purple-500/30 pb-1 group-hover:border-purple-600 dark:group-hover:border-purple-400 transition-colors"
+              <div className="mt-fib-3">
+                <div 
+                  className="inline-flex items-center gap-[8px] text-purple-600 dark:text-purple-400 font-medium border-b border-purple-500/30 pb-1 group-hover:border-purple-600 dark:group-hover:border-purple-400 transition-colors"
                 >
                   Unirse al Ecosystem <span className="text-xl">→</span>
-                </button>
+                </div>
               </div>
             </div>
 
@@ -344,12 +344,13 @@ function SmartSelector() {
 // CompaniesSection
 function CompaniesSection() {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   return (
     <section
       id="companies"
       ref={ref}
-      className="relative min-h-screen py-32 dark:bg-black overflow-hidden transition-colors duration-500"
+      className="relative min-h-screen py-fib-6 dark:bg-black overflow-hidden transition-colors duration-500"
     >
       {/* Titanium Texture - Image 2 */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -362,7 +363,7 @@ function CompaniesSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white dark:from-black dark:via-transparent dark:to-black pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-32">
+        <div className="text-center mb-fib-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -370,10 +371,10 @@ function CompaniesSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Eficiencia. <span className="text-slate-500">Fiscal.</span>
+              Ahorra más. <span className="text-slate-500">Legalmente.</span>
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mt-6 max-w-2xl mx-auto">
-              Maximiza el ROI de tu pauta publicitaria con una estructura diseñada para la deducibilidad total.
+            <p className="text-xl text-slate-600 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
+              Haz que tu presupuesto rinda más deduciendo impuestos correctamente y sin complicaciones.
             </p>
           </motion.div>
         </div>
@@ -383,6 +384,24 @@ function CompaniesSection() {
 
         {/* Billing Flow Animation */}
         <BillingFlowAnimation />
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="text-center mt-fib-6"
+        >
+          <motion.button
+            onClick={() => router.push('/registro/empresa')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
+          >
+            Optimizar mi gestión
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );
@@ -437,50 +456,34 @@ function ROICalculator() {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       className="max-w-5xl mx-auto mb-32"
     >
-      <div className="bg-glass-apple rounded-3xl p-8 md:p-12 border border-slate-200 dark:border-white/10 shadow-2xl">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
-          <div className="w-full md:w-2/3">
-            <label className="block text-lg font-medium text-slate-700 dark:text-slate-300 mb-6">
-              Presupuesto Mensual para Influencers
+      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-slate-200 dark:border-white/10 shadow-2xl">
+        
+        {/* Input Section */}
+        <div className="mb-fib-3 max-w-xl mx-auto">
+            <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-fib-1 uppercase tracking-wider text-center">
+              Presupuesto Mensual ($)
             </label>
-            <input
-              type="range"
-              min="500"
-              max="20000"
-              step="500"
-              value={investment}
-              onChange={(e) => setInvestment(Number(e.target.value))}
-              className="w-full h-2 bg-slate-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
-            />
-            <div className="flex justify-between text-xs text-slate-500 mt-2">
-              <span>$500</span>
-              <span>$20,000+</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <label htmlFor="investment-input" className="block text-sm text-slate-600 dark:text-slate-400 mb-1">Inversión Seleccionada</label>
-            <div className="flex items-center justify-end">
-              <span className="text-4xl font-bold text-slate-900 dark:text-white mr-1">$</span>
+            <div className="relative">
+              <span className="absolute left-fib-2 top-1/2 -translate-y-1/2 text-slate-400 text-xl">$</span>
               <input
-                id="investment-input"
                 type="number"
+                min="0"
                 value={investment}
                 onChange={(e) => setInvestment(Number(e.target.value))}
-                className="bg-transparent text-4xl font-bold text-slate-900 dark:text-white w-48 text-right border-b border-slate-300 dark:border-white/20 focus:border-slate-900 dark:focus:border-white outline-none transition-colors [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-center"
               />
             </div>
-          </div>
         </div>
 
         {/* Comparison Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-fib-2 mb-fib-3">
           {/* BAD Scenario */}
-          <div className="bg-slate-100 dark:bg-black/40 rounded-2xl p-8 border border-red-200 dark:border-red-900/30 relative overflow-hidden">
+          <div className="bg-slate-100 dark:bg-black/40 rounded-fib-2 p-fib-2 border border-red-200 dark:border-red-900/30 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10 text-red-500">
               <Warning size={64} weight="fill" />
             </div>
             <h4 className="text-lg font-semibold text-red-500 dark:text-red-400 mb-6 flex items-center gap-2">
-              Pago Directo / Informal
+              Pagando por fuera / Informal
             </h4>
             <div className="space-y-4 text-sm">
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
@@ -499,19 +502,19 @@ function ROICalculator() {
                 <span className="text-slate-600 dark:text-slate-400">Costo Real</span>
                 <span className="text-2xl font-bold text-red-500 dark:text-red-400">${scenarios.direct.total.toLocaleString("en-US")}</span>
               </div>
-              <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-300 px-3 py-2 rounded text-xs text-center">
-                Gasto NO Deducible de Impuestos
+              <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-300 px-3 py-2 rounded-fib-1 text-xs text-center">
+                Dinero que pierdes en impuestos
               </div>
             </div>
           </div>
 
           {/* GOOD Scenario */}
-          <div className="bg-white dark:bg-sky-900/10 rounded-2xl p-8 border border-sky-200 dark:border-sky-500/30 relative overflow-hidden">
+          <div className="bg-white dark:bg-sky-900/10 rounded-fib-2 p-fib-2 border border-sky-200 dark:border-sky-500/30 relative overflow-hidden">
              <div className="absolute top-0 right-0 p-4 opacity-10 text-sky-400">
               <ShieldCheck size={64} weight="fill" />
             </div>
             <h4 className="text-lg font-semibold text-sky-600 dark:text-sky-400 mb-6 flex items-center gap-2">
-              Vía AND Ecosystem
+              Usando AND
             </h4>
             <div className="space-y-4 text-sm">
               <div className="flex justify-between text-slate-700 dark:text-slate-300">
@@ -530,12 +533,43 @@ function ROICalculator() {
                 <span className="text-slate-700 dark:text-slate-300">Inversión Neta</span>
                 <span className="text-2xl font-bold text-sky-600 dark:text-sky-400">${scenarios.localAds.total.toLocaleString("en-US")}</span>
               </div>
-              <div className="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 px-3 py-2 rounded text-xs text-center border border-emerald-200 dark:border-emerald-900/30 flex items-center justify-center gap-2">
+              <div className="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 px-3 py-2 rounded-fib-1 text-xs text-center border border-emerald-200 dark:border-emerald-900/30 flex items-center justify-center gap-2">
                 <CheckCircle size={16} weight="fill" />
-                100% Deducible + Ahorro Operativo
+                100% Deducible y sin dolores de cabeza
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Result Section - Green Translucent */}
+        <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-emerald-500/20 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-fib-2">
+                <div className="text-center md:text-left">
+                    <h4 className="text-emerald-600 dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm max-w-md">
+                        Deja de perder dinero y evita problemas legales con nuestra plataforma.
+                    </p>
+                </div>
+
+                <div className="flex flex-col items-center md:items-end gap-[8px]">
+                    <div className="flex items-baseline gap-fib-1">
+                        <span className="text-sm text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-wider font-semibold">Ahorro Mensual</span>
+                        <span className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
+                            ${scenarios.savings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2">
+                         <span className="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-fib-1 py-[5px] rounded-full text-xs font-bold">
+                            +{scenarios.savingsPercent.toFixed(1)}% Eficiencia
+                         </span>
+                         <span className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                            Anual: <span className="font-bold text-emerald-600 dark:text-emerald-400">${(scenarios.savings * 12).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                         </span>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </motion.div>
@@ -552,18 +586,18 @@ function BillingFlowAnimation() {
       ref={ref}
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : {}}
-      className="max-w-5xl mx-auto mb-32"
+      className="max-w-5xl mx-auto mb-fib-6"
     >
-      <div className="text-center mb-20">
-        <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
-          Gestión Administrativa Centralizada
+      <div className="text-center mb-fib-5">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-fib-2">
+          Una sola factura. Cero estrés.
         </h3>
         <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
-          Olvídate de perseguir facturas individuales. Recibe una única factura fiscal válida por toda tu campaña.
+          Deja de perseguir facturas de cada influencer. Nosotros te damos una sola factura válida por toda la campaña.
         </p>
       </div>
 
-      <div className="flex items-center justify-center gap-4 md:gap-16 relative h-64">
+      <div className="flex items-center justify-center gap-fib-1 md:gap-fib-4 relative h-64">
         
         {/* Left Side: Chaos */}
         <div className="relative w-40 h-40 flex items-center justify-center">
@@ -650,15 +684,16 @@ function BillingFlowAnimation() {
 // Influencers Section
 function InfluencersSection() {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   return (
     <section
       id="influencers"
       ref={ref}
-      className="relative min-h-screen py-32 dark:bg-black transition-colors duration-500"
+      className="relative min-h-screen py-fib-6 dark:bg-black transition-colors duration-500"
     >
       <div className="container mx-auto px-4">
-        <div className="text-center mb-32">
+        <div className="text-center mb-fib-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -666,10 +701,10 @@ function InfluencersSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Tu Talento. <span className="text-amber-500/80">Tu Empresa.</span>
+              Tu Talento. <span className="text-amber-500/80">Tu Negocio.</span>
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mt-6 max-w-2xl mx-auto">
-              Profesionaliza tu carrera con herramientas financieras de nivel corporativo.
+            <p className="text-xl text-slate-600 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
+              Deja de ser un amateur. Te damos las herramientas para que cobres y trabajes como una empresa.
             </p>
           </motion.div>
         </div>
@@ -686,14 +721,15 @@ function InfluencersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-center mt-32"
+          className="text-center mt-fib-6"
         >
           <motion.button
+            onClick={() => router.push('/registro/influencer')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-10 py-5 text-lg font-medium rounded-full bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
           >
-            Profesionalizar mi Perfil
+            Quiero empezar ya
           </motion.button>
         </motion.div>
       </div>
@@ -711,34 +747,34 @@ function BrandRadar() {
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      className="max-w-5xl mx-auto mb-32"
+      className="max-w-5xl mx-auto mb-fib-6"
     >
-      <div className="bg-white dark:bg-white/10 rounded-3xl p-10 border border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-16">
+      <div className="bg-white dark:bg-white/10 rounded-3xl p-fib-3 border border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-fib-4">
         <div className="flex-1">
-          <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
-            Visibilidad Premium
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-fib-2">
+            Hazte Notar
           </h3>
-          <p className="text-slate-600 dark:text-slate-300 mb-8 text-lg leading-relaxed">
-            Nuestro algoritmo te conecta con marcas que buscan perfiles verificados. Accede a oportunidades exclusivas sin intermediarios innecesarios.
+          <p className="text-slate-600 dark:text-slate-300 mb-fib-3 text-lg leading-relaxed">
+            Te conectamos con marcas que buscan gente seria como tú. Consigue mejores campañas sin intermediarios.
           </p>
-          <ul className="space-y-4 text-slate-600 dark:text-slate-300">
-            <li className="flex items-center gap-3">
+          <ul className="space-y-fib-1 text-slate-600 dark:text-slate-300">
+            <li className="flex items-center gap-fib-1">
               <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-slate-900 dark:text-white">
                 <Check size={12} weight="bold" />
               </span>
-              Verificación de identidad y métricas
+              Tu identidad y números verificados
             </li>
-            <li className="flex items-center gap-3">
+            <li className="flex items-center gap-fib-1">
               <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-slate-900 dark:text-white">
                 <Check size={12} weight="bold" />
               </span>
-              Contratos digitales estandarizados
+              Contratos digitales claros
             </li>
-            <li className="flex items-center gap-3">
+            <li className="flex items-center gap-fib-1">
               <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-slate-900 dark:text-white">
                 <Check size={12} weight="bold" />
               </span>
-              Garantía de pago
+              Pagos garantizados
             </li>
           </ul>
         </div>
@@ -797,9 +833,9 @@ function CareerPath() {
   const isInView = useInView(ref, { once: false, margin: "-100px" });
 
   const steps = [
-    { title: "Verificación", desc: "Validación de identidad y audiencia" },
-    { title: "Profesionalización", desc: "Facturación y contratos legales" },
-    { title: "Escalabilidad", desc: "Acceso a campañas Tier-1" },
+    { title: "Verificación", desc: "Demuestra que eres real y confiable." },
+    { title: "Profesionalización", desc: "Todo legal, nada de sorpresas." },
+    { title: "Crecimiento", desc: "Trabaja con las mejores marcas." },
   ];
 
   return (
@@ -810,25 +846,25 @@ function CareerPath() {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="max-w-5xl mx-auto"
     >
-      <h3 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-16">
-        Plan de Carrera
+      <h3 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-fib-4">
+        Tu camino al éxito
       </h3>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-fib-3">
         {steps.map((step, i) => (
           <motion.div 
             key={i} 
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: i * 0.2 }}
-            className="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:bg-slate-50 dark:hover:bg-white/20 transition-colors"
+            className="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 p-fib-3 rounded-3xl relative overflow-hidden group hover:bg-slate-50 dark:hover:bg-white/20 transition-colors"
           >
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-slate-200/50 dark:bg-white/5 rounded-full blur-2xl group-hover:bg-slate-300/50 dark:group-hover:bg-white/10 transition-colors" />
             
-            <div className="w-10 h-10 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center font-bold text-sm mb-6">
+            <div className="w-10 h-10 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center font-bold text-sm mb-fib-2">
               {i + 1}
             </div>
-            <h4 className="text-xl font-semibold text-slate-900 dark:text-white mt-2 mb-3">{step.title}</h4>
+            <h4 className="text-xl font-semibold text-slate-900 dark:text-white mt-[8px] mb-fib-1">{step.title}</h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{step.desc}</p>
           </motion.div>
         ))}
@@ -842,17 +878,17 @@ function UnifiedFooter() {
   return (
     <footer
       id="footer"
-      className="relative py-24 dark:bg-black border-t border-slate-200 dark:border-white/10 transition-colors duration-500"
+      className="relative py-fib-5 dark:bg-black border-t border-slate-200 dark:border-white/10 transition-colors duration-500"
     >
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8 tracking-tight">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-fib-3 tracking-tight">
           AND Ecosystem
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-12 text-lg">
-          La plataforma estándar para la gestión profesional de campañas de influencia en Latinoamérica.
+        <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-fib-4 text-lg">
+          La forma inteligente de trabajar con influencers en Latinoamérica.
         </p>
 
-        <div className="flex flex-col md:flex-row justify-center gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-center gap-fib-3 mb-fib-4">
           <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Términos y Condiciones</a>
           <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Política de Privacidad</a>
           <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Soporte Empresas</a>
@@ -866,3 +902,4 @@ function UnifiedFooter() {
     </footer>
   );
 }
+
