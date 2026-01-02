@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/app/components/theme-provider";
+import { UserProvider } from "@/lib/context/UserContext";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -32,7 +33,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider>
+            {children}
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
