@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Envelope, LockKey, SignIn } from "@phosphor-icons/react";
+import { Envelope, LockKey, SignIn, Buildings, Key } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { InputGroup } from "@/app/components/ui/InputGroup";
 import { GradientButton } from "@/app/components/ui/GradientButton";
@@ -97,7 +97,7 @@ export default function LoginPage() {
                       : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
                 >
-                  <div className="text-2xl mb-1">🏢</div>
+                  <div className="flex justify-center mb-1"><Buildings size={32} weight="duotone" /></div>
                   <div className="text-sm font-medium">Empresa</div>
                 </button>
                 <button
@@ -109,7 +109,7 @@ export default function LoginPage() {
                       : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
                 >
-                  <div className="text-2xl mb-1">🔑</div>
+                  <div className="flex justify-center mb-1"><Key size={32} weight="duotone" /></div>
                   <div className="text-sm font-medium">Admin AND</div>
                 </button>
               </div>
