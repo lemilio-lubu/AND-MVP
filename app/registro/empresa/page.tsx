@@ -8,10 +8,34 @@ import { InputGroup } from "@/app/components/ui/InputGroup";
 import { Checkbox } from "@/app/components/ui/Checkbox";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
+import { useUser } from "@/lib/context/UserContext";
+import { User } from "@/lib/billing";
 
 export default function EmpresaRegistro() {
   const [accepted, setAccepted] = useState(false);
+  const [email, setEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [ruc, setRuc] = useState("");
   const router = useRouter();
+  const { login } = useUser();
+
+  const handleRegister = () => {
+    // Mock: crear usuario nuevo
+    const newUser: User = {
+      id: `new-user-${Date.now()}`,
+      type: "empresa",
+      isNew: true, // Usuario nuevo → verá gamificación
+      email: email,
+      name: companyName,
+      rucConnected: !!ruc,
+      hasEmittedFirstInvoice: false,
+    };
+
+    login(newUser);
+    
+    // Usuario nuevo → ve gamificación primero
+    router.push("/dashboard");
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-500">
@@ -46,6 +70,7 @@ export default function EmpresaRegistro() {
               icon={<Buildings size={18} />}
               placeholder="Ej. Tech Solutions S.A.C."
               theme="blue"
+              onChange={(e) => setCompanyName(e.target.value)}
             />
 
             <InputGroup 
@@ -53,6 +78,7 @@ export default function EmpresaRegistro() {
               icon={<Envelope size={18} />}
               placeholder="contacto@empresa.com"
               theme="blue"
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <InputGroup 
@@ -60,6 +86,7 @@ export default function EmpresaRegistro() {
               icon={<IdentificationCard size={18} />}
               placeholder="20123456789"
               theme="blue"
+              onChange={(e) => setRuc(e.target.value)}
             />
 
             <Checkbox 
@@ -72,7 +99,7 @@ export default function EmpresaRegistro() {
 
             <GradientButton 
               disabled={!accepted}
-              onClick={() => router.push("/dashboard")}
+              onClick={handleRegister}
               theme="blue"
             >
               Crear Cuenta Empresarial
