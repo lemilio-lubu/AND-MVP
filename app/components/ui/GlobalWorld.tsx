@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 interface GlobeProps {
   className?: string;
@@ -9,6 +10,7 @@ interface GlobeProps {
 
 export function GlobalWorld({ className = "", size = 400 }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -175,8 +177,11 @@ export function GlobalWorld({ className = "", size = 400 }: GlobeProps) {
         
         ctx.arc(px, py, DOT_RADIUS * scale, 0, Math.PI * 2);
         
-        // Color Soft UI (Azul Corporativo)
-        ctx.fillStyle = `rgba(59, 130, 246, ${alpha})`; 
+        // Color Soft UI Adaptable
+        const isDark = resolvedTheme === 'dark';
+        ctx.fillStyle = isDark 
+          ? `rgba(59, 130, 246, ${alpha})` // Blue-500 en dark
+          : `rgba(37, 99, 235, ${alpha})`; // Blue-600 en light (más contraste)
         ctx.fill();
       });
 
@@ -193,13 +198,13 @@ export function GlobalWorld({ className = "", size = 400 }: GlobeProps) {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [size]);
+  }, [size, resolvedTheme]);
 
   return (
     <div className={`relative flex items-center justify-center pointer-events-none ${className}`}>
       <canvas ref={canvasRef} className="opacity-90" />
-      {/* Glow effect detrás */}
-      <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full transform scale-75 -z-10" />
+      {/* Glow effect detrás adaptable */}
+      <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-500/20 blur-3xl rounded-full transform scale-75 -z-10" />
     </div>
   );
 }

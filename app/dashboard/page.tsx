@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useUser } from "@/lib/context/UserContext";
 import { 
   shouldShowGamification, 
@@ -25,6 +26,7 @@ import {
   CaretRight
 } from "@phosphor-icons/react";
 import { BillingRequestModal } from "@/app/components/BillingRequestModal";
+import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
 import { 
   BarChart, 
   Bar, 
@@ -43,6 +45,7 @@ import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
 export default function DashboardPage() {
   const router = useRouter();
   const { user, updateUser } = useUser();
+  const { resolvedTheme } = useTheme();
   const [showGamification, setShowGamification] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [metrics, setMetrics] = useState<DashboardMetrics>({
@@ -193,6 +196,7 @@ export default function DashboardPage() {
                 RUC PENDIENTE
               </span>
             )}
+            <ThemeToggle />
             <button
               onClick={() => router.push("/landing")}
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
@@ -317,11 +321,11 @@ export default function DashboardPage() {
           </div>
 
           {/* "Globe" / Network Area (Right - 5 cols) */}
-          <div className="lg:col-span-5 relative overflow-hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-white group">
+          <div className="lg:col-span-5 relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl text-slate-900 dark:text-white group">
             
             {/* Fondo decorativo sutil */}
-            <div className="absolute top-0 right-0 p-4 opacity-5">
-              <GlobeHemisphereWest size={200} weight="fill" />
+            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+              <GlobeHemisphereWest size={200} weight="fill" className="text-slate-900 dark:text-white" />
             </div>
 
             {/* Globo Animado Central */}
@@ -329,22 +333,22 @@ export default function DashboardPage() {
                <GlobalWorld size={400} />
             </div>
             
-            <div className="relative z-10 h-full flex flex-col justify-between">
+            <div className="relative z-10 h-full flex flex-col justify-between pointer-events-none">
               <div>
-                <h3 className="font-bold text-lg mb-1">Red de Negocios</h3>
-                <p className="text-slate-400 text-sm max-w-[70%]">
+                <h3 className="font-bold text-lg mb-1 text-slate-900 dark:text-white">Red de Negocios</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-[70%]">
                   Tu alcance global a través de AND.
                 </p>
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-700/50">
-                  <p className="text-xs text-slate-400 mb-1">Plataformas</p>
-                  <p className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">4 Activas</p>
+                <div className="bg-slate-50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Plataformas</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">4 Activas</p>
                 </div>
-                <div className="bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-700/50">
-                  <p className="text-xs text-slate-400 mb-1">Países</p>
-                  <p className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">2 Regiones</p>
+                <div className="bg-slate-50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Países</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">2 Regiones</p>
                 </div>
               </div>
 
@@ -352,20 +356,20 @@ export default function DashboardPage() {
                 <p className="text-xs text-slate-500 mb-2 uppercase font-bold tracking-wider">Top Plataformas Globales</p>
                 <div className="space-y-4">
                   <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Meta Ads (Global)</span>
-                      <span className="text-blue-400">45%</span>
+                    <div className="flex justify-between text-xs mb-1 font-medium">
+                      <span className="text-slate-700 dark:text-slate-200">Meta Ads (Global)</span>
+                      <span className="text-blue-600 dark:text-blue-400 font-bold">45%</span>
                     </div>
-                    <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div className="h-full bg-blue-500 w-[45%]" />
                     </div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span>Google Ads (Latam)</span>
-                      <span className="text-emerald-400">30%</span>
+                    <div className="flex justify-between text-xs mb-1 font-medium">
+                      <span className="text-slate-700 dark:text-slate-200">Google Ads (Latam)</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">30%</span>
                     </div>
-                    <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div className="h-full bg-emerald-500 w-[30%]" />
                     </div>
                   </div>
@@ -379,33 +383,56 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Validated Billing (Left - 5 cols) */}
-          <div className="lg:col-span-5 bg-slate-900 dark:bg-black rounded-2xl p-6 shadow-lg text-white">
+          <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
             <div className="mb-6">
               <h3 className="font-bold text-lg">Facturación vs Ahorro</h3>
-              <p className="text-sm text-slate-400">Rendimiento mensual</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Rendimiento mensual</p>
             </div>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
+                  <CartesianGrid 
+                    strokeDasharray="3 3" 
+                    vertical={false} 
+                    stroke={resolvedTheme === 'dark' ? "#334155" : "#e2e8f0"} 
+                  />
                   <XAxis 
                     dataKey="name" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                    tick={{ fill: resolvedTheme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 12 }} 
                     dy={10}
                   />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ 
+                      backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff', 
+                      borderColor: resolvedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                      borderWidth: '1px',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                    itemStyle={{ color: resolvedTheme === 'dark' ? '#fff' : '#0f172a' }}
+                    labelStyle={{ color: resolvedTheme === 'dark' ? '#94a3b8' : '#64748b' }}
                   />
-                  <Bar dataKey="billing" fill="#fff" radius={[4, 4, 0, 0]} barSize={20} name="Facturado" />
-                  <Bar dataKey="savings" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} name="Ahorrado" />
+                  <Bar 
+                    dataKey="billing" 
+                    fill={resolvedTheme === 'dark' ? "#fff" : "#0f172a"} 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={20} 
+                    name="Facturado" 
+                  />
+                  <Bar 
+                    dataKey="savings" 
+                    fill="#22c55e" 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={20} 
+                    name="Ahorrado" 
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 pt-4 border-t border-slate-800">
-               <p className="text-xs text-slate-400">
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+               <p className="text-xs text-slate-500 dark:text-slate-400">
                  <strong className="text-green-500 font-bold">(+23%)</strong> más que el mes anterior
                </p>
             </div>
