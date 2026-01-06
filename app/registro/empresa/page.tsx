@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Buildings, Envelope, IdentificationCard } from "@phosphor-icons/react";
+import { Buildings, Envelope, IdentificationCard, LockKey } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { InputGroup } from "@/app/components/ui/InputGroup";
 import { Checkbox } from "@/app/components/ui/Checkbox";
@@ -14,6 +14,8 @@ import { User } from "@/lib/billing";
 export default function EmpresaRegistro() {
   const [accepted, setAccepted] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [ruc, setRuc] = useState("");
   const router = useRouter();
@@ -87,6 +89,24 @@ export default function EmpresaRegistro() {
               placeholder="20123456789"
               theme="blue"
               onChange={(e) => setRuc(e.target.value)}
+            />
+
+            <InputGroup 
+              label="Contraseña"
+              icon={<LockKey size={18} />}
+              placeholder="••••••••"
+              type="password"
+              theme="blue"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <InputGroup 
+              label="Confirmar Contraseña"
+              icon={<LockKey size={18} />}
+              placeholder="••••••••"
+              type="password"
+              theme="blue"
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
             <Checkbox 

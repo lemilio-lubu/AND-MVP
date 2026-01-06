@@ -18,9 +18,27 @@ import {
   Rocket,
   TrendUp,
   FileText,
-  Warning
+  Warning,
+  ChartBar,
+  ChartLineUp,
+  GlobeHemisphereWest,
+  CaretRight
 } from "@phosphor-icons/react";
 import { BillingRequestModal } from "@/app/components/BillingRequestModal";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  AreaChart,
+  Area
+} from 'recharts';
+import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -107,6 +125,22 @@ export default function DashboardPage() {
           status: "REQUEST_CREATED",
           createdAt: new Date(),
         } as RechargeRequest,
+        {
+          id: "req-3",
+          companyId: user.id,
+          platform: "Google",
+          requestedAmount: 12000,
+          status: "COMPLETED",
+          createdAt: new Date(Date.now() - 86400000 * 5),
+        } as RechargeRequest,
+        {
+          id: "req-4",
+          companyId: user.id,
+          platform: "Meta",
+          requestedAmount: 8500,
+          status: "COMPLETED",
+          createdAt: new Date(Date.now() - 86400000 * 12),
+        } as RechargeRequest,
       ]);
     }
   };
@@ -117,219 +151,317 @@ export default function DashboardPage() {
 
   const trajectory = getUserTrajectory(metrics.invoicesEmitted, metrics.totalBilledThisMonth);
 
+  // Mock Data for Charts
+  const chartData = [
+    { name: 'Ene', billing: 4000, savings: 240 },
+    { name: 'Feb', billing: 3000, savings: 139 },
+    { name: 'Mar', billing: 2000, savings: 980 },
+    { name: 'Abr', billing: 2780, savings: 390 },
+    { name: 'May', billing: 1890, savings: 480 },
+    { name: 'Jun', billing: 2390, savings: 380 },
+    { name: 'Jul', billing: 3490, savings: 430 },
+  ];
+
+  const lineChartData = [
+    { name: 'Sem 1', amount: 4000 },
+    { name: 'Sem 2', amount: 3000 },
+    { name: 'Sem 3', amount: 5000 },
+    { name: 'Sem 4', amount: 2780 },
+    { name: 'Sem 5', amount: 1890 },
+    { name: 'Sem 6', amount: 2390 },
+    { name: 'Sem 7', amount: 3490 },
+  ];
+
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
-      {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 pb-20">
+      {/* Navbar Minimalista */}
+      <header className="bg-transparent px-6 py-6 mb-2">
+        <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Facturación Local
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pages / Dashboard</p>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+              Panel Principal
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              {user.name}
-            </p>
           </div>
           <div className="flex items-center gap-4">
-            {showGamification && (
-              <div className="px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg">
-                <p className="text-xs text-slate-600 dark:text-slate-400">Trayectoria</p>
-                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 capitalize">
-                  {trajectory.replace("-", " ")}
-                </p>
-              </div>
+             {user.rucConnected ? (
+              <span className="px-3 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 text-xs font-bold rounded-full border border-green-200 dark:border-green-500/30">
+                RUC CONECTADO
+              </span>
+            ) : (
+              <span className="px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-full border border-amber-200 dark:border-amber-500/30">
+                RUC PENDIENTE
+              </span>
             )}
             <button
               onClick={() => router.push("/landing")}
-              className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
             >
               Cerrar Sesión
+            </button>
+            <button
+              onClick={() => setShowRequestModal(true)}
+              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-slate-200 dark:shadow-none hover:scale-105 transition-transform"
+            >
+              + Nueva Solicitud
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Gamificación - Solo para usuarios nuevos */}
-        {showGamification && (
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white">
-                <Rocket size={24} weight="duotone" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                  ¡Bienvenido a AND! 🎉
-                </h3>
-                <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
-                  Tu trayectoria comienza aquí. Cada colaboración, entrega y conexión te impulsa a un nuevo nivel.
-                </p>
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="text-center p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                    <div className="text-2xl mb-1">🚀</div>
-                    <p className="text-xs font-medium text-slate-900 dark:text-white">Iniciando</p>
-                  </div>
-                  <div className="text-center p-3 bg-slate-100 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 opacity-50">
-                    <div className="text-2xl mb-1">⚡</div>
-                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Confianza comprobada</p>
-                  </div>
-                  <div className="text-center p-3 bg-slate-100 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 opacity-50">
-                    <div className="text-2xl mb-1">⭐</div>
-                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Colaborador estrella</p>
-                  </div>
-                  <div className="text-center p-3 bg-slate-100 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 opacity-50">
-                    <div className="text-2xl mb-1">🤝</div>
-                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Socio estratégico</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Métricas principales - Específicas AND */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard
-            icon={<CurrencyDollar size={24} weight="duotone" />}
-            label="Total facturado (mes)"
+      <div className="max-w-[1600px] mx-auto px-6 space-y-8">
+        
+        {/* Row 1: Metrics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <SoftMetricCard
+            title="Total Facturado"
             value={formatCurrency(metrics.totalBilledThisMonth)}
-            color="blue"
+            percentage="+55%"
+            icon={<CurrencyDollar size={24} weight="fill" color="#fff" />}
           />
-          <MetricCard
-            icon={<TrendUp size={24} weight="duotone" />}
-            label="Ahorro fiscal acumulado"
+          <SoftMetricCard
+            title="Ahorro Fiscal"
             value={formatCurrency(metrics.accumulatedTaxSavings)}
-            color="green"
-            trend="+15%"
+            percentage="+15%"
+            icon={<TrendUp size={24} weight="fill" color="#fff" />}
           />
-          <MetricCard
-            icon={<CheckCircle size={24} weight="duotone" />}
-            label="Facturas emitidas"
+          <SoftMetricCard
+            title="Facturas Emitidas"
             value={metrics.invoicesEmitted.toString()}
-            color="purple"
+            percentage="+3%"
+            icon={<FileText size={24} weight="fill" color="#fff" />}
           />
-          <MetricCard
-            icon={<Clock size={24} weight="duotone" />}
-            label="Facturas pendientes"
-            value={metrics.invoicesPending.toString()}
-            color="orange"
+          <SoftMetricCard
+            title="Solicitudes Activas"
+            value={metrics.activeRequests.toString()}
+            percentage="+5%"
+            icon={<Rocket size={24} weight="fill" color="#fff" />}
           />
         </div>
 
-        {/* Sección de acciones principales */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Solicitar facturación */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
-                <Receipt size={20} weight="duotone" />
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Solicitar Facturación</h3>
-            </div>
-            
-            {!user.rucConnected ? (
-              <div className="space-y-3">
-                <div className="flex items-start gap-2 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                  <Warning size={18} className="text-orange-600 dark:text-orange-400 mt-0.5" weight="duotone" />
-                  <p className="text-xs text-orange-800 dark:text-orange-300">
-                    Debes conectar tus datos tributarios (RUC) antes de solicitar facturación
-                  </p>
+        {/* Row 2: Tables & "Globe" Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Recent Requests Table (Left - 7 cols) */}
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Solicitudes Recientes</h3>
+                <div className="flex items-center gap-2 text-sm text-green-500 font-medium mt-1">
+                  <CheckCircle weight="fill" />
+                  <span>{metrics.activeRequests} solicitudes activas</span>
                 </div>
-                <button className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-                  Conectar RUC
-                </button>
               </div>
-            ) : (
               <button 
                 onClick={() => setShowRequestModal(true)}
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-medium transition-all text-sm shadow-lg shadow-blue-500/30"
+                className="p-2 text-slate-400 hover:text-blue-500 transition-colors"
+                title="Nueva Solicitud"
               >
-                Nueva Solicitud
+                <CaretRight size={20} weight="bold" />
               </button>
-            )}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                    <th className="pb-3 pl-2">Plataforma</th>
+                    <th className="pb-3 text-center">Monto</th>
+                    <th className="pb-3 text-center">Estado</th>
+                    <th className="pb-3 text-right pr-2">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {recentRequests.length > 0 ? (
+                    recentRequests.map((request) => (
+                      <tr key={request.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-4 pl-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                              <GlobeHemisphereWest weight="duotone" />
+                            </div>
+                            <span className="font-semibold text-sm text-slate-700 dark:text-slate-200">
+                              {request.platform}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 text-center">
+                          <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
+                            {formatCurrency(request.requestedAmount)}
+                          </span>
+                        </td>
+                        <td className="py-4 text-center">
+                          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${getStatusColor(request.status)}`}>
+                            {getStatusLabel(request.status)}
+                          </span>
+                        </td>
+                        <td className="py-4 text-right pr-2">
+                           {request.status === "CALCULATED" ? (
+                            <button className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors">
+                              Aprobar
+                            </button>
+                          ) : (
+                            <span className="text-xs font-medium text-slate-400">Ver detalles</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-slate-500">No hay solicitudes recientes</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Solicitudes activas (no "campañas") */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
-                <Clock size={20} weight="duotone" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-slate-900 dark:text-white">Solicitudes en Proceso</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">{metrics.activeRequests} activas</p>
-              </div>
+          {/* "Globe" / Network Area (Right - 5 cols) */}
+          <div className="lg:col-span-5 relative overflow-hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-white group">
+            
+            {/* Fondo decorativo sutil */}
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+              <GlobeHemisphereWest size={200} weight="fill" />
             </div>
-            <button className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors text-sm">
-              Ver Solicitudes
-            </button>
-          </div>
 
-          {/* Estado de facturación */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-500/10 rounded-lg flex items-center justify-center text-green-600 dark:text-green-400">
-                <FileText size={20} weight="duotone" />
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Estado</h3>
+            {/* Globo Animado Central */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-60 scale-125 group-hover:scale-150 transition-transform duration-1000">
+               <GlobalWorld size={400} />
             </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">RUC Conectado:</span>
-                <span className={user.rucConnected ? "text-green-600 dark:text-green-400 font-medium" : "text-orange-600 dark:text-orange-400 font-medium"}>
-                  {user.rucConnected ? "✓ Sí" : "Pendiente"}
-                </span>
+            
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div>
+                <h3 className="font-bold text-lg mb-1">Red de Negocios</h3>
+                <p className="text-slate-400 text-sm max-w-[70%]">
+                  Tu alcance global a través de AND.
+                </p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Primera Factura:</span>
-                <span className={user.hasEmittedFirstInvoice ? "text-green-600 dark:text-green-400 font-medium" : "text-slate-600 dark:text-slate-400"}>
-                  {user.hasEmittedFirstInvoice ? "✓ Emitida" : "Pendiente"}
-                </span>
+
+              <div className="mt-8 grid grid-cols-2 gap-4">
+                <div className="bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-700/50">
+                  <p className="text-xs text-slate-400 mb-1">Plataformas</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">4 Activas</p>
+                </div>
+                <div className="bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-700/50">
+                  <p className="text-xs text-slate-400 mb-1">Países</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">2 Regiones</p>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <p className="text-xs text-slate-500 mb-2 uppercase font-bold tracking-wider">Top Plataformas Globales</p>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span>Meta Ads (Global)</span>
+                      <span className="text-blue-400">45%</span>
+                    </div>
+                    <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 w-[45%]" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span>Google Ads (Latam)</span>
+                      <span className="text-emerald-400">30%</span>
+                    </div>
+                    <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 w-[30%]" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tabla de solicitudes recientes */}
-        {(metrics.activeRequests > 0 || recentRequests.length > 0) && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-            <h3 className="font-bold text-slate-900 dark:text-white mb-4">Solicitudes Recientes</h3>
-            {recentRequests.length > 0 ? (
-              <div className="space-y-3">
-                {recentRequests.map(request => (
-                  <div key={request.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900 dark:text-white">
-                        {request.platform} - {formatCurrency(request.requestedAmount)}
-                      </p>
-                      <p className="text-xs text-slate-600 dark:text-slate-400">
-                        {getStatusLabel(request.status)}
-                      </p>
-                    </div>
-                    {request.status === "CALCULATED" && (
-                      <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
-                        Aprobar
-                      </button>
-                    )}
-                    {request.status === "REQUEST_CREATED" && (
-                      <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 rounded-full text-xs font-medium">
-                        En revisión
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                <FileText size={48} weight="duotone" className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No hay solicitudes activas</p>
-              </div>
-            )}
+        {/* Row 3: Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Validated Billing (Left - 5 cols) */}
+          <div className="lg:col-span-5 bg-slate-900 dark:bg-black rounded-2xl p-6 shadow-lg text-white">
+            <div className="mb-6">
+              <h3 className="font-bold text-lg">Facturación vs Ahorro</h3>
+              <p className="text-sm text-slate-400">Rendimiento mensual</p>
+            </div>
+            <div className="h-[250px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                    dy={10}
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Bar dataKey="billing" fill="#fff" radius={[4, 4, 0, 0]} barSize={20} name="Facturado" />
+                  <Bar dataKey="savings" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} name="Ahorrado" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 pt-4 border-t border-slate-800">
+               <p className="text-xs text-slate-400">
+                 <strong className="text-green-500 font-bold">(+23%)</strong> más que el mes anterior
+               </p>
+            </div>
           </div>
-        )}
+
+          {/* Sales Comparison (Right - 7 cols) */}
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <div className="mb-6 flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Tendencia de Solicitudes</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Evolución semanal</p>
+              </div>
+              <div className="flex gap-2">
+                <span className="w-3 h-3 rounded-full bg-blue-500 block"></span>
+                <span className="text-xs text-slate-500">Volumen</span>
+              </div>
+            </div>
+            <div className="h-[250px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={lineChartData}>
+                  <defs>
+                    <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6 " stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#3b82f6 " stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#64748b', fontSize: 12 }} 
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#64748b', fontSize: 12 }} 
+                  />
+                  <Tooltip />
+                  <Area 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#3b82f6" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorAmount)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* Modal de Solicitud de Facturación */}
       <BillingRequestModal 
         isOpen={showRequestModal}
         onClose={() => setShowRequestModal(false)}
@@ -339,51 +471,41 @@ export default function DashboardPage() {
   );
 }
 
-// Helper para mostrar labels de estados
-function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    REQUEST_CREATED: "Enviada - En revisión por AND",
-    CALCULATED: "Calculada - Pendiente de tu aprobación",
-    APPROVED_BY_CLIENT: "Aprobada - Emitiendo factura",
-    INVOICED: "Factura emitida - Pendiente de pago",
-    PAID: "Pagada - Ejecutando recarga",
-    RECHARGE_EXECUTED: "Recarga ejecutada",
-    COMPLETED: "Completada",
-    ERROR: "Error - Contacta a soporte",
-  };
-  return labels[status] || status;
-}
+// --- Components ---
 
-interface MetricCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  color: "blue" | "green" | "purple" | "orange";
-  trend?: string;
-}
-
-function MetricCard({ icon, label, value, color, trend }: MetricCardProps) {
-  const colorClasses = {
-    blue: "bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    green: "bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400",
-    purple: "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400",
-    orange: "bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  };
-
+function SoftMetricCard({ title, value, percentage, icon }: { title: string, value: string, percentage: string, icon: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+      <div className="flex justify-between items-start z-10 relative">
+        <div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{title}</p>
+          <div className="flex items-baseline gap-2">
+            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
+            <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">{percentage}</span>
+          </div>
+        </div>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 group-hover:scale-110 transition-transform duration-300 text-white shadow-blue-500/20">
           {icon}
         </div>
-        {trend && (
-          <span className="ml-auto text-xs font-semibold text-green-600 dark:text-green-400">
-            {trend}
-          </span>
-        )}
       </div>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">{label}</p>
-      <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
     </div>
   );
+}
+
+function getStatusLabel(status: string) {
+  const map: Record<string, string> = {
+    REQUEST_CREATED: "Revisión",
+    CALCULATED: "Aprobación",
+    COMPLETED: "Completado"
+  };
+  return map[status] || status;
+}
+
+function getStatusColor(status: string) {
+  const map: Record<string, string> = {
+    REQUEST_CREATED: "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+    CALCULATED: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+    COMPLETED: "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+  };
+  return map[status] || "bg-slate-100 text-slate-600";
 }
