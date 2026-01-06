@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useUser } from "@/lib/context/UserContext";
 import { 
   RechargeRequest,
@@ -16,12 +17,32 @@ import {
   Receipt, 
   CurrencyDollar,
   Warning,
-  Calculator
+  Calculator,
+  TrendUp,
+  ChartPieSlice,
+  Users,
+  GlobeHemisphereWest
 } from "@phosphor-icons/react";
+import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell,
+  PieChart,
+  Pie
+} from 'recharts';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { user } = useUser();
+  const { resolvedTheme } = useTheme();
   const [metrics, setMetrics] = useState<AdminMetrics>({
     pendingRequests: 0,
     pendingApprovals: 0,
@@ -321,149 +342,309 @@ export default function AdminDashboardPage() {
     return null;
   }
 
+  // Mock data for charts
+  const revenueData = [
+    { name: 'Lun', amount: 15000 },
+    { name: 'Mar', amount: 25000 },
+    { name: 'Mié', amount: 18000 },
+    { name: 'Jue', amount: 32000 },
+    { name: 'Vie', amount: 28000 },
+    { name: 'Sáb', amount: 12000 },
+    { name: 'Dom', amount: 9000 },
+  ];
+
+  const platformData = [
+    { name: 'Meta', value: 45, color: '#3b82f6' },
+    { name: 'Google', value: 30, color: '#10b981' },
+    { name: 'TikTok', value: 15, color: '#000000' }, // Dark/Light handled in component
+    { name: 'LinkedIn', value: 10, color: '#6366f1' },
+  ];
+
+  const getActionButtons = (request: RechargeRequest) => {
+      switch (request.status) {
+          case "REQUEST_CREATED":
+            return (
+              <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-blue-500/30">
+                Calcular
+              </button>
+            );
+          case "CALCULATED":
+            return (
+               <span className="text-xs font-medium text-slate-400 italic">Esperando aprobación del cliente...</span>
+            );
+          case "APPROVED_BY_CLIENT":
+             return (
+              <button onClick={() => handleEmitInvoice(request)} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-emerald-500/30">
+                Emitir Factura
+              </button>
+            );
+          case "INVOICED":
+            return (
+              <button onClick={() => handleRegisterPayment(request)} className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-purple-500/30">
+                Registrar Pago
+              </button>
+            );
+           case "PAID":
+            return (
+              <button onClick={() => handleExecuteRecharge(request)} className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-orange-500/30">
+                Ejecutar Recarga
+              </button>
+            );
+           case "RECHARGE_EXECUTED":
+            return (
+              <button onClick={() => handleCompleteProcess(request)} className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-teal-500/30">
+                Finalizar
+              </button>
+            );
+           default:
+             return null;
+      }
+  };
+
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 pb-20">
       {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <header className="bg-transparent px-6 py-6 mb-2">
+        <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Panel Admin AND
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pages / Admin</p>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+              Panel de Administración
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Gestión de Facturación Local
-            </p>
           </div>
-          <button
-            onClick={() => router.push("/landing")}
-            className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-          >
-            Cerrar Sesión
-          </button>
+          <div className="flex items-center gap-4">
+             <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full border border-purple-200 dark:border-purple-500/30 flex items-center gap-2">
+                <CheckCircle weight="fill" />
+                ADMINISTRADOR
+              </span>
+            <ThemeToggle />
+            <button
+              onClick={() => router.push("/landing")}
+              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-[1600px] mx-auto px-6 space-y-8">
         {/* Métricas Admin */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <AdminMetricCard
-            icon={<Clock size={20} weight="duotone" />}
-            label="Pendientes Calcular"
-            value={metrics.pendingRequests}
-            color="orange"
-          />
-          <AdminMetricCard
-            icon={<Calculator size={20} weight="duotone" />}
-            label="Pendientes Aprobar"
-            value={metrics.pendingApprovals}
-            color="yellow"
-          />
-          <AdminMetricCard
-            icon={<Receipt size={20} weight="duotone" />}
-            label="Pendientes Facturar"
-            value={metrics.pendingInvoices}
-            color="blue"
-          />
-          <AdminMetricCard
-            icon={<CurrencyDollar size={20} weight="duotone" />}
-            label="Pendientes Pago"
-            value={metrics.pendingPayments}
-            color="purple"
-          />
-          <AdminMetricCard
-            icon={<CheckCircle size={20} weight="duotone" />}
-            label="Completadas (mes)"
-            value={metrics.completedThisMonth}
-            color="green"
-          />
-          <AdminMetricCard
-            icon={<CurrencyDollar size={20} weight="duotone" />}
-            label="Ingresos Totales"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <SoftMetricCard
+            title="Ingresos Totales"
             value={formatCurrency(metrics.totalRevenue)}
-            color="green"
-            small
+            percentage="+12%"
+            icon={<CurrencyDollar size={24} weight="fill" color="#fff" />}
+            gradient="from-blue-600 to-indigo-600"
+          />
+          <SoftMetricCard
+            title="Pendientes Acción"
+            value={(metrics.pendingRequests + metrics.pendingApprovals).toString()}
+            percentage="Atención"
+            icon={<Warning size={24} weight="fill" color="#fff" />}
+            gradient="from-blue-600 to-indigo-600"
+          />
+          <SoftMetricCard
+            title="Pendientes Facturar"
+            value={metrics.pendingInvoices.toString()}
+            percentage="Prioridad"
+            icon={<Receipt size={24} weight="fill" color="#fff" />}
+            gradient="from-blue-600 to-indigo-600"
+          />
+           <SoftMetricCard
+            title="Completadas (Mes)"
+            value={metrics.completedThisMonth.toString()}
+            percentage="+8%"
+            icon={<CheckCircle size={24} weight="fill" color="#fff" />}
+            gradient="from-blue-600 to-indigo-600"
           />
         </div>
 
+        {/* Row 2: Charts Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Revenue Trend - 8 cols */}
+          <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+            <div className="mb-6 flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-lg">Flujo de Ingresos</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Últimos 7 días</p>
+              </div>
+              <div className="flex gap-2 items-center">
+                 <div className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-xs font-bold text-slate-600 dark:text-slate-400">
+                    Semanal
+                 </div>
+              </div>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData}>
+                   <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid 
+                    strokeDasharray="3 3" 
+                    vertical={false} 
+                    stroke={resolvedTheme === 'dark' ? "#334155" : "#e2e8f0"} 
+                  />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: resolvedTheme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 12 }} 
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: resolvedTheme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 12 }} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff', 
+                      borderColor: resolvedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                    itemStyle={{ color: resolvedTheme === 'dark' ? '#fff' : '#0f172a' }}
+                    labelStyle={{ color: resolvedTheme === 'dark' ? '#94a3b8' : '#64748b' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#10b981" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Platform Distribution - 4 cols */}
+          <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+            <div className="mb-6">
+                <h3 className="font-bold text-lg">Distribución</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Solicitudes por plataforma</p>
+            </div>
+            <div className="h-[300px] w-full relative">
+               <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={platformData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {platformData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                     contentStyle={{ 
+                      backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff', 
+                      borderColor: resolvedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                      borderRadius: '8px'
+                    }}
+                    itemStyle={{ color: resolvedTheme === 'dark' ? '#fff' : '#0f172a' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Legend overlay */}
+              <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-30">
+                 <Users size={40} weight="duotone" className="text-slate-400 dark:text-slate-600" />
+              </div>
+            </div>
+             <div className="flex flex-wrap gap-2 justify-center mt-2">
+                {platformData.map((p) => (
+                  <div key={p.name} className="flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }}></span>
+                    {p.name}
+                  </div>
+                ))}
+             </div>
+          </div>
+        </div>
+
         {/* Lista de solicitudes por estado */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-          <h3 className="font-bold text-slate-900 dark:text-white mb-4">Solicitudes Activas</h3>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+               <h3 className="font-bold text-lg text-slate-900 dark:text-white">Gestión de Operaciones</h3>
+               <p className="text-sm text-slate-500 dark:text-slate-400">
+                 {metrics.pendingRequests + metrics.pendingApprovals + metrics.pendingInvoices} tareas pendientes
+               </p>
+            </div>
+             <div className="flex gap-2">
+                <button className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                  <ChartPieSlice size={20} />
+                </button>
+             </div>
+          </div>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             {requests.map(request => (
-              <div key={request.id} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg">
-                <div className="flex-1">
-                  <p className="font-medium text-slate-900 dark:text-white">
-                    {request.platform} - {formatCurrency(request.requestedAmount)}
-                  </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
-                    ID: {request.id} | Estado: {request.status}
-                  </p>
+              <div key={request.id} className="group flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500/30 transition-all duration-200">
+                
+                {/* Icon Column */}
+                <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
+                   {getPlatformIcon(request.platform)}
                 </div>
 
-                {request.status === "REQUEST_CREATED" && (
-                  <button
-                    onClick={() => handleCalculate(request)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Calcular
-                  </button>
-                )}
-
-                {request.status === "CALCULATED" && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                      Total: {formatCurrency(request.calculatedTotal || 0)}
-                    </span>
-                    <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 rounded-full text-xs font-medium">
-                      Esperando cliente
-                    </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                      {request.companyId} <span className="text-slate-400 font-normal mx-1">•</span> {request.platform}
+                    </h4>
+                    {request.status === "COMPLETED" && (
+                       <CheckCircle size={14} weight="fill" className="text-green-500" />
+                    )}
                   </div>
-                )}
+                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="font-mono bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{request.id}</span>
+                    <span>{formatDate(request.createdAt)}</span>
+                  </div>
+                </div>
 
-                {request.status === "APPROVED_BY_CLIENT" && (
-                  <button
-                    onClick={() => handleEmitInvoice(request)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Emitir Factura
-                  </button>
-                )}
+                {/* Status Badge */}
+                <div className="w-full md:w-auto flex justify-between md:block items-center">
+                   <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.status)}`}>
+                      {getStatusLabel(request.status)}
+                   </span>
+                </div>
 
-                {request.status === "INVOICED" && (
-                  <button
-                    onClick={() => handleRegisterPayment(request)}
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Registrar Pago
-                  </button>
-                )}
+                {/* Amount */}
+                <div className="text-right">
+                   <p className="font-bold text-slate-900 dark:text-white">
+                      {formatCurrency(request.requestedAmount)}
+                   </p>
+                   {request.calculatedTotal && (
+                     <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Total: {formatCurrency(request.calculatedTotal)}
+                     </p>
+                   )}
+                </div>
 
-                {request.status === "PAID" && (
-                  <button
-                    onClick={() => handleExecuteRecharge(request)}
-                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Ejecutar Recarga
-                  </button>
-                )}
-
-                {request.status === "RECHARGE_EXECUTED" && (
-                  <button
-                    onClick={() => handleCompleteProcess(request)}
-                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Completar
-                  </button>
-                )}
-
-                {request.status === "COMPLETED" && (
-                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-full text-xs font-medium">
-                    ✓ Completado
-                  </span>
-                )}
+                {/* Actions */}
+                <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
+                    {getActionButtons(request)}
+                </div>
               </div>
             ))}
+             
+             {requests.length === 0 && (
+                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                   <CheckCircle size={40} className="mx-auto mb-3 opacity-20" />
+                   <p>No hay solicitudes pendientes</p>
+                </div>
+             )}
           </div>
         </div>
 
@@ -548,24 +729,65 @@ interface AdminMetricCardProps {
   small?: boolean;
 }
 
-function AdminMetricCard({ icon, label, value, color, small }: AdminMetricCardProps) {
-  const colorClasses = {
-    orange: "bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400",
-    yellow: "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-    blue: "bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    purple: "bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400",
-    green: "bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400",
-  };
+// --- Components & Helpers ---
 
+function SoftMetricCard({ title, value, percentage, icon, gradient }: { title: string, value: string, percentage: string, icon: React.ReactNode, gradient: string }) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${colorClasses[color]}`}>
-        {icon}
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+      <div className="flex justify-between items-start z-10 relative">
+        <div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{title}</p>
+          <div className="flex items-baseline gap-2">
+            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
+            <span className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{percentage}</span>
+          </div>
+        </div>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300 text-white shadow-blue-500/20`}>
+          {icon}
+        </div>
       </div>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">{label}</p>
-      <p className={`font-bold text-slate-900 dark:text-white ${small ? 'text-sm' : 'text-xl'}`}>
-        {value}
-      </p>
     </div>
   );
 }
+
+function getPlatformIcon(platform: string) {
+    // You can replace with specialized icons if available
+    return <GlobeHemisphereWest weight="duotone" className="text-blue-500" size={20} />; 
+}
+
+function getStatusStyle(status: string) {
+  const map: Record<string, string> = {
+    REQUEST_CREATED: "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+    CALCULATED: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+    APPROVED_BY_CLIENT: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+    INVOICED: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
+    PAID: "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400",
+    RECHARGE_EXECUTED: "bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400",
+    COMPLETED: "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+  };
+  return map[status] || "bg-slate-100 text-slate-600";
+}
+
+function getStatusLabel(status: string) {
+  const map: Record<string, string> = {
+    REQUEST_CREATED: "Revisión",
+    CALCULATED: "Calculado",
+    APPROVED_BY_CLIENT: "Aprobado",
+    INVOICED: "Facturado",
+    PAID: "Pagado",
+    RECHARGE_EXECUTED: "Recargado",
+    COMPLETED: "Completado"
+  };
+  return map[status] || status;
+}
+
+function formatDate(date?: Date) {
+    if(!date) return "";
+    return new Date(date).toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
