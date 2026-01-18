@@ -36,16 +36,16 @@ export function ProcessTimeline() {
   return (
     <div className="max-w-5xl mx-auto mb-fib-6 relative">
         <div className="text-center mb-24 relative z-10">
-            <h3 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            <h3 className="text-4xl font-bold text-[var(--text-main)] dark:text-white mb-4">
                 Así funciona el proceso
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-xl max-w-2xl mx-auto">
+            <p className="text-[var(--text-main)]/70 dark:text-slate-400 text-xl max-w-2xl mx-auto">
                 Desde la calculadora hasta tu primera campaña en 5 pasos simples.
             </p>
         </div>
         
         {/* Connecting Line (Desktop only) */}
-        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-slate-200 via-slate-300 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
+        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-[var(--primary)]/10 via-[var(--primary)]/30 to-[var(--primary)]/10 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
 
         <div className="space-y-24 relative z-10">
             {steps.map((step, index) => (
@@ -70,21 +70,21 @@ function TimelineStep({ step, index }: { step: any, index: number }) {
         >
             {/* Timeline Dot */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center justify-center w-8 h-8 z-10">
-                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-blue-500 scale-150 shadow-blue-500/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-[var(--accent)] scale-150 shadow-green-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
             </div>
 
             <div className="flex-1 w-full">
-                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-slate-200 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
+                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-[var(--primary)]/10 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
                     {step.component}
                 </div>
             </div>
             <div className="flex-1 text-center md:text-left">
-                <div className="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">
+                <div className="inline-block px-3 py-1 mb-4 rounded-full bg-[var(--primary)]/10 dark:bg-[var(--primary)]/30 text-[var(--primary)] dark:text-emerald-400 font-bold text-sm uppercase tracking-wider">
                     Paso {index + 1}
                 </div>
-                <h4 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">{step.title.split('. ')[1]}</h4>
-                <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">{step.description}</p>
+                <h4 className="text-3xl font-bold text-[var(--text-main)] dark:text-white mb-4">{step.title.split('. ')[1]}</h4>
+                <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-lg leading-relaxed">{step.description}</p>
             </div>
         </motion.div>
     )
@@ -106,10 +106,10 @@ function StepConfirmAmount() {
                     $ 1,000
                 </div>
                 <motion.div 
-                    className="h-8 w-full bg-blue-600 rounded-lg flex items-center justify-center text-white font-medium text-sm"
+                    className="h-8 w-full bg-[var(--accent)] rounded-lg flex items-center justify-center text-white font-medium text-sm"
                     animate={isInView ? { scale: [1, 0.95, 1, 1] } : {}}
                     transition={{ 
-                        duration: 4, 
+                        duration: 4,  
                         times: [0, 0.1, 0.2, 1],
                         repeat: Infinity,
                         repeatDelay: 0
@@ -203,7 +203,7 @@ function StepBilling() {
                 initial={{ scale: 0.8, opacity: 0.5 }}
                 animate={isInView ? { scale: [1, 1.05, 1], opacity: 1 } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="relative z-10 w-20 h-28 bg-gradient-to-b from-blue-600 to-blue-800 rounded-lg shadow-xl flex flex-col items-center justify-center border border-blue-400"
+                className="relative z-10 w-20 h-28 bg-gradient-to-b from-[var(--primary)] to-[var(--primary)]/80 rounded-lg shadow-xl flex flex-col items-center justify-center border border-[var(--accent)]/50"
             >
                 <FileText size={32} weight="fill" className="text-white mb-1" />
                 <div className="w-12 h-1 bg-white/20 rounded-full mb-1" />
@@ -244,14 +244,14 @@ function StepPayment() {
                 <div className="w-8 h-1 bg-slate-600 rounded-full mb-4" />
                 {/* Screen Content */}
                 <div className="w-full flex-1 bg-slate-800 dark:bg-slate-900 rounded-lg flex flex-col items-center justify-center gap-2 p-1">
-                    <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <Wallet size={16} weight="fill" className="text-blue-500" />
+                    <div className="w-8 h-8 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
+                        <Wallet size={16} weight="fill" className="text-[var(--accent)]" />
                     </div>
                     <div className="w-10 h-1.5 bg-slate-600 rounded-full" />
                     <motion.div 
-                        animate={isInView ? { scale: [1, 0.9, 1], backgroundColor: ["#2563eb", "#1d4ed8", "#2563eb"] } : {}}
+                        animate={isInView ? { scale: [1, 0.9, 1], backgroundColor: ["#03A64A", "#045932", "#03A64A"] } : {}}
                         transition={{ delay: 1, duration: 0.3, repeat: Infinity, repeatDelay: 3 }}
-                        className="w-12 h-4 bg-blue-600 rounded-full mt-2" 
+                        className="w-12 h-4 bg-[var(--accent)] rounded-full mt-2" 
                     />
                 </div>
             </motion.div>
@@ -292,10 +292,10 @@ function StepPayment() {
                 <motion.div
                     animate={isInView ? { 
                         y: [0, -5, 0],
-                        color: ["#94a3b8", "#10b981", "#94a3b8"] // slate-400 to emerald-500
+                        color: ["#94a3b8", "#03A64A", "#94a3b8"] // slate-400 to accent
                     } : {}}
                     transition={{ 
-                        delay: 2.3, 
+                        delay: 2.3,  
                         duration: 0.5,
                         repeat: Infinity,
                         repeatDelay: 3
@@ -478,7 +478,7 @@ function StepStartAds() {
                             repeat: Infinity,
                             repeatType: "reverse"
                         }}
-                        className="w-4 md:w-6 bg-blue-500 rounded-t-md"
+                        className="w-4 md:w-6 bg-[var(--accent)] rounded-t-md"
                     />
                 ))}
             </div>
@@ -500,7 +500,7 @@ function StepStartAds() {
                 className="absolute z-20"
             >
                 <div className="relative transform rotate-45">
-                    <RocketLaunch size={80} weight="fill" className="text-blue-600 dark:text-blue-400 drop-shadow-2xl" />
+                    <RocketLaunch size={80} weight="fill" className="text-[var(--accent)] drop-shadow-2xl" />
                     
                     {/* Engine Fire */}
                     <motion.div

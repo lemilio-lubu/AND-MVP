@@ -3,11 +3,13 @@ import { ReactNode } from "react";
 interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon: ReactNode;
-  theme?: 'blue' | 'purple';
+  theme?: 'blue' | 'purple' | 'brand';
 }
 
-export function InputGroup({ label, icon, theme = 'blue', className = "", ...props }: InputGroupProps) {
-  const focusColor = theme === 'blue' ? 'focus:border-blue-500 focus:ring-blue-500' : 'focus:border-purple-500 focus:ring-purple-500';
+export function InputGroup({ label, icon, theme = 'brand', className = "", ...props }: InputGroupProps) {
+  let focusColor = 'focus:border-[var(--accent)] focus:ring-[var(--accent)]';
+  if (theme === 'blue') focusColor = 'focus:border-blue-500 focus:ring-blue-500';
+  if (theme === 'purple') focusColor = 'focus:border-purple-500 focus:ring-purple-500';
   
   // Default padding is pl-10, but allow override via className if needed (e.g. pl-14)
   const basePadding = className.includes('pl-') ? '' : 'pl-10';

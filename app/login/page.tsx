@@ -46,11 +46,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-[var(--background)] dark:bg-[#000B05] flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-500">
       {/* Background Gradients */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[20%] w-[50%] h-[50%] bg-blue-200/30 dark:bg-blue-900/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[20%] w-[50%] h-[50%] bg-purple-200/30 dark:bg-purple-900/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-20%] left-[20%] w-[50%] h-[50%] bg-[var(--primary)]/10 dark:bg-[var(--primary)]/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[20%] w-[50%] h-[50%] bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 rounded-full blur-[120px]" />
       </div>
 
       <motion.div 
@@ -61,19 +61,19 @@ export default function LoginPage() {
       >
         <BackButton />
 
-        <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-[var(--surface)] dark:bg-[#011F10]/50 backdrop-blur-xl border border-slate-200 dark:border-[#04301C] rounded-2xl p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-500/20 dark:to-purple-500/20 flex items-center justify-center border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white mb-4 shadow-inner">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#E6F4EA] to-[#F2FBF5] dark:from-[#045932] dark:to-[#03A64A] flex items-center justify-center border border-slate-200 dark:border-white/10 text-[var(--primary)] dark:text-white mb-4 shadow-inner">
               <SignIn size={32} weight="duotone" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Bienvenido de nuevo</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-main)] dark:text-white">Bienvenido de nuevo</h2>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">Accede a tu panel de control</p>
           </div>
 
           <div className="space-y-6">
             {/* Selector de tipo de usuario */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+              <label className="block text-sm font-medium text-[var(--text-main)] dark:text-slate-300 mb-3">
                 Tipo de acceso
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -82,7 +82,7 @@ export default function LoginPage() {
                   onClick={() => setUserType("empresa")}
                   className={`px-4 py-3 rounded-xl border-2 transition-all ${
                     userType === "empresa"
-                      ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20 text-sky-700 dark:text-sky-300"
+                      ? "border-[var(--accent)] bg-[var(--primary)]/5 dark:bg-[var(--primary)]/20 text-[var(--primary)] dark:text-white"
                       : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
                 >
@@ -108,7 +108,7 @@ export default function LoginPage() {
               label="Correo Electrónico"
               icon={<Envelope size={18} />}
               placeholder={userType === "admin" ? "admin@and.com" : "tu@email.com"}
-              theme="blue"
+              theme="brand"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -119,13 +119,13 @@ export default function LoginPage() {
                 icon={<LockKey size={18} />}
                 placeholder="••••••••"
                 type="password"
-                theme="blue"
+                theme="brand"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               {userType === "empresa" && (
                 <div className="text-right">
-                  <Link href="#" className="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <Link href="#" className="text-xs text-slate-500 hover:text-[var(--accent)] transition-colors">
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
@@ -142,7 +142,7 @@ export default function LoginPage() {
 
             <GradientButton 
               onClick={handleLogin}
-              theme="blue"
+              theme="brand"
               className="mt-8"
               disabled={loading}
             >
@@ -154,14 +154,14 @@ export default function LoginPage() {
                 <>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿Tu empresa aún no tiene cuenta?{" "}
-                    <Link href="/registro/empresa" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium hover:underline transition-colors">
+                    <Link href="/registro/empresa" className="text-[var(--primary)] dark:text-[var(--accent)] hover:underline font-medium transition-colors">
                       Regístrate aquí
                     </Link>
                   </p>
 
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿Eres influencer?{" "}
-                    <Link href="/registro/influencer" className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-medium hover:underline transition-colors">
+                    <Link href="/registro/influencer" className="text-[var(--primary)] dark:text-[var(--accent)] hover:underline font-medium transition-colors">
                       Únete aquí
                     </Link>
                   </p>

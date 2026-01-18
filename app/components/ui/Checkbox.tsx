@@ -5,13 +5,17 @@ interface CheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   children: ReactNode;
-  theme?: 'blue' | 'purple';
+  theme?: 'blue' | 'purple' | 'brand';
 }
 
-export function Checkbox({ checked, onChange, children, theme = 'blue' }: CheckboxProps) {
-  const activeColor = theme === 'blue' 
-    ? 'peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-focus:ring-blue-500/20' 
-    : 'peer-checked:bg-purple-500 peer-checked:border-purple-500 peer-focus:ring-purple-500/20';
+export function Checkbox({ checked, onChange, children, theme = 'brand' }: CheckboxProps) {
+  let activeColor = 'peer-checked:bg-[var(--accent)] peer-checked:border-[var(--accent)] peer-focus:ring-[var(--accent)]/20';
+  
+  if (theme === 'blue') {
+    activeColor = 'peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-focus:ring-blue-500/20';
+  } else if (theme === 'purple') {
+    activeColor = 'peer-checked:bg-purple-500 peer-checked:border-purple-500 peer-focus:ring-purple-500/20';
+  }
 
   return (
     <label className="flex items-start gap-3 mt-6 cursor-pointer group">

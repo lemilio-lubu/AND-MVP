@@ -216,7 +216,7 @@ export default function AdminDashboardPage() {
       switch (request.estado) {
           case "REQUEST_CREATED":
             return (
-              <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-blue-500/30">
+              <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-accent hover:bg-primary text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-accent/30">
                 Calcular
               </button>
             );
@@ -265,7 +265,7 @@ export default function AdminDashboardPage() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-             <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full border border-purple-200 dark:border-purple-500/30 flex items-center gap-2">
+             <span className="px-3 py-1 bg-accent/10 dark:bg-accent/20 text-accent dark:text-[#4ADE80] text-xs font-bold rounded-full border border-accent/20 dark:border-accent/30 flex items-center gap-2">
                 <CheckCircle weight="fill" />
                 ADMINISTRADOR
               </span>
@@ -288,35 +288,35 @@ export default function AdminDashboardPage() {
             value={formatCurrency(metrics.totalRevenue)}
             percentage="+12%"
             icon={<CurrencyDollar size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
           <SoftMetricCard
             title="Pendientes Acción"
             value={(metrics.pendingRequests + metrics.pendingApprovals).toString()}
             percentage="Atención"
             icon={<Warning size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
           <SoftMetricCard
             title="Pendientes Facturar"
             value={metrics.pendingInvoices.toString()}
             percentage="Prioridad"
             icon={<Receipt size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
            <SoftMetricCard
             title="Completadas (Mes)"
             value={metrics.completedThisMonth.toString()}
             percentage="+8%"
             icon={<CheckCircle size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
         </div>
 
         {/* Row 2: Charts Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Revenue Trend - 8 cols */}
-          <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <div className="lg:col-span-8 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg">Flujo de Ingresos</h3>
@@ -378,7 +378,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Platform Distribution - 4 cols */}
-          <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <div className="lg:col-span-4 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white">
             <div className="mb-6">
                 <h3 className="font-bold text-lg">Distribución</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Solicitudes por plataforma</p>
@@ -426,16 +426,16 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Lista de solicitudes por estado */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+        <div className="bg-[var(--surface)] dark:bg-surface/40 border border-slate-200 dark:border-primary/20 rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
-               <h3 className="font-bold text-lg text-slate-900 dark:text-white">Gestión de Operaciones</h3>
+               <h3 className="font-bold text-lg text-[var(--text-main)] dark:text-white">Gestión de Operaciones</h3>
                <p className="text-sm text-slate-500 dark:text-slate-400">
                  {metrics.pendingRequests + metrics.pendingApprovals + metrics.pendingInvoices} tareas pendientes
                </p>
             </div>
              <div className="flex gap-2">
-                <button className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button className="p-2 text-slate-400 hover:text-accent hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
                   <ChartPieSlice size={20} />
                 </button>
              </div>
@@ -449,7 +449,7 @@ export default function AdminDashboardPage() {
               </div>
             ) : requests.length > 0 ? (
               requests.map(request => (
-                <div key={request.id} className="group flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500/30 transition-all duration-200">
+                <div key={request.id} className="group flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-accent/30 transition-all duration-200">
                   
                   {/* Icon Column */}
                   <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
@@ -523,16 +523,16 @@ interface AdminMetricCardProps {
 
 function SoftMetricCard({ title, value, percentage, icon, gradient }: { title: string, value: string, percentage: string, icon: React.ReactNode, gradient: string }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+    <div className="bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-primary/20 relative overflow-hidden group hover:border-[var(--accent)]/30 transition-all duration-300">
       <div className="flex justify-between items-start z-10 relative">
         <div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{title}</p>
           <div className="flex items-baseline gap-2">
             <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
-            <span className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{percentage}</span>
+            <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">{percentage}</span>
           </div>
         </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300 text-white shadow-blue-500/20`}>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300 text-white shadow-accent/20`}>
           {icon}
         </div>
       </div>
@@ -542,7 +542,7 @@ function SoftMetricCard({ title, value, percentage, icon, gradient }: { title: s
 
 function getPlatformIcon(platform: string) {
     // You can replace with specialized icons if available
-    return <GlobeHemisphereWest weight="duotone" className="text-blue-500" size={20} />; 
+    return <GlobeHemisphereWest weight="duotone" className="text-accent" size={20} />; 
 }
 
 function getStatusStyle(status: string) {

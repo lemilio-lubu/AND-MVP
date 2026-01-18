@@ -14,7 +14,7 @@ export function CompaniesSection() {
     <section
       id="companies"
       ref={ref}
-      className="relative min-h-screen py-fib-6 dark:bg-black overflow-hidden transition-colors duration-500"
+      className="relative min-h-screen py-fib-6 bg-transparent overflow-hidden transition-colors duration-500"
     >
       {/* Titanium Texture - Image 2 */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -34,10 +34,10 @@ export function CompaniesSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Ahorra más. <span className="text-slate-500">Legalmente.</span>
+            <h2 className="text-5xl md:text-7xl font-bold text-[var(--text-main)] dark:text-white tracking-tight">
+              Ahorra más. <span className="text-[var(--primary)]">Legalmente.</span>
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--text-main)]/80 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
               Haz que tu presupuesto rinda más deduciendo impuestos correctamente y sin complicaciones.
             </p>
           </motion.div>
@@ -61,7 +61,7 @@ export function CompaniesSection() {
             onClick={() => router.push('/registro/empresa')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-[var(--accent)] text-white hover:bg-[var(--accent)]/90 shadow-lg shadow-green-900/20 transition-all"
           >
             Optimizar mi gestión
           </motion.button>
