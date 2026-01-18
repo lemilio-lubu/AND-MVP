@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Buildings, Envelope, IdentificationCard, LockKey } from "@phosphor-icons/react";
+import { Buildings, Envelope, IdentificationCard, LockKey, Phone, MapPin } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { InputGroup } from "@/app/components/ui/InputGroup";
 import { Checkbox } from "@/app/components/ui/Checkbox";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
 import { useUser } from "@/lib/context/UserContext";
-import { User } from "@/lib/billing";
+import { register as apiRegister, createEmpresa } from "@/lib/api/client";
 
 export default function EmpresaRegistro() {
   const [accepted, setAccepted] = useState(false);
@@ -18,25 +18,55 @@ export default function EmpresaRegistro() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [ruc, setRuc] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useUser();
 
-  const handleRegister = () => {
-    // Mock: crear usuario nuevo
-    const newUser: User = {
-      id: `new-user-${Date.now()}`,
-      type: "empresa",
-      isNew: true, // Usuario nuevo → verá gamificación
-      email: email,
-      name: companyName,
-      rucConnected: !!ruc,
-      hasEmittedFirstInvoice: false,
-    };
+  const handleRegister = async () => {
+    setError("");
 
-    login(newUser);
-    
-    // Usuario nuevo → ve gamificación primero
-    router.push("/dashboard");
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (!companyName || !email || !ruc || !telefono || !ciudad || !password) {
+      setError("Completa todos los campos");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Registrar usuario
+      const authResponse = await apiRegister({
+        email,
+        password,
+        role: "EMPRESA",
+      });
+
+      // 2. Login automático
+      await login(authResponse.access_token);
+
+      // 3. Crear empresa
+      await createEmpresa({
+        razon_social: companyName,
+        correo_corporativo: email,
+        ruc,
+        telefono,
+        ciudad,
+      });
+
+      // 4. Redirigir a dashboard
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Error al registrar empresa");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,7 +118,26 @@ export default function EmpresaRegistro() {
               icon={<IdentificationCard size={18} />}
               placeholder="20123456789"
               theme="blue"
+              value={ruc}
               onChange={(e) => setRuc(e.target.value)}
+            />
+
+            <InputGroup 
+              label="Teléfono"
+              icon={<Phone size={18} />}
+              placeholder="+593 99 999 9999"
+              theme="blue"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+            />
+
+            <InputGroup 
+              label="Ciudad"
+              icon={<MapPin size={18} />}
+              placeholder="Quito"
+              theme="blue"
+              value={ciudad}
+              onChange={(e) => setCiudad(e.target.value)}
             />
 
             <InputGroup 
@@ -117,12 +166,20 @@ export default function EmpresaRegistro() {
               Acepto los <span className="text-blue-600 dark:text-blue-400 hover:underline">Términos y Condiciones</span> y la <span className="text-blue-600 dark:text-blue-400 hover:underline">Política de Privacidad</span>.
             </Checkbox>
 
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                <p className="text-xs text-red-800 dark:text-red-200">
+                  {error}
+                </p>
+              </div>
+            )}
+
             <GradientButton 
-              disabled={!accepted}
+              disabled={!accepted || loading}
               onClick={handleRegister}
               theme="blue"
             >
-              Crear Cuenta Empresarial
+              {loading ? "Creando cuenta..." : "Crear Cuenta Empresarial"}
             </GradientButton>
           </div>
         </div>

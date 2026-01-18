@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useUser } from "@/lib/context/UserContext";
 import { 
-  shouldShowGamification, 
   getUserTrajectory,
-  DashboardMetrics,
-  RechargeRequest,
   formatCurrency 
 } from "@/lib/billing";
 import { 
@@ -41,25 +38,33 @@ import {
   Area
 } from 'recharts';
 import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
+import { getMyFacturacionRequests, FacturacionRequest, approveFacturacionRequest } from "@/lib/api/client";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, updateUser } = useUser();
+  const { user, refreshUser, loading: userLoading, logout } = useUser();
   const { resolvedTheme } = useTheme();
   const [showGamification, setShowGamification] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [metrics, setMetrics] = useState<DashboardMetrics>({
-    totalBilledThisMonth: 0,
-    accumulatedTaxSavings: 0,
-    invoicesEmitted: 0,
-    invoicesPending: 0,
-    activeRequests: 0,  // Ahora "solicitudes activas", no "campañas"
-  });
+  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<FacturacionRequest[]>([]);
 
-  // Mock: datos de ejemplo para demostración
-  const [recentRequests, setRecentRequests] = useState<RechargeRequest[]>([]);
+  // Calculated metrics from real data
+  const metrics = {
+    totalBilledThisMonth: requests
+      .filter(r => r.estado === "COMPLETED" && new Date(r.created_at).getMonth() === new Date().getMonth())
+      .reduce((sum, r) => sum + (r.total_facturado || 0), 0),
+    accumulatedTaxSavings: requests
+      .filter(r => r.estado === "COMPLETED")
+      .reduce((sum, r) => sum + (r.isd_evitado || 0), 0),
+    invoicesEmitted: requests.filter(r => ["INVOICED", "PAID", "RECHARGE_EXECUTED", "COMPLETED"].includes(r.estado)).length,
+    invoicesPending: requests.filter(r => ["REQUEST_CREATED", "CALCULATED", "APPROVED_BY_CLIENT"].includes(r.estado)).length,
+    activeRequests: requests.filter(r => !["COMPLETED", "ERROR"].includes(r.estado)).length,
+  };
 
   useEffect(() => {
+    if (userLoading) return;
+    
     if (!user) {
       router.push("/login");
       return;
@@ -78,78 +83,49 @@ export default function DashboardPage() {
     }
 
     // Determinar si mostrar gamificación
-    const shouldShow = shouldShowGamification(user);
+    const shouldShow = user.isNew && !user.hasEmittedFirstInvoice;
     setShowGamification(shouldShow);
 
-    // Mock: cargar métricas (en producción sería API call)
-    loadMockData();
-  }, [user, router]);
+    // Cargar datos reales
+    loadData();
+  }, [user, userLoading, router]);
 
-  const loadMockData = () => {
-    if (!user) return;
-    
-    // Datos mock para demostración
-    if (user.isNew) {
-      // Usuario nuevo: sin datos aún
-      setMetrics({
-        totalBilledThisMonth: 0,
-        accumulatedTaxSavings: 0,
-        invoicesEmitted: 0,
-        invoicesPending: 0,
-        activeRequests: 0,
-      });
-      setRecentRequests([]);
-    } else {
-      // Usuario existente: con datos
-      setMetrics({
-        totalBilledThisMonth: 53000,
-        accumulatedTaxSavings: 2650,
-        invoicesEmitted: 12,
-        invoicesPending: 0,
-        activeRequests: 2,  // 2 solicitudes en proceso
-      });
-      
-      // Mock: solicitudes recientes
-      setRecentRequests([
-        {
-          id: "req-1",
-          companyId: user.id,
-          platform: "Meta",
-          requestedAmount: 5000,
-          status: "CALCULATED",
-          calculatedTotal: 5275,
-          createdAt: new Date(),
-        } as RechargeRequest,
-        {
-          id: "req-2",
-          companyId: user.id,
-          platform: "TikTok",
-          requestedAmount: 3000,
-          status: "REQUEST_CREATED",
-          createdAt: new Date(),
-        } as RechargeRequest,
-        {
-          id: "req-3",
-          companyId: user.id,
-          platform: "Google",
-          requestedAmount: 12000,
-          status: "COMPLETED",
-          createdAt: new Date(Date.now() - 86400000 * 5),
-        } as RechargeRequest,
-        {
-          id: "req-4",
-          companyId: user.id,
-          platform: "Meta",
-          requestedAmount: 8500,
-          status: "COMPLETED",
-          createdAt: new Date(Date.now() - 86400000 * 12),
-        } as RechargeRequest,
-      ]);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const data = await getMyFacturacionRequests();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error loading requests:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!user) {
-    return null;
+  const handleApprove = async (requestId: string) => {
+    try {
+      await approveFacturacionRequest(requestId);
+      await loadData();
+      await refreshUser();
+    } catch (error) {
+      console.error("Error approving request:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/landing");
+  };
+
+  if (userLoading || !user) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
   const trajectory = getUserTrajectory(metrics.invoicesEmitted, metrics.totalBilledThisMonth);
@@ -187,9 +163,9 @@ export default function DashboardPage() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-             {user.rucConnected ? (
+             {user.empresa?.ruc ? (
               <span className="px-3 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 text-xs font-bold rounded-full border border-green-200 dark:border-green-500/30">
-                RUC CONECTADO
+                RUC: {user.empresa.ruc}
               </span>
             ) : (
               <span className="px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-full border border-amber-200 dark:border-amber-500/30">
@@ -198,7 +174,7 @@ export default function DashboardPage() {
             )}
             <ThemeToggle />
             <button
-              onClick={() => router.push("/landing")}
+              onClick={handleLogout}
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
             >
               Cerrar Sesión
@@ -276,8 +252,14 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {recentRequests.length > 0 ? (
-                    recentRequests.map((request) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center">
+                        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      </td>
+                    </tr>
+                  ) : requests.length > 0 ? (
+                    requests.slice(0, 5).map((request) => (
                       <tr key={request.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="py-4 pl-2">
                           <div className="flex items-center gap-3">
@@ -285,23 +267,26 @@ export default function DashboardPage() {
                               <GlobeHemisphereWest weight="duotone" />
                             </div>
                             <span className="font-semibold text-sm text-slate-700 dark:text-slate-200">
-                              {request.platform}
+                              {request.plataforma}
                             </span>
                           </div>
                         </td>
                         <td className="py-4 text-center">
                           <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                            {formatCurrency(request.requestedAmount)}
+                            {formatCurrency(request.monto_solicitado)}
                           </span>
                         </td>
                         <td className="py-4 text-center">
-                          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${getStatusColor(request.status)}`}>
-                            {getStatusLabel(request.status)}
+                          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${getStatusColor(request.estado)}`}>
+                            {getStatusLabel(request.estado)}
                           </span>
                         </td>
                         <td className="py-4 text-right pr-2">
-                           {request.status === "CALCULATED" ? (
-                            <button className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors">
+                           {request.estado === "CALCULATED" ? (
+                            <button 
+                              onClick={() => handleApprove(request.id)}
+                              className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors"
+                            >
                               Aprobar
                             </button>
                           ) : (
@@ -492,7 +477,7 @@ export default function DashboardPage() {
       <BillingRequestModal 
         isOpen={showRequestModal}
         onClose={() => setShowRequestModal(false)}
-        onSuccess={() => loadMockData()}
+        onSuccess={() => loadData()}
       />
     </main>
   );
@@ -523,7 +508,12 @@ function getStatusLabel(status: string) {
   const map: Record<string, string> = {
     REQUEST_CREATED: "Revisión",
     CALCULATED: "Aprobación",
-    COMPLETED: "Completado"
+    APPROVED_BY_CLIENT: "Aprobado",
+    INVOICED: "Facturado",
+    PAID: "Pagado",
+    RECHARGE_EXECUTED: "Recargado",
+    COMPLETED: "Completado",
+    ERROR: "Error"
   };
   return map[status] || status;
 }
@@ -532,7 +522,12 @@ function getStatusColor(status: string) {
   const map: Record<string, string> = {
     REQUEST_CREATED: "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
     CALCULATED: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-    COMPLETED: "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+    APPROVED_BY_CLIENT: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400",
+    INVOICED: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
+    PAID: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-400",
+    RECHARGE_EXECUTED: "bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400",
+    COMPLETED: "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
+    ERROR: "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
   };
   return map[status] || "bg-slate-100 text-slate-600";
 }

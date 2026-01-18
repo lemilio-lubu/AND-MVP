@@ -9,51 +9,40 @@ import { InputGroup } from "@/app/components/ui/InputGroup";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
 import { useUser } from "@/lib/context/UserContext";
-import { User } from "@/lib/billing";
+import { login as apiLogin } from "@/lib/api/client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useUser();
+  const { login, user } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState<"empresa" | "admin">("empresa");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    // Mock: Simular login (en producción sería API call)
-    
-    // Credenciales especiales para Admin
-    if (userType === "admin") {
-      if (email === "admin@and.com" && password === "admin123") {
-        const adminUser: User = {
-          id: "admin-and-001",
-          type: "admin",
-          isNew: false,
-          email: "admin@and.com",
-          name: "Operador AND",
-          rucConnected: true,
-          hasEmittedFirstInvoice: true,
-        };
-        login(adminUser);
-        router.push("/admin");
-      } else {
-        alert("Credenciales de admin incorrectas");
-      }
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Ingresa email y contraseña");
       return;
     }
-    
-    // Login normal para empresa
-    const mockUser: User = {
-      id: "existing-user-123",
-      type: "empresa",
-      isNew: false, // Usuario existente
-      email: email || "empresa@example.com",
-      name: "Empresa Demo",
-      rucConnected: true,
-      hasEmittedFirstInvoice: true,
-    };
 
-    login(mockUser);
-    router.push("/dashboard");
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await apiLogin({ email, password });
+      await login(response.access_token);
+      
+      // Redirigir después de cargar usuario
+      // El hook de UserContext ya tiene el usuario actualizado
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -143,10 +132,10 @@ export default function LoginPage() {
               )}
             </div>
 
-            {userType === "admin" && (
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-                <p className="text-xs text-amber-800 dark:text-amber-200">
-                  <strong>Demo:</strong> admin@and.com / admin123
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                <p className="text-xs text-red-800 dark:text-red-200">
+                  {error}
                 </p>
               </div>
             )}
@@ -155,8 +144,9 @@ export default function LoginPage() {
               onClick={handleLogin}
               theme="blue"
               className="mt-8"
+              disabled={loading}
             >
-              {userType === "admin" ? "Acceder como Admin" : "Iniciar Sesión"}
+              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </GradientButton>
 
             <div className="pt-6 mt-6 border-t border-slate-200 dark:border-slate-800/50 text-center space-y-4">

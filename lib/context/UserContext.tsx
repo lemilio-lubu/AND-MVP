@@ -1,49 +1,96 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User } from "@/lib/billing";
+import { getMe, saveToken, removeToken, hasToken, MeResponse } from "@/lib/api/client";
+
+// Nuevo tipo User mapeado desde MeResponse
+export interface User {
+  id: string;
+  type: "admin" | "empresa" | "influencer";
+  isNew: boolean;
+  email: string;
+  name: string;
+  hasEmittedFirstInvoice: boolean;
+  empresa?: {
+    id: string;
+    razon_social: string;
+    correo_corporativo: string;
+    ruc: string;
+    telefono: string;
+    ciudad: string;
+    estado_tributario: "PENDIENTE" | "ACTIVO" | "SUSPENDIDO";
+  };
+}
 
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
-  login: (user: User) => void;
+  loading: boolean;
+  login: (token: string) => Promise<void>;
   logout: () => void;
-  updateUser: (updates: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+function mapMeResponseToUser(me: MeResponse): User {
+  return {
+    id: me.id,
+    type: me.role.toLowerCase() as "admin" | "empresa" | "influencer",
+    isNew: me.is_new,
+    email: me.empresa?.correo_corporativo || "",
+    name: me.empresa?.razon_social || "Usuario",
+    hasEmittedFirstInvoice: me.has_emitted_first_invoice,
+    empresa: me.empresa,
+  };
+}
+
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Simular carga de usuario desde localStorage (mock)
+  // Cargar usuario desde token al montar
   useEffect(() => {
-    const storedUser = localStorage.getItem("and_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const initUser = async () => {
+      if (hasToken()) {
+        try {
+          const me = await getMe();
+          setUser(mapMeResponseToUser(me));
+        } catch (error) {
+          console.error("Error loading user:", error);
+          removeToken();
+        }
+      }
+      setLoading(false);
+    };
+
+    initUser();
   }, []);
 
-  const login = (newUser: User) => {
-    setUser(newUser);
-    localStorage.setItem("and_user", JSON.stringify(newUser));
+  const login = async (token: string) => {
+    saveToken(token);
+    const me = await getMe();
+    setUser(mapMeResponseToUser(me));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("and_user");
+    removeToken();
   };
 
-  const updateUser = (updates: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
-      localStorage.setItem("and_user", JSON.stringify(updatedUser));
+  const refreshUser = async () => {
+    if (hasToken()) {
+      try {
+        const me = await getMe();
+        setUser(mapMeResponseToUser(me));
+      } catch (error) {
+        console.error("Error refreshing user:", error);
+        logout();
+      }
     }
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, login, logout, updateUser }}>
+    <UserContext.Provider value={{ user, loading, login, logout, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

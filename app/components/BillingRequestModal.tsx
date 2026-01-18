@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Receipt, CheckCircle, Clock } from "@phosphor-icons/react";
 import { 
   formatCurrency,
-  canRequestBilling,
   isValidAmount
 } from "@/lib/billing";
 import { useUser } from "@/lib/context/UserContext";
+import { createFacturacionRequest } from "@/lib/api/client";
 
 interface BillingRequestModalProps {
   isOpen: boolean;
@@ -17,26 +17,22 @@ interface BillingRequestModalProps {
 }
 
 export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingRequestModalProps) {
-  const { user } = useUser();
-  const [step, setStep] = useState<"form" | "submitting" | "success">("form");
+  const { user, refreshUser } = useUser();
+  const [step, setStep] = useState<"form" | "submitting" | "success" | "error">("form");
   const [amount, setAmount] = useState<string>("");
   const [platform, setPlatform] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const platforms = [
-    { id: "Meta", name: "Meta (Facebook/Instagram)" },
-    { id: "TikTok", name: "TikTok" },
-    { id: "Google", name: "Google Ads" },
-    { id: "LinkedIn", name: "LinkedIn" },
+    { id: "META", name: "Meta (Facebook/Instagram)" },
+    { id: "TIKTOK", name: "TikTok" },
+    { id: "GOOGLE", name: "Google Ads" },
+    { id: "OTRO", name: "Otra Plataforma" },
   ];
 
   const handleSubmit = async () => {
-    if (!user) return;
-
-    // Validación de usuario
-    const userValidation = canRequestBilling(user);
-    if (!userValidation.isValid) {
-      setError(userValidation.error || "Error de validación");
+    if (!user || !user.empresa) {
+      setError("No se encontró información de la empresa");
       return;
     }
 
@@ -53,11 +49,19 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
       return;
     }
 
-    // Simular creación de solicitud
     setStep("submitting");
     setError("");
 
-    setTimeout(() => {
+    try {
+      await createFacturacionRequest({
+        empresaId: user.empresa.id,
+        plataforma: platform as "META" | "TIKTOK" | "GOOGLE" | "OTRO",
+        monto_solicitado: numAmount,
+      });
+
+      // Refrescar datos del usuario
+      await refreshUser();
+
       setStep("success");
       
       setTimeout(() => {
@@ -65,7 +69,10 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
         onClose();
         resetForm();
       }, 2000);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || "Error al crear solicitud");
+      setStep("error");
+    }
   };
 
   const resetForm = () => {
@@ -235,6 +242,20 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                   <div className="py-12 text-center">
                     <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-slate-600 dark:text-slate-400">Enviando solicitud...</p>
+                  </div>
+                )}
+
+                {step === "error" && (
+                  <div className="py-8">
+                    <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
+                    </div>
+                    <button
+                      onClick={() => setStep("form")}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      Intentar de nuevo
+                    </button>
                   </div>
                 )}
 
