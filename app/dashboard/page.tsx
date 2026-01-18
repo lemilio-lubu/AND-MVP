@@ -176,13 +176,13 @@ export default function DashboardPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 pb-20">
+    <main className="min-h-screen bg-[var(--background)] transition-colors duration-500 pb-20">
       {/* Navbar Minimalista */}
       <header className="bg-transparent px-6 py-6 mb-2">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           <div>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pages / Dashboard</p>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+            <h1 className="text-xl font-bold text-[var(--text-main)] dark:text-white mt-1">
               Panel Principal
             </h1>
           </div>
@@ -199,13 +199,13 @@ export default function DashboardPage() {
             <ThemeToggle />
             <button
               onClick={() => router.push("/landing")}
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
+              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-white px-4 py-2"
             >
               Cerrar Sesión
             </button>
             <button
               onClick={() => setShowRequestModal(true)}
-              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-slate-200 dark:shadow-none hover:scale-105 transition-transform"
+              className="bg-[var(--primary)] text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-green-900/10 hover:bg-[var(--accent)] hover:scale-105 transition-all"
             >
               + Nueva Solicitud
             </button>
@@ -247,11 +247,11 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Recent Requests Table (Left - 7 cols) */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="lg:col-span-7 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C]">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Solicitudes Recientes</h3>
-                <div className="flex items-center gap-2 text-sm text-green-500 font-medium mt-1">
+                <h3 className="font-bold text-lg text-[var(--text-main)] dark:text-white">Solicitudes Recientes</h3>
+                <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium mt-1">
                   <CheckCircle weight="fill" />
                   <span>{metrics.activeRequests} solicitudes activas</span>
                 </div>
@@ -321,11 +321,11 @@ export default function DashboardPage() {
           </div>
 
           {/* "Globe" / Network Area (Right - 5 cols) */}
-          <div className="lg:col-span-5 relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl text-slate-900 dark:text-white group">
+          <div className="lg:col-span-5 relative overflow-hidden bg-[var(--surface)] dark:bg-[#011F10]/40 border border-slate-200 dark:border-[#04301C] rounded-2xl p-6 shadow-sm dark:shadow-xl text-[var(--text-main)] dark:text-white group">
             
             {/* Fondo decorativo sutil */}
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-              <GlobeHemisphereWest size={200} weight="fill" className="text-slate-900 dark:text-white" />
+              <GlobeHemisphereWest size={200} weight="fill" className="text-[var(--primary)] dark:text-white" />
             </div>
 
             {/* Globo Animado Central */}
@@ -383,7 +383,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Validated Billing (Left - 5 cols) */}
-          <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <div className="lg:col-span-5 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C] text-[var(--text-main)] dark:text-white">
             <div className="mb-6">
               <h3 className="font-bold text-lg">Facturación vs Ahorro</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400">Rendimiento mensual</p>
@@ -439,7 +439,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Sales Comparison (Right - 7 cols) */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="lg:col-span-7 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C]">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white">Tendencia de Solicitudes</h3>
@@ -502,16 +502,16 @@ export default function DashboardPage() {
 
 function SoftMetricCard({ title, value, percentage, icon }: { title: string, value: string, percentage: string, icon: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+    <div className="bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-[#04301C] relative overflow-hidden group hover:border-[var(--accent)]/30 transition-all duration-300">
       <div className="flex justify-between items-start z-10 relative">
         <div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{title}</p>
           <div className="flex items-baseline gap-2">
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
-            <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">{percentage}</span>
+            <h4 className="text-2xl font-bold text-[var(--text-main)] dark:text-white mt-1">{value}</h4>
+            <span className="text-xs font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-full">{percentage}</span>
           </div>
         </div>
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 group-hover:scale-110 transition-transform duration-300 text-white shadow-blue-500/20">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] group-hover:scale-110 transition-transform duration-300 text-white shadow-green-900/20">
           {icon}
         </div>
       </div>

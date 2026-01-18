@@ -88,8 +88,9 @@
 }
 
 .dark {
-  --background: #0f172a;
+  --background: #000B05; /* Green Night */
   --foreground: #f8fafc;
+  --surface: #011F10; /* Dark Green Surface */
 }
 
 body {
