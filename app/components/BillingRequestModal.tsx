@@ -54,6 +54,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
       await createFacturacionRequest({
         plataforma: platform,
         montoSolicitado: numAmount,
+        empresaId: user?.empresa?.id,
       });
 
       // Refrescar datos del usuario (o facturación) si fuera necesario

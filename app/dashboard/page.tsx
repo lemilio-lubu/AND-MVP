@@ -39,7 +39,7 @@ import {
   Area
 } from 'recharts';
 import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
-import { getDashboardStats, DashboardStats, approveFacturacionRequest } from "@/lib/api/client";
+import { getDashboardStats, DashboardStats, approveFacturacionRequest, payFacturacionRequest } from "@/lib/api/client";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -108,6 +108,19 @@ export default function DashboardPage() {
       await refreshUser();
     } catch (error) {
       console.error("Error approving request:", error);
+    }
+  };
+
+  const handlePay = async (requestId: string) => {
+    try {
+      if(!confirm("¿Confirmar simulación de pago?")) return;
+      await payFacturacionRequest(requestId);
+      await loadData();
+      await refreshUser();
+      alert("Pago realizado con éxito");
+    } catch (error) {
+      console.error("Error paying request:", error);
+      alert("Error al realizar el pago");
     }
   };
 
@@ -298,6 +311,13 @@ export default function DashboardPage() {
                             >
                               Aprobar
                             </button>
+                          ) : request.estado === "INVOICED" ? (
+                            <button 
+                              onClick={() => handlePay(request.id)}
+                              className="text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors"
+                            >
+                              Pagar
+                            </button>
                           ) : (
                             <span className="text-xs font-medium text-slate-400">Ver detalles</span>
                           )}
@@ -380,7 +400,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Validated Billing (Left - 5 cols) */}
-          <div className="lg:col-span-5 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C] text-[var(--text-main)] dark:text-white">
+          <div className="lg:col-span-5 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C] text-[var(--text-main)] dark:text-white min-w-0">
             <div className="mb-6">
               <h3 className="font-bold text-lg">Facturación vs Ahorro</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400">Rendimiento mensual</p>
@@ -436,7 +456,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Sales Comparison (Right - 7 cols) */}
-          <div className="lg:col-span-7 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C]">
+          <div className="lg:col-span-7 bg-[var(--surface)] dark:bg-[#011F10]/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-[#04301C] min-w-0">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white">Tendencia de Solicitudes</h3>

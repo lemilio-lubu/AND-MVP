@@ -234,12 +234,28 @@ export async function approveFacturacionRequest(requestId: string): Promise<Fact
   return handleResponse<FacturacionRequest>(response);
 }
 
+export async function payFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/pay`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<FacturacionRequest>(response);
+}
+
 export async function getAllFacturacionRequests(): Promise<FacturacionRequest[]> {
   const response = await fetch(`${API_BASE_URL}/facturacion/admin/all`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
   return handleResponse<FacturacionRequest[]>(response);
+}
+
+export async function calculateFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/calculate`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<FacturacionRequest>(response);
 }
 
 export async function emitInvoice(requestId: string): Promise<FacturacionRequest> {

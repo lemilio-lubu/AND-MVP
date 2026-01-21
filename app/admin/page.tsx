@@ -12,6 +12,7 @@ import {
   emitInvoice,
   confirmPayment,
   completeFacturacionRequest,
+  calculateFacturacionRequest,
   FacturacionRequest
 } from "@/lib/api/client";
 import { 
@@ -59,17 +60,17 @@ export default function AdminDashboardPage() {
 
   // Calculate metrics from real data
   const metrics = {
-    pendingRequests: requests.filter(r => r.status === "REQUEST_CREATED").length,
-    pendingApprovals: requests.filter(r => r.status === "CALCULATED").length,
-    pendingInvoices: requests.filter(r => r.status === "APPROVED_BY_CLIENT").length,
-    pendingPayments: requests.filter(r => r.status === "INVOICED").length,
-    pendingRecharges: requests.filter(r => r.status === "PAID").length,
+    pendingRequests: requests.filter(r => r.estado === "REQUEST_CREATED").length,
+    pendingApprovals: requests.filter(r => r.estado === "CALCULATED").length,
+    pendingInvoices: requests.filter(r => r.estado === "APPROVED_BY_CLIENT").length,
+    pendingPayments: requests.filter(r => r.estado === "INVOICED").length,
+    pendingRecharges: requests.filter(r => r.estado === "PAID").length,
     completedThisMonth: requests.filter(r => 
-      r.status === "COMPLETED" && 
+      r.estado === "COMPLETED" && 
       new Date(r.created_at).getMonth() === new Date().getMonth()
     ).length,
     totalRevenue: requests
-      .filter(r => r.status === "COMPLETED")
+      .filter(r => r.estado === "COMPLETED")
       .reduce((sum, r) => sum + (r.total_facturado || 0), 0),
   };
 
@@ -101,16 +102,26 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleCalculate = (request: FacturacionRequest) => {
-    // Nota: En el backend, el cálculo se hace automáticamente al crear la solicitud
-    // y cambia el estado a CALCULATED. Este botón es informativo.
-    alert("El backend ya calculó los valores automáticamente. Estado: CALCULATED");
+  const handleCalculate = async (request: FacturacionRequest) => {
+    if (request.estado !== "REQUEST_CREATED") {
+      alert("Solo se pueden calcular solicitudes en estado REQUEST_CREATED");
+      return;
+    }
+    
+    try {
+      await calculateFacturacionRequest(request.id);
+      await loadData();
+      alert("Cálculo realizado y enviado para aprobación");
+    } catch (error: any) {
+      console.error("Error calculating request:", error);
+      alert(error.message || "Error al calcular solicitud");
+    }
   };
 
 
 
   const handleEmitInvoice = async (request: FacturacionRequest) => {
-    if (request.status !== "APPROVED_BY_CLIENT") {
+    if (request.estado !== "APPROVED_BY_CLIENT") {
       alert("La solicitud debe estar aprobada por el cliente antes de emitir factura");
       return;
     }
@@ -126,7 +137,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleRegisterPayment = async (request: FacturacionRequest) => {
-    if (request.status !== "INVOICED") {
+    if (request.estado !== "INVOICED") {
       alert("Solo se puede registrar pago para facturas emitidas");
       return;
     }
@@ -142,7 +153,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleExecuteRecharge = async (request: FacturacionRequest) => {
-    if (request.status !== "PAID") {
+    if (request.estado !== "PAID") {
       alert("Solo se puede ejecutar recarga para solicitudes pagadas");
       return;
     }
@@ -152,7 +163,7 @@ export default function AdminDashboardPage() {
     try {
       await completeFacturacionRequest(request.id);
       await loadData();
-      alert(`Recarga ejecutada en ${request.platform}`);
+      alert(`Recarga ejecutada en ${request.plataforma}`);
     } catch (error: any) {
       console.error("Error executing recharge:", error);
       alert(error.message || "Error al ejecutar recarga");
@@ -160,7 +171,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleCompleteProcess = async (request: FacturacionRequest) => {
-    if (request.status !== "RECHARGE_EXECUTED" && request.status !== "PAID") {
+    if (request.estado !== "RECHARGE_EXECUTED" && request.estado !== "PAID") {
       alert("Solo se pueden completar procesos con recarga ejecutada o pagados");
       return;
     }
@@ -195,26 +206,53 @@ export default function AdminDashboardPage() {
     return null;
   }
 
-  // Mock data for charts
-  const revenueData = [
-    { name: 'Lun', amount: 15000 },
-    { name: 'Mar', amount: 25000 },
-    { name: 'Mié', amount: 18000 },
-    { name: 'Jue', amount: 32000 },
-    { name: 'Vie', amount: 28000 },
-    { name: 'Sáb', amount: 12000 },
-    { name: 'Dom', amount: 9000 },
-  ];
+  // --- Process data for charts ---
+  
+  // 1. Revenue Trends (Last 7 days approx)
+  const revenueData = (() => {
+      const dataMap = new Map<string, number>();
+      // Initialize with last 7 days empty
+      for(let i=6; i>=0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = d.toLocaleDateString("es-ES", { weekday: 'short' });
+          dataMap.set(key, 0);
+      }
 
-  const platformData = [
-    { name: 'Meta', value: 45, color: '#3b82f6' },
-    { name: 'Google', value: 30, color: '#10b981' },
-    { name: 'TikTok', value: 15, color: '#000000' }, // Dark/Light handled in component
-    { name: 'LinkedIn', value: 10, color: '#6366f1' },
-  ];
+      requests.forEach(r => {
+          if (r.estado === 'COMPLETED' || r.estado === 'PAID') {
+              const d = new Date(r.created_at);
+              const key = d.toLocaleDateString("es-ES", { weekday: 'short' });
+              const amount = r.total_facturado || r.monto || 0;
+              if (dataMap.has(key)) {
+                  dataMap.set(key, dataMap.get(key)! + amount);
+              }
+          }
+      });
+
+      return Array.from(dataMap.entries()).map(([name, amount]) => ({ name, amount }));
+  })();
+
+  // 2. Platform Distribution
+  const platformData = (() => {
+      const counts: Record<string, number> = {};
+      requests.forEach(r => {
+          counts[r.plataforma] = (counts[r.plataforma] || 0) + 1;
+      });
+      
+      const total = requests.length || 1;
+      const colors = ['#3b82f6', '#10b981', '#000000', '#6366f1', '#f59e0b'];
+      
+      return Object.entries(counts).map(([name, count], index) => ({
+          name,
+          value: count, // Pie chart uses raw values
+          percent: Math.round((count / total) * 100),
+          color: colors[index % colors.length]
+      }));
+  })();
 
   const getActionButtons = (request: FacturacionRequest) => {
-      switch (request.status) {
+      switch (request.estado) {
           case "REQUEST_CREATED":
             return (
               <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-accent hover:bg-primary text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-accent/30">
@@ -324,7 +362,7 @@ export default function AdminDashboardPage() {
         {/* Row 2: Charts Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Revenue Trend - 8 cols */}
-          <div className="lg:col-span-8 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white">
+          <div className="lg:col-span-8 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white min-w-0">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg">Flujo de Ingresos</h3>
@@ -386,7 +424,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Platform Distribution - 4 cols */}
-          <div className="lg:col-span-4 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white">
+          <div className="lg:col-span-4 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white min-w-0">
             <div className="mb-6">
                 <h3 className="font-bold text-lg">Distribución</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Solicitudes por plataforma</p>
@@ -461,15 +499,15 @@ export default function AdminDashboardPage() {
                   
                   {/* Icon Column */}
                   <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
-                     {getPlatformIcon(request.platform)}
+                     {getPlatformIcon(request.plataforma)}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">
-                        {request.empresa_id} <span className="text-slate-400 font-normal mx-1">•</span> {request.platform}
+                        {request.empresa_id} <span className="text-slate-400 font-normal mx-1">•</span> {request.plataforma}
                       </h4>
-                      {request.status === "COMPLETED" && (
+                      {request.estado === "COMPLETED" && (
                          <CheckCircle size={14} weight="fill" className="text-green-500" />
                       )}
                     </div>
@@ -481,15 +519,15 @@ export default function AdminDashboardPage() {
 
                   {/* Status Badge */}
                   <div className="w-full md:w-auto flex justify-between md:block items-center">
-                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.status)}`}>
-                        {getStatusLabel(request.status)}
+                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.estado)}`}>
+                        {getStatusLabel(request.estado)}
                      </span>
                   </div>
 
                   {/* Amount */}
                   <div className="text-right">
                      <p className="font-bold text-slate-900 dark:text-white">
-                        {formatCurrency(request.amount)}
+                        {formatCurrency(request.monto)}
                      </p>
                      {request.total_facturado && (
                        <p className="text-xs text-slate-500 dark:text-slate-400">
