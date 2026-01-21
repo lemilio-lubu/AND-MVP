@@ -9,8 +9,8 @@ import {
 } from "@/lib/billing";
 import { 
   getAllFacturacionRequests,
-  invoiceFacturacionRequest,
-  markFacturacionAsPaid,
+  emitInvoice,
+  confirmPayment,
   completeFacturacionRequest,
   FacturacionRequest
 } from "@/lib/api/client";
@@ -24,6 +24,7 @@ import {
   TrendUp,
   ChartPieSlice,
   Users,
+  User,
   GlobeHemisphereWest
 } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
@@ -58,17 +59,17 @@ export default function AdminDashboardPage() {
 
   // Calculate metrics from real data
   const metrics = {
-    pendingRequests: requests.filter(r => r.estado === "REQUEST_CREATED").length,
-    pendingApprovals: requests.filter(r => r.estado === "CALCULATED").length,
-    pendingInvoices: requests.filter(r => r.estado === "APPROVED_BY_CLIENT").length,
-    pendingPayments: requests.filter(r => r.estado === "INVOICED").length,
-    pendingRecharges: requests.filter(r => r.estado === "PAID").length,
+    pendingRequests: requests.filter(r => r.status === "REQUEST_CREATED").length,
+    pendingApprovals: requests.filter(r => r.status === "CALCULATED").length,
+    pendingInvoices: requests.filter(r => r.status === "APPROVED_BY_CLIENT").length,
+    pendingPayments: requests.filter(r => r.status === "INVOICED").length,
+    pendingRecharges: requests.filter(r => r.status === "PAID").length,
     completedThisMonth: requests.filter(r => 
-      r.estado === "COMPLETED" && 
+      r.status === "COMPLETED" && 
       new Date(r.created_at).getMonth() === new Date().getMonth()
     ).length,
     totalRevenue: requests
-      .filter(r => r.estado === "COMPLETED")
+      .filter(r => r.status === "COMPLETED")
       .reduce((sum, r) => sum + (r.total_facturado || 0), 0),
   };
 
@@ -109,13 +110,13 @@ export default function AdminDashboardPage() {
 
 
   const handleEmitInvoice = async (request: FacturacionRequest) => {
-    if (request.estado !== "APPROVED_BY_CLIENT") {
+    if (request.status !== "APPROVED_BY_CLIENT") {
       alert("La solicitud debe estar aprobada por el cliente antes de emitir factura");
       return;
     }
     
     try {
-      await invoiceFacturacionRequest(request.id);
+      await emitInvoice(request.id);
       await loadData();
       alert("Factura emitida correctamente");
     } catch (error: any) {
@@ -125,13 +126,13 @@ export default function AdminDashboardPage() {
   };
 
   const handleRegisterPayment = async (request: FacturacionRequest) => {
-    if (request.estado !== "INVOICED") {
+    if (request.status !== "INVOICED") {
       alert("Solo se puede registrar pago para facturas emitidas");
       return;
     }
     
     try {
-      await markFacturacionAsPaid(request.id);
+      await confirmPayment(request.id);
       await loadData();
       alert("Pago registrado correctamente");
     } catch (error: any) {
@@ -141,7 +142,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleExecuteRecharge = async (request: FacturacionRequest) => {
-    if (request.estado !== "PAID") {
+    if (request.status !== "PAID") {
       alert("Solo se puede ejecutar recarga para solicitudes pagadas");
       return;
     }
@@ -151,7 +152,7 @@ export default function AdminDashboardPage() {
     try {
       await completeFacturacionRequest(request.id);
       await loadData();
-      alert(`Recarga ejecutada en ${request.plataforma}`);
+      alert(`Recarga ejecutada en ${request.platform}`);
     } catch (error: any) {
       console.error("Error executing recharge:", error);
       alert(error.message || "Error al ejecutar recarga");
@@ -159,7 +160,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleCompleteProcess = async (request: FacturacionRequest) => {
-    if (request.estado !== "RECHARGE_EXECUTED" && request.estado !== "PAID") {
+    if (request.status !== "RECHARGE_EXECUTED" && request.status !== "PAID") {
       alert("Solo se pueden completar procesos con recarga ejecutada o pagados");
       return;
     }
@@ -213,7 +214,7 @@ export default function AdminDashboardPage() {
   ];
 
   const getActionButtons = (request: FacturacionRequest) => {
-      switch (request.estado) {
+      switch (request.status) {
           case "REQUEST_CREATED":
             return (
               <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-accent hover:bg-primary text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-accent/30">
@@ -270,6 +271,13 @@ export default function AdminDashboardPage() {
                 ADMINISTRADOR
               </span>
             <ThemeToggle />
+            <button
+              onClick={() => router.push("/perfil")}
+              className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              title="Mi Perfil"
+            >
+              <User size={24} weight="duotone" />
+            </button>
             <button
               onClick={handleLogout}
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
@@ -453,15 +461,15 @@ export default function AdminDashboardPage() {
                   
                   {/* Icon Column */}
                   <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
-                     {getPlatformIcon(request.plataforma)}
+                     {getPlatformIcon(request.platform)}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">
-                        {request.empresa_id} <span className="text-slate-400 font-normal mx-1">•</span> {request.plataforma}
+                        {request.empresa_id} <span className="text-slate-400 font-normal mx-1">•</span> {request.platform}
                       </h4>
-                      {request.estado === "COMPLETED" && (
+                      {request.status === "COMPLETED" && (
                          <CheckCircle size={14} weight="fill" className="text-green-500" />
                       )}
                     </div>
@@ -473,15 +481,15 @@ export default function AdminDashboardPage() {
 
                   {/* Status Badge */}
                   <div className="w-full md:w-auto flex justify-between md:block items-center">
-                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.estado)}`}>
-                        {getStatusLabel(request.estado)}
+                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.status)}`}>
+                        {getStatusLabel(request.status)}
                      </span>
                   </div>
 
                   {/* Amount */}
                   <div className="text-right">
                      <p className="font-bold text-slate-900 dark:text-white">
-                        {formatCurrency(request.monto_solicitado)}
+                        {formatCurrency(request.amount)}
                      </p>
                      {request.total_facturado && (
                        <p className="text-xs text-slate-500 dark:text-slate-400">

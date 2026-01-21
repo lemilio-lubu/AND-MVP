@@ -20,7 +20,8 @@ import {
   ChartBar,
   ChartLineUp,
   GlobeHemisphereWest,
-  CaretRight
+  CaretRight,
+  User
 } from "@phosphor-icons/react";
 import { BillingRequestModal } from "@/app/components/BillingRequestModal";
 import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
@@ -38,7 +39,7 @@ import {
   Area
 } from 'recharts';
 import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
-import { getMyFacturacionRequests, FacturacionRequest, approveFacturacionRequest } from "@/lib/api/client";
+import { getDashboardStats, DashboardStats, approveFacturacionRequest } from "@/lib/api/client";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -47,41 +48,35 @@ export default function DashboardPage() {
   const [showGamification, setShowGamification] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [requests, setRequests] = useState<FacturacionRequest[]>([]);
-
-  // Calculated metrics from real data
-  const metrics = {
-    totalBilledThisMonth: requests
-      .filter(r => r.estado === "COMPLETED" && new Date(r.created_at).getMonth() === new Date().getMonth())
-      .reduce((sum, r) => sum + (r.total_facturado || 0), 0),
-    accumulatedTaxSavings: requests
-      .filter(r => r.estado === "COMPLETED")
-      .reduce((sum, r) => sum + (r.isd_evitado || 0), 0),
-    invoicesEmitted: requests.filter(r => ["INVOICED", "PAID", "RECHARGE_EXECUTED", "COMPLETED"].includes(r.estado)).length,
-    invoicesPending: requests.filter(r => ["REQUEST_CREATED", "CALCULATED", "APPROVED_BY_CLIENT"].includes(r.estado)).length,
-    activeRequests: requests.filter(r => !["COMPLETED", "ERROR"].includes(r.estado)).length,
-  };
+  const [error, setError] = useState("");
+  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
+    console.log('📊 Dashboard: useEffect ejecutado. userLoading:', userLoading, 'user:', user);
+    
     if (userLoading) return;
     
     if (!user) {
+      console.log('⚠️ Dashboard: No hay usuario, redirigiendo a login');
       router.push("/login");
       return;
     }
 
     // Redirigir admin a su dashboard
     if (user.type === "admin") {
+      console.log('🔀 Dashboard: Usuario admin, redirigiendo a /admin');
       router.push("/admin");
       return;
     }
 
     // Solo empresas pueden ver este dashboard
     if (user.type !== "empresa") {
+      console.log('🔀 Dashboard: Usuario no es empresa, redirigiendo a /');
       router.push("/");
       return;
     }
 
+    console.log('✅ Dashboard: Usuario válido, cargando datos...');
     // Determinar si mostrar gamificación
     const shouldShow = user.isNew && !user.hasEmittedFirstInvoice;
     setShowGamification(shouldShow);
@@ -92,11 +87,15 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     setLoading(true);
+    setError("");
     try {
-      const data = await getMyFacturacionRequests();
-      setRequests(data);
-    } catch (error) {
-      console.error("Error loading requests:", error);
+      console.log("Cargando datos del dashboard...");
+      const data = await getDashboardStats();
+      console.log("Datos recibidos:", data);
+      setStats(data);
+    } catch (error: any) {
+      console.error("Error loading dashboard stats:", error);
+      setError("No se pudieron cargar los datos.");
     } finally {
       setLoading(false);
     }
@@ -128,28 +127,16 @@ export default function DashboardPage() {
     );
   }
 
-  const trajectory = getUserTrajectory(metrics.invoicesEmitted, metrics.totalBilledThisMonth);
+  const trajectory = getUserTrajectory(stats?.summary.facturasEmitidas.value || 0, stats?.summary.totalFacturado.value || 0);
 
-  // Mock Data for Charts
-  const chartData = [
-    { name: 'Ene', billing: 4000, savings: 240 },
-    { name: 'Feb', billing: 3000, savings: 139 },
-    { name: 'Mar', billing: 2000, savings: 980 },
-    { name: 'Abr', billing: 2780, savings: 390 },
-    { name: 'May', billing: 1890, savings: 480 },
-    { name: 'Jun', billing: 2390, savings: 380 },
-    { name: 'Jul', billing: 3490, savings: 430 },
-  ];
+  // Charts data from API
+  const chartData = stats?.charts.monthlyPerformance.map(item => ({
+    name: item.month,
+    billing: item.facturado,
+    savings: item.ahorro
+  })) || [];
 
-  const lineChartData = [
-    { name: 'Sem 1', amount: 4000 },
-    { name: 'Sem 2', amount: 3000 },
-    { name: 'Sem 3', amount: 5000 },
-    { name: 'Sem 4', amount: 2780 },
-    { name: 'Sem 5', amount: 1890 },
-    { name: 'Sem 6', amount: 2390 },
-    { name: 'Sem 7', amount: 3490 },
-  ];
+  const lineChartData = stats?.charts.weeklyTrend || [];
 
   return (
     <main className="min-h-screen bg-[var(--background)] transition-colors duration-500 pb-20">
@@ -174,6 +161,13 @@ export default function DashboardPage() {
             )}
             <ThemeToggle />
             <button
+              onClick={() => router.push("/perfil")}
+              className="p-2 text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-white transition-colors"
+              title="Mi Perfil"
+            >
+              <User size={24} weight="duotone" />
+            </button>
+            <button
               onClick={handleLogout}
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-white px-4 py-2"
             >
@@ -190,31 +184,46 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-[1600px] mx-auto px-6 space-y-8">
+
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Warning size={20} />
+              <span>{error}</span>
+            </div>
+            <button 
+              onClick={() => loadData()}
+              className="text-sm font-bold underline hover:no-underline"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
         
         {/* Row 1: Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <SoftMetricCard
             title="Total Facturado"
-            value={formatCurrency(metrics.totalBilledThisMonth)}
-            percentage="+55%"
+            value={formatCurrency(stats?.summary.totalFacturado.value || 0)}
+            percentage={stats?.summary.totalFacturado.percentageChange ? `+${stats.summary.totalFacturado.percentageChange}%` : "0%"}
             icon={<CurrencyDollar size={24} weight="fill" color="#fff" />}
           />
           <SoftMetricCard
             title="Ahorro Fiscal"
-            value={formatCurrency(metrics.accumulatedTaxSavings)}
-            percentage="+15%"
+            value={formatCurrency(stats?.summary.ahorroFiscal.value || 0)}
+            percentage={stats?.summary.ahorroFiscal.percentageChange ? `+${stats.summary.ahorroFiscal.percentageChange}%` : "0%"}
             icon={<TrendUp size={24} weight="fill" color="#fff" />}
           />
           <SoftMetricCard
             title="Facturas Emitidas"
-            value={metrics.invoicesEmitted.toString()}
-            percentage="+3%"
+            value={(stats?.summary.facturasEmitidas.value || 0).toString()}
+            percentage={stats?.summary.facturasEmitidas.percentageChange ? `+${stats.summary.facturasEmitidas.percentageChange}%` : "0%"}
             icon={<FileText size={24} weight="fill" color="#fff" />}
           />
           <SoftMetricCard
             title="Solicitudes Activas"
-            value={metrics.activeRequests.toString()}
-            percentage="+5%"
+            value={(stats?.summary.solicitudesActivas.value || 0).toString()}
+            percentage={stats?.summary.solicitudesActivas.percentageChange ? `+${stats.summary.solicitudesActivas.percentageChange}%` : "0%"}
             icon={<Rocket size={24} weight="fill" color="#fff" />}
           />
         </div>
@@ -229,7 +238,7 @@ export default function DashboardPage() {
                 <h3 className="font-bold text-lg text-[var(--text-main)] dark:text-white">Solicitudes Recientes</h3>
                 <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium mt-1">
                   <CheckCircle weight="fill" />
-                  <span>{metrics.activeRequests} solicitudes activas</span>
+                  <span>{stats?.summary.solicitudesActivas.value || 0} solicitudes activas</span>
                 </div>
               </div>
               <button 
@@ -258,8 +267,8 @@ export default function DashboardPage() {
                         <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                       </td>
                     </tr>
-                  ) : requests.length > 0 ? (
-                    requests.slice(0, 5).map((request) => (
+                  ) : (stats?.recentRequests?.length || 0) > 0 ? (
+                    (stats?.recentRequests || []).slice(0, 5).map((request) => (
                       <tr key={request.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="py-4 pl-2">
                           <div className="flex items-center gap-3">
@@ -273,7 +282,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="py-4 text-center">
                           <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                            {formatCurrency(request.monto_solicitado)}
+                            {formatCurrency(request.monto)}
                           </span>
                         </td>
                         <td className="py-4 text-center">
@@ -329,35 +338,38 @@ export default function DashboardPage() {
               <div className="mt-8 grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Plataformas</p>
-                  <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">4 Activas</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                    {stats?.businessNetwork.activePlatforms || 0} Activas
+                  </p>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Países</p>
-                  <p className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">2 Regiones</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
+                    {stats?.businessNetwork.regions || 1} Regiones
+                  </p>
                 </div>
               </div>
 
               <div className="mt-6">
                 <p className="text-xs text-slate-500 mb-2 uppercase font-bold tracking-wider">Top Plataformas Globales</p>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-xs mb-1 font-medium">
-                      <span className="text-slate-700 dark:text-slate-200">Meta Ads (Global)</span>
-                      <span className="text-blue-600 dark:text-blue-400 font-bold">45%</span>
+                  {(stats?.businessNetwork.topPlatforms || []).map((platform, index) => (
+                    <div key={index}>
+                      <div className="flex justify-between text-xs mb-1 font-medium">
+                        <span className="text-slate-700 dark:text-slate-200">{platform.name}</span>
+                        <span className="text-blue-600 dark:text-blue-400 font-bold">{platform.percentage}%</span>
+                      </div>
+                      <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full ${index === 0 ? 'bg-blue-500' : 'bg-emerald-500'} w-[${platform.percentage}%]`} 
+                          style={{ width: `${platform.percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 w-[45%]" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1 font-medium">
-                      <span className="text-slate-700 dark:text-slate-200">Google Ads (Latam)</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">30%</span>
-                    </div>
-                    <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-500 w-[30%]" />
-                    </div>
-                  </div>
+                  ))}
+                  {(stats?.businessNetwork.topPlatforms?.length === 0) && (
+                    <p className="text-xs text-slate-500 italic">No hay datos de plataformas aún</p>
+                  )}
                 </div>
               </div>
             </div>

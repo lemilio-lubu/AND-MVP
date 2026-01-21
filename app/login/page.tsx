@@ -9,7 +9,7 @@ import { InputGroup } from "@/app/components/ui/InputGroup";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
 import { useUser } from "@/lib/context/UserContext";
-import { login as apiLogin } from "@/lib/api/client";
+import { login as apiLogin, getMe } from "@/lib/api/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,15 +30,29 @@ export default function LoginPage() {
     setError("");
 
     try {
+      console.log('🔑 Login: Intentando iniciar sesión...', { email });
       const response = await apiLogin({ email, password });
-      await login(response.access_token);
+      console.log('✅ Login: Respuesta del backend recibida');
       
-      // Redirigir después de cargar usuario
-      // El hook de UserContext ya tiene el usuario actualizado
-      setTimeout(() => {
+      await login(response.access_token);
+      console.log('✅ Login: Context actualizado');
+      
+      // Verificar rol para redirección correcta
+      const profile = await getMe();
+      console.log('✅ Login: Perfil obtenido:', profile);
+      
+      // Normalizar el rol a mayúsculas para evitar errores de case-sensitivity
+      const role = profile.role?.toUpperCase() || '';
+      
+      if (role === 'ADMIN') {
+        console.log('🔀 Login: Redirigiendo a /admin');
+        router.push("/admin");
+      } else {
+        console.log('🔀 Login: Redirigiendo a /dashboard');
         router.push("/dashboard");
-      }, 100);
+      }
     } catch (err: any) {
+      console.error('❌ Login: Error:', err);
       setError(err.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
@@ -166,6 +180,14 @@ export default function LoginPage() {
                     </Link>
                   </p>
                 </>
+              )}
+              {userType === "admin" && (
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  ¿Nuevo administrador?{" "}
+                  <Link href="/registro/admin" className="text-amber-600 dark:text-amber-400 hover:underline font-medium transition-colors">
+                    Registrar acceso
+                  </Link>
+                </p>
               )}
             </div>
           </div>

@@ -24,17 +24,15 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
   const [error, setError] = useState<string>("");
 
   const platforms = [
-    { id: "META", name: "Meta (Facebook/Instagram)" },
-    { id: "TIKTOK", name: "TikTok" },
-    { id: "GOOGLE", name: "Google Ads" },
-    { id: "OTRO", name: "Otra Plataforma" },
+    { id: "meta", name: "Instagram" },
+    { id: "tiktok", name: "TikTok" },
+    { id: "google", name: "YouTube" },
+    { id: "otro", name: "UGC (User Generated Content)" },
   ];
 
   const handleSubmit = async () => {
-    if (!user || !user.empresa) {
-      setError("No se encontró información de la empresa");
-      return;
-    }
+    // Nota: ya no requerimos validar user.empresa.id aquí porque el token maneja la empresa.
+    if (!user) return;
 
     // Validación de monto
     const numAmount = parseFloat(amount);
@@ -54,13 +52,12 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
 
     try {
       await createFacturacionRequest({
-        empresaId: user.empresa.id,
-        plataforma: platform as "META" | "TIKTOK" | "GOOGLE" | "OTRO",
-        monto_solicitado: numAmount,
+        plataforma: platform,
+        montoSolicitado: numAmount,
       });
 
-      // Refrescar datos del usuario
-      await refreshUser();
+      // Refrescar datos del usuario (o facturación) si fuera necesario
+      // await refreshUser(); // Quizá no sea necesario si no cambia el usuario, pero mal no hace.
 
       setStep("success");
       

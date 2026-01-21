@@ -37,7 +37,7 @@ function mapMeResponseToUser(me: MeResponse): User {
     id: me.id,
     type: me.role.toLowerCase() as "admin" | "empresa" | "influencer",
     isNew: me.is_new,
-    email: me.empresa?.correo_corporativo || "",
+    email: me.email || me.empresa?.correo_corporativo || "",
     name: me.empresa?.razon_social || "Usuario",
     hasEmittedFirstInvoice: me.has_emitted_first_invoice,
     empresa: me.empresa,
@@ -55,8 +55,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           const me = await getMe();
           setUser(mapMeResponseToUser(me));
-        } catch (error) {
-          console.error("Error loading user:", error);
+        } catch (error: any) {
+          // Si es error de autenticación (Token expirado/inválido), limpiar silenciosamente
+          if (error.message === "Unauthorized" || error.message.includes("401")) {
+            console.log("Sesión expirada o inválida, limpiando token.");
+          } else {
+            console.error("Error loading user:", error);
+          }
           removeToken();
         }
       }
@@ -67,14 +72,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (token: string) => {
+    console.log('🔐 Login: Guardando token y obteniendo datos de usuario...');
     saveToken(token);
-    const me = await getMe();
-    setUser(mapMeResponseToUser(me));
+    try {
+      const me = await getMe();
+      console.log('✅ Login: Datos recibidos del backend:', me);
+      const mappedUser = mapMeResponseToUser(me);
+      console.log('✅ Login: Usuario mapeado:', mappedUser);
+      setUser(mappedUser);
+    } catch (error) {
+      console.error('❌ Login: Error obteniendo datos:', error);
+      removeToken();
+      throw error;
+    }
   };
 
   const logout = () => {
+    console.log('🚪 Logout: Limpiando sesión...');
     setUser(null);
     removeToken();
+    console.log('✅ Logout: Sesión limpiada');
   };
 
   const refreshUser = async () => {

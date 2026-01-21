@@ -38,7 +38,7 @@ export interface LoginRequest {
 export interface RegisterRequest {
   email: string;
   password: string;
-  role: "EMPRESA" | "INFLUENCER";
+  role: "EMPRESA" | "INFLUENCER" | "ADMIN";
 }
 
 export interface AuthResponse {
@@ -63,10 +63,59 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
   return handleResponse<AuthResponse>(response);
 }
 
+export interface RegisterCompanyRequest {
+  razonSocial: string;
+  correoCorporativo: string;
+  ruc: string;
+  telefono: string;
+  ciudad: string;
+  password: string;
+}
+
+export async function registerCompany(data: RegisterCompanyRequest): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/register-company`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<AuthResponse>(response);
+}
+
+export interface RegisterAdminRequest {
+  fullName: string;
+  email: string;
+  adminSecret: string;
+  password: string;
+}
+
+export async function registerAdmin(data: RegisterAdminRequest): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/register-admin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<AuthResponse>(response);
+}
+
+export interface ChangePasswordRequest {
+  currentPassword?: string; // Optional if not enforced by backend strictly yet, but good practice
+  newPassword: string;
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return handleResponse<void>(response);
+}
+
 // ==================== USER ====================
 
 export interface MeResponse {
   id: string;
+  email: string; // Added email field
   role: "EMPRESA" | "INFLUENCER" | "ADMIN";
   is_new: boolean;
   has_emitted_first_invoice: boolean;
@@ -87,6 +136,7 @@ export async function getMe(): Promise<MeResponse> {
   const response = await fetch(`${API_BASE_URL}/me`, {
     method: "GET",
     headers: getAuthHeaders(),
+    cache: "no-store"
   });
   return handleResponse<MeResponse>(response);
 }
@@ -132,20 +182,24 @@ export async function getMyEmpresa(): Promise<EmpresaResponse> {
 // ==================== FACTURACIÓN ====================
 
 export interface CreateFacturacionRequest {
-  empresaId: string;
-  plataforma: "META" | "TIKTOK" | "GOOGLE" | "OTRO";
-  monto_solicitado: number;
+  plataforma: string;
+  montoSolicitado: number;
+  empresaId?: string;
 }
 
 export interface FacturacionRequest {
   id: string;
   empresa_id: string;
-  plataforma: "META" | "TIKTOK" | "GOOGLE" | "OTRO";
+  plataforma: string;
+  monto: number;
   monto_solicitado: number;
+  
+  // Campos calculados
   base_calculada?: number;
   iva?: number;
   isd_evitado?: number;
   total_facturado?: number;
+  
   estado: "REQUEST_CREATED" | "CALCULATED" | "APPROVED_BY_CLIENT" | "INVOICED" | "PAID" | "RECHARGE_EXECUTED" | "COMPLETED" | "ERROR";
   created_by: string;
   created_at: string;
@@ -154,12 +208,8 @@ export interface FacturacionRequest {
   invoice_number?: string;
 }
 
-export interface ApproveFacturacionRequest {
-  requestId: string;
-}
-
 export async function createFacturacionRequest(data: CreateFacturacionRequest): Promise<FacturacionRequest> {
-  const response = await fetch(`${API_BASE_URL}/facturacion/request`, {
+  const response = await fetch(`${API_BASE_URL}/facturacion`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -171,38 +221,38 @@ export async function getMyFacturacionRequests(): Promise<FacturacionRequest[]> 
   const response = await fetch(`${API_BASE_URL}/facturacion/mine`, {
     method: "GET",
     headers: getAuthHeaders(),
+    cache: "no-store",
   });
   return handleResponse<FacturacionRequest[]>(response);
 }
 
 export async function approveFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
-  const response = await fetch(`${API_BASE_URL}/facturacion/approve`, {
-    method: "PUT",
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/approve`, {
+    method: "PATCH",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ requestId }),
   });
   return handleResponse<FacturacionRequest>(response);
 }
 
 export async function getAllFacturacionRequests(): Promise<FacturacionRequest[]> {
-  const response = await fetch(`${API_BASE_URL}/facturacion/all`, {
+  const response = await fetch(`${API_BASE_URL}/facturacion/admin/all`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
   return handleResponse<FacturacionRequest[]>(response);
 }
 
-export async function invoiceFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
-  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/invoice`, {
-    method: "PUT",
+export async function emitInvoice(requestId: string): Promise<FacturacionRequest> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/emit-invoice`, {
+    method: "PATCH",
     headers: getAuthHeaders(),
   });
   return handleResponse<FacturacionRequest>(response);
 }
 
-export async function markFacturacionAsPaid(requestId: string): Promise<FacturacionRequest> {
-  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/paid`, {
-    method: "PUT",
+export async function confirmPayment(requestId: string): Promise<FacturacionRequest> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/confirm-payment`, {
+    method: "PATCH",
     headers: getAuthHeaders(),
   });
   return handleResponse<FacturacionRequest>(response);
@@ -210,10 +260,38 @@ export async function markFacturacionAsPaid(requestId: string): Promise<Facturac
 
 export async function completeFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
   const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/complete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: getAuthHeaders(),
   });
   return handleResponse<FacturacionRequest>(response);
+}
+
+export interface DashboardStats {
+  summary: {
+    totalFacturado: { value: number; percentageChange: number };
+    ahorroFiscal: { value: number; percentageChange: number };
+    facturasEmitidas: { value: number; percentageChange: number };
+    solicitudesActivas: { value: number; percentageChange: number };
+  };
+  recentRequests: FacturacionRequest[];
+  businessNetwork: {
+    activePlatforms: number;
+    regions: number;
+    topPlatforms: { name: string; percentage: number }[];
+  };
+  charts: {
+    monthlyPerformance: { month: string; facturado: number; ahorro: number }[];
+    weeklyTrend: { name: string; amount: number }[];
+  };
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/dashboard`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+    cache: "no-store",
+  });
+  return handleResponse<DashboardStats>(response);
 }
 
 // ==================== STORAGE ====================
