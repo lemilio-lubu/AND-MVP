@@ -39,7 +39,7 @@ import {
   Area
 } from 'recharts';
 import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
-import { getDashboardStats, DashboardStats, approveFacturacionRequest, payFacturacionRequest } from "@/lib/api/client";
+import { getDashboardStats, DashboardStats, approveFacturacionRequest, payFacturacionRequest, downloadInvoice } from "@/lib/api/client";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -121,6 +121,15 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error paying request:", error);
       alert("Error al realizar el pago");
+    }
+  };
+
+  const handleDownload = async (requestId: string) => {
+    try {
+      await downloadInvoice(requestId);
+    } catch (error) {
+      console.error("Error downloading invoice:", error);
+      alert("Error al descargar factura");
     }
   };
 
@@ -312,11 +321,27 @@ export default function DashboardPage() {
                               Aprobar
                             </button>
                           ) : request.estado === "INVOICED" ? (
+                            <div className="flex justify-end gap-2">
+                              <button 
+                                onClick={() => handleDownload(request.id)}
+                                className="text-xs font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg transition-colors"
+                                title="Descargar Factura"
+                              >
+                                PDF
+                              </button>
+                              <button 
+                                onClick={() => handlePay(request.id)}
+                                className="text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors"
+                              >
+                                Pagar
+                              </button>
+                            </div>
+                          ) : (['PAID', 'COMPLETED', 'RECHARGE_EXECUTED'].includes(request.estado)) ? (
                             <button 
-                              onClick={() => handlePay(request.id)}
-                              className="text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors"
+                              onClick={() => handleDownload(request.id)}
+                              className="text-xs font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg transition-colors"
                             >
-                              Pagar
+                              Descargar PDF
                             </button>
                           ) : (
                             <span className="text-xs font-medium text-slate-400">Ver detalles</span>

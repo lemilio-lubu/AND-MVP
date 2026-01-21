@@ -282,6 +282,29 @@ export async function completeFacturacionRequest(requestId: string): Promise<Fac
   return handleResponse<FacturacionRequest>(response);
 }
 
+export async function downloadInvoice(requestId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/pdf`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Error descargando factura" }));
+    throw new Error(error.message || `Error: ${response.status}`);
+  }
+
+  // Crear Blob y descargar
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `factura-${requestId}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 export interface DashboardStats {
   summary: {
     totalFacturado: { value: number; percentageChange: number };
