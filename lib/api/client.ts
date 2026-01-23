@@ -250,6 +250,7 @@ export async function getAllFacturacionRequests(): Promise<FacturacionRequest[]>
   return handleResponse<FacturacionRequest[]>(response);
 }
 
+// Admin Actions
 export async function calculateFacturacionRequest(requestId: string): Promise<FacturacionRequest> {
   const response = await fetch(`${API_BASE_URL}/facturacion/${requestId}/calculate`, {
     method: "PATCH",

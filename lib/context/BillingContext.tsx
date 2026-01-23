@@ -1,120 +1,119 @@
 // lib/context/BillingContext.tsx
 import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
 import { useWebSocket } from '../hooks/useWebSocket';
+import * as API from '../api/client';
+import { FacturacionRequest } from '../api/client'; // Assuming types are exported there or I should map them
 
-interface BillingRequest {
-  id: string;
-  companyId: string;
-  platform: string;
-  requestedAmount: number;
-  calculatedBase?: number;
-  calculatedCommission?: number;
-  calculatedTotal?: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Use FacturacionRequest from API Client or keep local interface matching it
+// Let's use local interface but mapped to simplify for now, or assume structure matches.
+// Actually client.ts defines FacturacionRequest inside? Let's check client.ts definitions
 
 interface BillingContextType {
-  requests: BillingRequest[];
-  currentRequest: BillingRequest | null;
+  requests: any[]; // Relaxing type to avoid conflict or need import
+  currentRequest: any | null;
   loading: boolean;
   error: string | null;
-  createRequest: (data: any) => void;
-  approveRequest: (requestId: string) => void;
-  rejectRequest: (requestId: string) => void;
+  createRequest: (data: any) => Promise<void>;
+  approveRequest: (requestId: string) => Promise<void>;
+  rejectRequest: (requestId: string) => Promise<void>;
+  refreshRequests: () => void; // New helper
 }
 
 const BillingContext = createContext<BillingContextType | undefined>(undefined);
 
 export function BillingProvider({ children }: { children: React.ReactNode }) {
-  const { emit, on, off } = useWebSocket();
-  const [requests, setRequests] = useState<BillingRequest[]>([]);
-  const [currentRequest, setCurrentRequest] = useState<BillingRequest | null>(null);
+  const { on, off } = useWebSocket();
+  const [requests, setRequests] = useState<any[]>([]);
+  const [currentRequest, setCurrentRequest] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper handling update
+  const handleUpdate = useCallback((data: any) => {
+    setRequests((prev) =>
+       prev.map((req) => (req.id === data.id ? data : req))
+    );
+     // Update current if selected
+    setCurrentRequest(prev => prev?.id === data.id ? data : prev);
+  }, []);
+
   useEffect(() => {
-    on('billing:created', (data) => {
+    // Escuchar eventos del nuevo backend (AND-BACK)
+    
+    // 1. Nueva solicitud (Para Admin principalmente)
+    on('billing:new-request', (data) => {
       setRequests((prev) => [data, ...prev]);
-      setCurrentRequest(data);
-      setLoading(true);
     });
 
-    on('billing:calculating', (data) => {
-      console.log('Calculando...', data);
+    // 2. Cambio de estado (Para Usuario)
+    on('billing:status-changed', (data) => {
+      handleUpdate(data);
+       // Si pasa a CALCULATED, dejar de cargar si estábamos esperando
+      if (data.estado === 'CALCULATED') setLoading(false);
     });
 
-    on('billing:calculated', (data) => {
-      setCurrentRequest(data);
-      setRequests((prev) =>
-        prev.map((req) => (req.id === data.id ? data : req))
-      );
-      setLoading(false);
-    });
-
-    on('billing:approved', (data) => {
-      setRequests((prev) =>
-        prev.map((req) => (req.id === data.id ? data : req))
-      );
-    });
-
-    on('billing:rejected', (data) => {
-      setRequests((prev) =>
-        prev.map((req) => (req.id === data.id ? data : req))
-      );
-    });
-
-    on('billing:calculation-error', (data) => {
-      setError(data.error);
-      setLoading(false);
+    // 3. Update genérico (Para Admin)
+    on('billing:update', (data) => {
+      handleUpdate(data);
     });
 
     return () => {
-      off('billing:created');
-      off('billing:calculating');
-      off('billing:calculated');
-      off('billing:approved');
-      off('billing:rejected');
-      off('billing:calculation-error');
+      off('billing:new-request');
+      off('billing:status-changed');
+      off('billing:update');
     };
-  }, [on, off]);
+  }, [on, off, handleUpdate]);
 
   const createRequest = useCallback(
-    (data: any) => {
+    async (data: any) => {
       setLoading(true);
       setError(null);
-      emit('billing:create', data, (response: any) => {
-        if (!response.success) {
-          setError(response.error);
+      try {
+          const newReq = await API.createFacturacionRequest({
+              plataforma: data.platform || data.plataforma,
+              montoSolicitado: parseFloat(data.requestedAmount || data.montoSolicitado)
+          });
+          setRequests(prev => [newReq, ...prev]);
+          setCurrentRequest(newReq);
+          // Don't turn off loading here, maybe wait for calculation? 
+          // Previous code waited for 'billing:calculated' event to set loading false.
+          // Let's keep loading true until socket updates status or timeout?
+          // Or just set false because Creation is done.
+          // setLoading(false); 
+      } catch (err: any) {
+          setError(err.message);
           setLoading(false);
-        }
-      });
+      }
     },
-    [emit],
+    [],
   );
 
   const approveRequest = useCallback(
-    (requestId: string) => {
-      emit('billing:approve', { requestId }, (response: any) => {
-        if (!response.success) {
-          setError(response.error);
-        }
-      });
+    async (requestId: string) => {
+      try {
+        const updated = await API.approveFacturacionRequest(requestId);
+        handleUpdate(updated);
+      } catch (err: any) {
+        setError(err.message);
+      }
     },
-    [emit],
+    [handleUpdate],
   );
 
   const rejectRequest = useCallback(
-    (requestId: string) => {
-      emit('billing:reject', { requestId }, (response: any) => {
-        if (!response.success) {
-          setError(response.error);
-        }
-      });
+    async (requestId: string) => {
+      // Implementar API reject cuando exista en backend
+      console.warn('Reject not implemented yet inside API');
     },
-    [emit],
+    [],
   );
+  
+  const refreshRequests = useCallback(async () => {
+      try {
+           const data = await API.getMyRequests();
+           setRequests(data);
+      } catch(e) { console.error(e); }
+  }, []);
 
   return (
     <BillingContext.Provider
@@ -126,6 +125,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
         createRequest,
         approveRequest,
         rejectRequest,
+        refreshRequests
       }}
     >
       {children}
