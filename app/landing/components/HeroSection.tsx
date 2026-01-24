@@ -65,7 +65,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-xl md:text-2xl font-medium text-slate-400 mb-fib-2 tracking-widest uppercase"
+            className="text-xl md:text-2xl font-medium text-[var(--accent)] mb-fib-2 tracking-widest uppercase"
           >
             AND Ecosystem
           </motion.h2>
@@ -76,18 +76,18 @@ export function HeroSection() {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="text-5xl md:text-8xl font-bold mb-fib-3 leading-tight tracking-tight"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Gestión.</span>
+            <span className="text-gradient-hero-gestion">Gestión.</span>
             <br />
-            <span className="text-slate-900 dark:text-white">Inteligente.</span>
+            <span className="text-[var(--hero-inteligente)] dark:text-white">Inteligente.</span>
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
+            className="text-xl md:text-2xl text-[var(--text-main)] dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
           >
-            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-slate-900 dark:text-white font-medium">crear</span> y <span className="text-slate-900 dark:text-white font-medium">crecer</span>.
+            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-[var(--primary)] dark:text-white font-medium">crear</span> y <span className="text-[var(--primary)] dark:text-white font-medium">crecer</span>.
           </motion.p>
 
           <motion.div
@@ -98,13 +98,13 @@ export function HeroSection() {
           >
             <button 
               onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full bg-white text-black font-semibold text-lg hover:bg-slate-200 transition-colors min-w-[200px]"
+              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] shadow-lg shadow-green-900/20"
             >
               Soy Empresa
             </button>
             <button 
               onClick={() => document.getElementById('influencers')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full border border-slate-700 text-white font-semibold text-lg hover:bg-slate-900 transition-colors min-w-[200px]"
+              className="px-fib-3 py-fib-1 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] dark:text-white dark:border-white font-semibold text-lg hover:bg-[var(--primary)] hover:text-white transition-colors min-w-[200px]"
             >
               Soy Creador
             </button>

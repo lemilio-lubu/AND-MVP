@@ -3,9 +3,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --green: #16a34a;
+  /* New Design System Palette (Landing Page) */
+  --primary: #045932;       /* Branding & Structure (Navbar, Footer, Headers) */
+  --accent: #03A64A;        /* Action / CTA */
+  --text-main: #01260E;     /* Body Text (The new Black) */
+  --background: #F2F2F2;    /* Page Background */
+  --surface: #FFFFFF;       /* Components / Cards */
+
+  /* Mapped System Variables */
+  --foreground: var(--text-main);
+  
+  /* Legacy / Specific Themes */
+  --green: #03A64A; /* Updated to Accent */
   --gray: #6b7280;
   
   /* LocalAds Suite Color Palette - Corporate Fintech */
@@ -27,11 +36,37 @@
   /* Unified */
   --gradient-start: #38bdf8;
   --gradient-end: #818cf8;
+
+  /* Hero Section Specific Colors (Light Mode) */
+  --hero-gestion-start: #002212; /* Inicio del degradado de "Gestión" */
+  --hero-gestion-end: #000000;   /* Fin del degradado de "Gestión" */
+  --hero-inteligente: #000c06;   /* Color sólido de "Inteligente" */
+}
+
+/* Hero Specific Gradient Class */
+.text-gradient-hero-gestion {
+  background: linear-gradient(to right, var(--hero-gestion-start), var(--hero-gestion-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Dark mode override for the gradient */
+.dark .text-gradient-hero-gestion {
+  background: linear-gradient(to right, #ffffff, #e2e8f0, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
   --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
 
@@ -53,8 +88,9 @@
 }
 
 .dark {
-  --background: #0f172a;
+  --background: #000B05; /* Green Night */
   --foreground: #f8fafc;
+  --surface: #011F10; /* Dark Green Surface */
 }
 
 body {

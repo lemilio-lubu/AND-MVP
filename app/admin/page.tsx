@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useUser } from "@/lib/context/UserContext";
 import { 
-  RechargeRequest,
-  AdminMetrics,
-  BillingStatus,
-  formatCurrency,
-  isAdmin
+  formatCurrency
 } from "@/lib/billing";
+import { 
+  getAllFacturacionRequests,
+  emitInvoice,
+  confirmPayment,
+  completeFacturacionRequest,
+  calculateFacturacionRequest,
+  FacturacionRequest
+} from "@/lib/api/client";
 import { 
   Clock, 
   CheckCircle, 
@@ -21,6 +25,7 @@ import {
   TrendUp,
   ChartPieSlice,
   Users,
+  User,
   GlobeHemisphereWest
 } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
@@ -41,330 +46,216 @@ import {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, loading: userLoading, logout } = useUser();
   const { resolvedTheme } = useTheme();
-  const [metrics, setMetrics] = useState<AdminMetrics>({
-    pendingRequests: 0,
-    pendingApprovals: 0,
-    pendingInvoices: 0,
-    pendingPayments: 0,
-    pendingRecharges: 0,
-    completedThisMonth: 0,
-    totalRevenue: 0,
-  });
-
-  const [requests, setRequests] = useState<RechargeRequest[]>([]);
-  const [selectedRequest, setSelectedRequest] = useState<RechargeRequest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<FacturacionRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<FacturacionRequest | null>(null);
+  const [showCalculateModal, setShowCalculateModal] = useState(false);
   const [calculatedValues, setCalculatedValues] = useState({
     base: "",
     commission: "",
     total: "",
   });
 
+  // Calculate metrics from real data
+  const metrics = {
+    pendingRequests: requests.filter(r => r.estado === "REQUEST_CREATED").length,
+    pendingApprovals: requests.filter(r => r.estado === "CALCULATED").length,
+    pendingInvoices: requests.filter(r => r.estado === "APPROVED_BY_CLIENT").length,
+    pendingPayments: requests.filter(r => r.estado === "INVOICED").length,
+    pendingRecharges: requests.filter(r => r.estado === "PAID").length,
+    completedThisMonth: requests.filter(r => 
+      r.estado === "COMPLETED" && 
+      new Date(r.created_at).getMonth() === new Date().getMonth()
+    ).length,
+    totalRevenue: requests
+      .filter(r => r.estado === "COMPLETED")
+      .reduce((sum, r) => sum + (r.total_facturado || 0), 0),
+  };
+
   useEffect(() => {
+    if (userLoading) return;
+    
     if (!user) {
       router.push("/login");
       return;
     }
 
-    if (!isAdmin(user)) {
+    if (user.type !== "admin") {
       router.push("/dashboard");
       return;
     }
 
-    loadMockData();
-  }, [user, router]);
+    loadData();
+  }, [user, userLoading, router]);
 
-  const loadMockData = () => {
-    // Mock: métricas admin
-    setMetrics({
-      pendingRequests: 2,
-      pendingApprovals: 1,
-      pendingInvoices: 1,
-      pendingPayments: 1,
-      pendingRecharges: 1,
-      completedThisMonth: 15,
-      totalRevenue: 45000,
-    });
-
-    // Mock: solicitudes en diferentes estados para demostración
-    setRequests([
-      {
-        id: "req-1",
-        companyId: "company-1",
-        platform: "Meta",
-        requestedAmount: 5000,
-        status: "REQUEST_CREATED",
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-2",
-        companyId: "company-1",
-        platform: "Meta",
-        requestedAmount: 2000,
-        status: "REQUEST_CREATED",
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-3",
-        companyId: "company-2",
-        platform: "TikTok",
-        requestedAmount: 3000,
-        status: "CALCULATED",
-        calculatedBase: 3000,
-        calculatedCommission: 165,
-        calculatedTotal: 3165,
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-4",
-        companyId: "company-3",
-        platform: "Google",
-        requestedAmount: 10000,
-        status: "APPROVED_BY_CLIENT",
-        calculatedBase: 10000,
-        calculatedCommission: 550,
-        calculatedTotal: 10550,
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-5",
-        companyId: "company-4",
-        platform: "LinkedIn",
-        requestedAmount: 7000,
-        status: "INVOICED",
-        calculatedTotal: 7385,
-        invoiceNumber: "AND-20260102001",
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-6",
-        companyId: "company-5",
-        platform: "Meta",
-        requestedAmount: 15000,
-        status: "PAID",
-        calculatedTotal: 15825,
-        invoiceNumber: "AND-20260102002",
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-7",
-        companyId: "company-6",
-        platform: "TikTok",
-        requestedAmount: 4000,
-        status: "RECHARGE_EXECUTED",
-        calculatedTotal: 4220,
-        createdAt: new Date(),
-      } as RechargeRequest,
-      {
-        id: "req-8",
-        companyId: "company-7",
-        platform: "Google",
-        requestedAmount: 8000,
-        status: "COMPLETED",
-        calculatedTotal: 8440,
-        createdAt: new Date(),
-        completedAt: new Date(),
-      } as RechargeRequest,
-    ]);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllFacturacionRequests();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error loading requests:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCalculate = (request: RechargeRequest) => {
-    setSelectedRequest(request);
-    // Pre-cargar valores sugeridos (basado en Excel AND)
-    const suggestedBase = request.requestedAmount;
-    const suggestedCommission = request.requestedAmount * 0.055; // 5.5% comisión AND
-    const suggestedTotal = suggestedBase + suggestedCommission;
-    setCalculatedValues({
-      base: suggestedBase.toFixed(2),
-      commission: suggestedCommission.toFixed(2),
-      total: suggestedTotal.toFixed(2),
-    });
+  const handleCalculate = async (request: FacturacionRequest) => {
+    if (request.estado !== "REQUEST_CREATED") {
+      alert("Solo se pueden calcular solicitudes en estado REQUEST_CREATED");
+      return;
+    }
+    
+    try {
+      await calculateFacturacionRequest(request.id);
+      await loadData();
+      alert("Cálculo realizado y enviado para aprobación");
+    } catch (error: any) {
+      console.error("Error calculating request:", error);
+      alert(error.message || "Error al calcular solicitud");
+    }
   };
 
-  const handleSaveCalculation = () => {
-    if (!selectedRequest) return;
-    
-    // Actualizar solicitud con valores calculados
-    const updatedRequests = requests.map(req => {
-      if (req.id === selectedRequest.id) {
-        return {
-          ...req,
-          status: "CALCULATED" as BillingStatus,
-          calculatedBase: parseFloat(calculatedValues.base),
-          calculatedCommission: parseFloat(calculatedValues.commission),
-          calculatedTotal: parseFloat(calculatedValues.total),
-          calculatedAt: new Date(),
-        };
-      }
-      return req;
-    });
-    
-    setRequests(updatedRequests);
-    
-    // Actualizar métricas
-    setMetrics(prev => ({
-      ...prev,
-      pendingRequests: prev.pendingRequests - 1,
-      pendingApprovals: prev.pendingApprovals + 1,
-    }));
-    
-    console.log("✅ Cálculo guardado:", calculatedValues);
-    alert(`Cálculo guardado. Cliente será notificado para aprobar.`);
-    
-    // Cerrar modal
-    setSelectedRequest(null);
-    setCalculatedValues({ base: "", commission: "", total: "" });
-  };
 
-  const handleEmitInvoice = (request: RechargeRequest) => {
-    // Validar que la solicitud esté aprobada por el cliente
-    if (request.status !== "APPROVED_BY_CLIENT") {
+
+  const handleEmitInvoice = async (request: FacturacionRequest) => {
+    if (request.estado !== "APPROVED_BY_CLIENT") {
       alert("La solicitud debe estar aprobada por el cliente antes de emitir factura");
       return;
     }
     
-    // Simular emisión de factura
-    const invoiceNumber = `AND-${Date.now()}`;
-    
-    const updatedRequests = requests.map(req => {
-      if (req.id === request.id) {
-        return {
-          ...req,
-          status: "INVOICED" as BillingStatus,
-          invoiceNumber,
-          invoicedAt: new Date(),
-        };
-      }
-      return req;
-    });
-    
-    setRequests(updatedRequests);
-    
-    // Actualizar métricas
-    setMetrics(prev => ({
-      ...prev,
-      pendingInvoices: prev.pendingInvoices - 1,
-      pendingPayments: prev.pendingPayments + 1,
-    }));
-    
-    console.log("✅ Factura emitida:", invoiceNumber);
-    alert(`Factura ${invoiceNumber} emitida correctamente`);
+    try {
+      await emitInvoice(request.id);
+      await loadData();
+      alert("Factura emitida correctamente");
+    } catch (error: any) {
+      console.error("Error emitting invoice:", error);
+      alert(error.message || "Error al emitir factura");
+    }
   };
 
-  const handleRegisterPayment = (request: RechargeRequest) => {
-    if (request.status !== "INVOICED") {
+  const handleRegisterPayment = async (request: FacturacionRequest) => {
+    if (request.estado !== "INVOICED") {
       alert("Solo se puede registrar pago para facturas emitidas");
       return;
     }
     
-    const updatedRequests = requests.map(req => {
-      if (req.id === request.id) {
-        return {
-          ...req,
-          status: "PAID" as BillingStatus,
-          paidAt: new Date(),
-        };
-      }
-      return req;
-    });
-    
-    setRequests(updatedRequests);
-    
-    setMetrics(prev => ({
-      ...prev,
-      pendingPayments: prev.pendingPayments - 1,
-      pendingRecharges: prev.pendingRecharges + 1,
-    }));
-    
-    console.log("✅ Pago registrado para:", request.id);
-    alert("Pago registrado correctamente");
+    try {
+      await confirmPayment(request.id);
+      await loadData();
+      alert("Pago registrado correctamente");
+    } catch (error: any) {
+      console.error("Error registering payment:", error);
+      alert(error.message || "Error al registrar pago");
+    }
   };
 
-  const handleExecuteRecharge = (request: RechargeRequest) => {
-    if (request.status !== "PAID") {
+  const handleExecuteRecharge = async (request: FacturacionRequest) => {
+    if (request.estado !== "PAID") {
       alert("Solo se puede ejecutar recarga para solicitudes pagadas");
       return;
     }
     
-    const updatedRequests = requests.map(req => {
-      if (req.id === request.id) {
-        return {
-          ...req,
-          status: "RECHARGE_EXECUTED" as BillingStatus,
-          rechargeExecutedAt: new Date(),
-        };
-      }
-      return req;
-    });
-    
-    setRequests(updatedRequests);
-    
-    setMetrics(prev => ({
-      ...prev,
-      pendingRecharges: prev.pendingRecharges - 1,
-    }));
-    
-    console.log("✅ Recarga ejecutada para:", request.id);
-    alert(`Recarga ejecutada en ${request.platform}`);
+    // Nota: Este endpoint aún no existe en el backend
+    // Por ahora, usar completeFacturacionRequest directamente
+    try {
+      await completeFacturacionRequest(request.id);
+      await loadData();
+      alert(`Recarga ejecutada en ${request.plataforma}`);
+    } catch (error: any) {
+      console.error("Error executing recharge:", error);
+      alert(error.message || "Error al ejecutar recarga");
+    }
   };
 
-  const handleCompleteProcess = (request: RechargeRequest) => {
-    if (request.status !== "RECHARGE_EXECUTED") {
-      alert("Solo se pueden completar procesos con recarga ejecutada");
+  const handleCompleteProcess = async (request: FacturacionRequest) => {
+    if (request.estado !== "RECHARGE_EXECUTED" && request.estado !== "PAID") {
+      alert("Solo se pueden completar procesos con recarga ejecutada o pagados");
       return;
     }
     
-    const updatedRequests = requests.map(req => {
-      if (req.id === request.id) {
-        return {
-          ...req,
-          status: "COMPLETED" as BillingStatus,
-          completedAt: new Date(),
-        };
-      }
-      return req;
-    });
-    
-    setRequests(updatedRequests);
-    
-    setMetrics(prev => ({
-      ...prev,
-      completedThisMonth: prev.completedThisMonth + 1,
-      totalRevenue: prev.totalRevenue + (request.calculatedTotal || 0),
-    }));
-    
-    console.log("✅ Proceso completado:", request.id);
-    alert("Proceso marcado como completado");
+    try {
+      await completeFacturacionRequest(request.id);
+      await loadData();
+      alert("Proceso marcado como completado");
+    } catch (error: any) {
+      console.error("Error completing process:", error);
+      alert(error.message || "Error al completar proceso");
+    }
   };
 
-  if (!user || !isAdmin(user)) {
+  const handleLogout = () => {
+    logout();
+    router.push("/landing");
+  };
+
+  if (userLoading || !user) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user.type !== "admin") {
     return null;
   }
 
-  // Mock data for charts
-  const revenueData = [
-    { name: 'Lun', amount: 15000 },
-    { name: 'Mar', amount: 25000 },
-    { name: 'Mié', amount: 18000 },
-    { name: 'Jue', amount: 32000 },
-    { name: 'Vie', amount: 28000 },
-    { name: 'Sáb', amount: 12000 },
-    { name: 'Dom', amount: 9000 },
-  ];
+  // --- Process data for charts ---
+  
+  // 1. Revenue Trends (Last 7 days approx)
+  const revenueData = (() => {
+      const dataMap = new Map<string, number>();
+      // Initialize with last 7 days empty
+      for(let i=6; i>=0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = d.toLocaleDateString("es-ES", { weekday: 'short' });
+          dataMap.set(key, 0);
+      }
 
-  const platformData = [
-    { name: 'Meta', value: 45, color: '#3b82f6' },
-    { name: 'Google', value: 30, color: '#10b981' },
-    { name: 'TikTok', value: 15, color: '#000000' }, // Dark/Light handled in component
-    { name: 'LinkedIn', value: 10, color: '#6366f1' },
-  ];
+      requests.forEach(r => {
+          if (r.estado === 'COMPLETED' || r.estado === 'PAID') {
+              const d = new Date(r.created_at);
+              const key = d.toLocaleDateString("es-ES", { weekday: 'short' });
+              const amount = r.total_facturado || r.monto || 0;
+              if (dataMap.has(key)) {
+                  dataMap.set(key, dataMap.get(key)! + amount);
+              }
+          }
+      });
 
-  const getActionButtons = (request: RechargeRequest) => {
-      switch (request.status) {
+      return Array.from(dataMap.entries()).map(([name, amount]) => ({ name, amount }));
+  })();
+
+  // 2. Platform Distribution
+  const platformData = (() => {
+      const counts: Record<string, number> = {};
+      requests.forEach(r => {
+          counts[r.plataforma] = (counts[r.plataforma] || 0) + 1;
+      });
+      
+      const total = requests.length || 1;
+      const colors = ['#3b82f6', '#10b981', '#000000', '#6366f1', '#f59e0b'];
+      
+      return Object.entries(counts).map(([name, count], index) => ({
+          name,
+          value: count, // Pie chart uses raw values
+          percent: Math.round((count / total) * 100),
+          color: colors[index % colors.length]
+      }));
+  })();
+
+  const getActionButtons = (request: FacturacionRequest) => {
+      switch (request.estado) {
           case "REQUEST_CREATED":
             return (
-              <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-blue-500/30">
+              <button onClick={() => handleCalculate(request)} className="px-3 py-1.5 bg-accent hover:bg-primary text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-accent/30">
                 Calcular
               </button>
             );
@@ -413,13 +304,20 @@ export default function AdminDashboardPage() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-             <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full border border-purple-200 dark:border-purple-500/30 flex items-center gap-2">
+             <span className="px-3 py-1 bg-accent/10 dark:bg-accent/20 text-accent dark:text-[#4ADE80] text-xs font-bold rounded-full border border-accent/20 dark:border-accent/30 flex items-center gap-2">
                 <CheckCircle weight="fill" />
                 ADMINISTRADOR
               </span>
             <ThemeToggle />
             <button
-              onClick={() => router.push("/landing")}
+              onClick={() => router.push("/perfil")}
+              className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              title="Mi Perfil"
+            >
+              <User size={24} weight="duotone" />
+            </button>
+            <button
+              onClick={handleLogout}
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2"
             >
               Cerrar Sesión
@@ -436,35 +334,35 @@ export default function AdminDashboardPage() {
             value={formatCurrency(metrics.totalRevenue)}
             percentage="+12%"
             icon={<CurrencyDollar size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
           <SoftMetricCard
             title="Pendientes Acción"
             value={(metrics.pendingRequests + metrics.pendingApprovals).toString()}
             percentage="Atención"
             icon={<Warning size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
           <SoftMetricCard
             title="Pendientes Facturar"
             value={metrics.pendingInvoices.toString()}
             percentage="Prioridad"
             icon={<Receipt size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
            <SoftMetricCard
             title="Completadas (Mes)"
             value={metrics.completedThisMonth.toString()}
             percentage="+8%"
             icon={<CheckCircle size={24} weight="fill" color="#fff" />}
-            gradient="from-blue-600 to-indigo-600"
+            gradient="from-primary to-accent"
           />
         </div>
 
         {/* Row 2: Charts Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Revenue Trend - 8 cols */}
-          <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <div className="lg:col-span-8 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white min-w-0">
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg">Flujo de Ingresos</h3>
@@ -526,7 +424,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Platform Distribution - 4 cols */}
-          <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <div className="lg:col-span-4 bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-primary/20 text-[var(--text-main)] dark:text-white min-w-0">
             <div className="mb-6">
                 <h3 className="font-bold text-lg">Distribución</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Solicitudes por plataforma</p>
@@ -574,148 +472,86 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Lista de solicitudes por estado */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+        <div className="bg-[var(--surface)] dark:bg-surface/40 border border-slate-200 dark:border-primary/20 rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
-               <h3 className="font-bold text-lg text-slate-900 dark:text-white">Gestión de Operaciones</h3>
+               <h3 className="font-bold text-lg text-[var(--text-main)] dark:text-white">Gestión de Operaciones</h3>
                <p className="text-sm text-slate-500 dark:text-slate-400">
                  {metrics.pendingRequests + metrics.pendingApprovals + metrics.pendingInvoices} tareas pendientes
                </p>
             </div>
              <div className="flex gap-2">
-                <button className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button className="p-2 text-slate-400 hover:text-accent hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
                   <ChartPieSlice size={20} />
                 </button>
              </div>
           </div>
           
           <div className="space-y-4">
-            {requests.map(request => (
-              <div key={request.id} className="group flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500/30 transition-all duration-200">
-                
-                {/* Icon Column */}
-                <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
-                   {getPlatformIcon(request.platform)}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">
-                      {request.companyId} <span className="text-slate-400 font-normal mx-1">•</span> {request.platform}
-                    </h4>
-                    {request.status === "COMPLETED" && (
-                       <CheckCircle size={14} weight="fill" className="text-green-500" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                    <span className="font-mono bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{request.id}</span>
-                    <span>{formatDate(request.createdAt)}</span>
-                  </div>
-                </div>
-
-                {/* Status Badge */}
-                <div className="w-full md:w-auto flex justify-between md:block items-center">
-                   <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.status)}`}>
-                      {getStatusLabel(request.status)}
-                   </span>
-                </div>
-
-                {/* Amount */}
-                <div className="text-right">
-                   <p className="font-bold text-slate-900 dark:text-white">
-                      {formatCurrency(request.requestedAmount)}
-                   </p>
-                   {request.calculatedTotal && (
-                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Total: {formatCurrency(request.calculatedTotal)}
-                     </p>
-                   )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
-                    {getActionButtons(request)}
-                </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-600 dark:text-slate-400">Cargando solicitudes...</p>
               </div>
-            ))}
-             
-             {requests.length === 0 && (
-                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                   <CheckCircle size={40} className="mx-auto mb-3 opacity-20" />
-                   <p>No hay solicitudes pendientes</p>
+            ) : requests.length > 0 ? (
+              requests.map(request => (
+                <div key={request.id} className="group flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-accent/30 transition-all duration-200">
+                  
+                  {/* Icon Column */}
+                  <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
+                     {getPlatformIcon(request.plataforma)}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                        {request.empresa_id} <span className="text-slate-400 font-normal mx-1">•</span> {request.plataforma}
+                      </h4>
+                      {request.estado === "COMPLETED" && (
+                         <CheckCircle size={14} weight="fill" className="text-green-500" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="font-mono bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{request.id}</span>
+                      <span>{formatDate(request.created_at)}</span>
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="w-full md:w-auto flex justify-between md:block items-center">
+                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusStyle(request.estado)}`}>
+                        {getStatusLabel(request.estado)}
+                     </span>
+                  </div>
+
+                  {/* Amount */}
+                  <div className="text-right">
+                     <p className="font-bold text-slate-900 dark:text-white">
+                        {formatCurrency(request.monto)}
+                     </p>
+                     {request.total_facturado && (
+                       <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Total: {formatCurrency(request.total_facturado)}
+                       </p>
+                     )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
+                      {getActionButtons(request)}
+                  </div>
                 </div>
-             )}
+              ))
+            ) : (
+              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                 <CheckCircle size={40} className="mx-auto mb-3 opacity-20" />
+                 <p>No hay solicitudes</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Modal de cálculo */}
-        {selectedRequest && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Calcular Valores - {selectedRequest.platform}
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Monto solicitado: {formatCurrency(selectedRequest.requestedAmount)}
-                </p>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
-                    Base
-                  </label>
-                  <input
-                    type="number"
-                    value={calculatedValues.base}
-                    onChange={(e) => setCalculatedValues({ ...calculatedValues, base: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
-                    Comisión
-                  </label>
-                  <input
-                    type="number"
-                    value={calculatedValues.commission}
-                    onChange={(e) => setCalculatedValues({ ...calculatedValues, commission: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
-                    Total
-                  </label>
-                  <input
-                    type="number"
-                    value={calculatedValues.total}
-                    onChange={(e) => setCalculatedValues({ ...calculatedValues, total: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => setSelectedRequest(null)}
-                    className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleSaveCalculation}
-                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    Guardar Cálculo
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Nota: Modal de cálculo eliminado - backend calcula automáticamente */}
       </div>
     </main>
   );
@@ -733,16 +569,16 @@ interface AdminMetricCardProps {
 
 function SoftMetricCard({ title, value, percentage, icon, gradient }: { title: string, value: string, percentage: string, icon: React.ReactNode, gradient: string }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
+    <div className="bg-[var(--surface)] dark:bg-surface/40 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-primary/20 relative overflow-hidden group hover:border-[var(--accent)]/30 transition-all duration-300">
       <div className="flex justify-between items-start z-10 relative">
         <div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{title}</p>
           <div className="flex items-baseline gap-2">
             <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
-            <span className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">{percentage}</span>
+            <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">{percentage}</span>
           </div>
         </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300 text-white shadow-blue-500/20`}>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300 text-white shadow-accent/20`}>
           {icon}
         </div>
       </div>
@@ -752,7 +588,7 @@ function SoftMetricCard({ title, value, percentage, icon, gradient }: { title: s
 
 function getPlatformIcon(platform: string) {
     // You can replace with specialized icons if available
-    return <GlobeHemisphereWest weight="duotone" className="text-blue-500" size={20} />; 
+    return <GlobeHemisphereWest weight="duotone" className="text-accent" size={20} />; 
 }
 
 function getStatusStyle(status: string) {
@@ -781,7 +617,7 @@ function getStatusLabel(status: string) {
   return map[status] || status;
 }
 
-function formatDate(date?: Date) {
+function formatDate(date?: Date | string) {
     if(!date) return "";
     return new Date(date).toLocaleDateString("es-ES", {
         day: "2-digit",

@@ -115,11 +115,11 @@ export function ROICalculator() {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       className="max-w-5xl mx-auto mb-32"
     >
-      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-slate-200 dark:border-white/10 shadow-2xl">
+      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl">
         
         {/* Input Section */}
         <div className="mb-fib-3 max-w-xl mx-auto">
-            <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-fib-1 uppercase tracking-wider text-center">
+            <label className="block text-sm font-medium text-[var(--text-main)]/60 dark:text-slate-400 mb-fib-1 uppercase tracking-wider text-center">
               Presupuesto Mensual ($)
             </label>
             <div className="relative">
@@ -129,7 +129,7 @@ export function ROICalculator() {
                 min="0"
                 value={investment}
                 onChange={(e) => setInvestment(Number(e.target.value))}
-                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-center"
+                className="w-full bg-white dark:bg-slate-900 border border-[var(--primary)]/20 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-[var(--text-main)] dark:text-white focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-center"
               />
             </div>
         </div>
@@ -137,7 +137,7 @@ export function ROICalculator() {
         {/* Comparison Grid */}
         <div className="grid md:grid-cols-2 gap-fib-2 mb-fib-3">
           {/* BAD Scenario */}
-          <div className="bg-slate-100 dark:bg-black/40 rounded-fib-2 p-fib-2 border border-red-200 dark:border-red-900/30 relative overflow-hidden">
+          <div className="bg-[var(--primary)]/5 dark:bg-black/40 rounded-fib-2 p-fib-2 border border-red-200 dark:border-red-900/30 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10 text-red-500">
               <Warning size={64} weight="fill" />
             </div>
@@ -145,7 +145,7 @@ export function ROICalculator() {
               Pagando por fuera / Informal
             </h4>
             <div className="space-y-4 text-sm">
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+              <div className="flex justify-between text-[var(--text-main)]/80 dark:text-slate-400">
                 <span>Costo Base</span>
                 <span>${scenarios.direct.base.toLocaleString("en-US")}</span>
               </div>
@@ -157,8 +157,8 @@ export function ROICalculator() {
                 <span>IVA (15% sobre Base+ISD)</span>
                 <span>+${scenarios.direct.iva.toLocaleString("en-US")}</span>
               </div>
-              <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-400">Costo Real</span>
+              <div className="pt-4 border-t border-[var(--primary)]/10 dark:border-white/5 flex justify-between items-center">
+                <span className="text-[var(--text-main)]/80 dark:text-slate-400">Costo Real</span>
                 <span className="text-2xl font-bold text-red-500 dark:text-red-400">${scenarios.direct.total.toLocaleString("en-US")}</span>
               </div>
               <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-300 px-3 py-2 rounded-fib-1 text-xs text-center">
@@ -168,15 +168,15 @@ export function ROICalculator() {
           </div>
 
           {/* GOOD Scenario */}
-          <div className="bg-white dark:bg-sky-900/10 rounded-fib-2 p-fib-2 border border-sky-200 dark:border-sky-500/30 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 opacity-10 text-sky-400">
+          <div className="bg-[var(--surface)] dark:bg-sky-900/10 rounded-fib-2 p-fib-2 border border-[var(--primary)]/20 dark:border-sky-500/30 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-4 opacity-10 text-[var(--primary)]">
               <ShieldCheck size={64} weight="fill" />
             </div>
-            <h4 className="text-lg font-semibold text-sky-600 dark:text-sky-400 mb-6 flex items-center gap-2">
+            <h4 className="text-lg font-semibold text-[var(--primary)] dark:text-sky-400 mb-6 flex items-center gap-2">
               Usando AND
             </h4>
             <div className="space-y-4 text-sm">
-              <div className="flex justify-between text-slate-700 dark:text-slate-300">
+              <div className="flex justify-between text-[var(--text-main)]/90 dark:text-slate-300">
                 <span>Costo Base</span>
                 <span>${scenarios.localAds.base.toLocaleString("en-US")}</span>
               </div>
@@ -188,7 +188,7 @@ export function ROICalculator() {
                 <span>ISD (0%)</span>
                 <span>$0</span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+              <div className="flex justify-between text-[var(--text-main)]/80 dark:text-slate-400">
                 <span>IVA (Crédito Fiscal)</span>
                 <span>+${scenarios.localAds.iva.toLocaleString("en-US")}</span>
               </div>
@@ -196,8 +196,8 @@ export function ROICalculator() {
                 <span className="text-slate-700 dark:text-slate-300">Inversión Neta</span>
                 <span className="text-2xl font-bold text-sky-600 dark:text-sky-400">${scenarios.localAds.subtotal.toLocaleString("en-US")}</span>
               </div>
-              <div className="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 px-3 py-2 rounded-fib-1 text-xs text-center border border-emerald-200 dark:border-emerald-900/30 flex items-center justify-center gap-2">
-                <CheckCircle size={16} weight="fill" />
+              <div className="bg-[var(--accent)]/10 dark:bg-emerald-900/20 text-[var(--primary)] dark:text-emerald-300 px-3 py-2 rounded-fib-1 text-xs text-center border border-[var(--accent)]/20 dark:border-emerald-900/30 flex items-center justify-center gap-2">
+                <CheckCircle size={16} weight="fill" className="text-[var(--accent)]" />
                 100% Deducible y sin dolores de cabeza
               </div>
             </div>
@@ -205,13 +205,13 @@ export function ROICalculator() {
         </div>
 
         {/* Result Section - Green Translucent */}
-        <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-emerald-500/20 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="bg-[var(--primary)]/5 backdrop-blur-md border border-[var(--primary)]/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-[var(--primary)]/10 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-fib-2">
                 <div className="text-center md:text-left">
-                    <h4 className="text-emerald-600 dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm max-w-md">
+                    <h4 className="text-[var(--primary)] dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
+                    <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-sm max-w-md">
                         Deja de perder dinero y evita problemas legales con nuestra plataforma.
                     </p>
                 </div>
@@ -224,7 +224,7 @@ export function ROICalculator() {
                         </span>
                     </div>
                     <div className="flex items-center gap-4 mt-2">
-                         <span className="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-fib-1 py-[5px] rounded-full text-xs font-bold">
+                         <span className="bg-[var(--accent)]/10 dark:bg-emerald-500/20 text-[var(--accent)] dark:text-emerald-300 px-fib-1 py-[5px] rounded-full text-xs font-bold">
                             +{scenarios.savingsPercent.toFixed(1)}% Eficiencia
                          </span>
                          <span className="text-lg font-medium text-slate-600 dark:text-slate-300">

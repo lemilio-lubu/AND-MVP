@@ -88,13 +88,13 @@ function NavDot({
     >
       <div className={`relative flex items-center justify-center transition-all duration-500 ${active ? 'w-4 h-4' : 'w-2 h-2'}`}>
         {/* Active Ring */}
-        <span className={`absolute inset-0 rounded-full border border-white transition-all duration-500 ${active ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} />
+        <span className={`absolute inset-0 rounded-full border border-[var(--primary)] dark:border-white transition-all duration-500 ${active ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} />
         
         {/* Core Dot */}
-        <span className={`rounded-full transition-all duration-500 ${active ? 'w-1.5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-slate-600 group-hover:bg-slate-400'}`} />
+        <span className={`rounded-full transition-all duration-500 ${active ? 'w-1.5 h-1.5 bg-[var(--primary)] dark:bg-white' : 'w-1.5 h-1.5 bg-[var(--primary)]/40 dark:bg-slate-600 group-hover:bg-[var(--accent)]'}`} />
       </div>
       
-      <span className={`text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-500 ${active ? "opacity-100 translate-x-0 text-white" : "opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 text-slate-500"}`}>
+      <span className={`text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-500 ${active ? "opacity-100 translate-x-0 text-[var(--primary)] dark:text-white" : "opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 text-[var(--primary)]/60 dark:text-slate-500"}`}>
         {label}
       </span>
     </button>

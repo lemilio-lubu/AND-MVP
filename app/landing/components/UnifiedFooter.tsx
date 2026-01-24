@@ -6,24 +6,24 @@ export function UnifiedFooter() {
   return (
     <footer
       id="footer"
-      className="relative py-fib-5 dark:bg-black border-t border-slate-200 dark:border-white/10 transition-colors duration-500"
+      className="relative py-fib-5 bg-transparent border-t border-[var(--primary)]/10 dark:border-white/10 transition-colors duration-500"
     >
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-fib-3 tracking-tight">
+        <h2 className="text-3xl font-bold text-[var(--primary)] dark:text-white mb-fib-3 tracking-tight">
           AND Ecosystem
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-fib-4 text-lg">
+        <p className="text-[var(--text-main)] dark:text-slate-400 max-w-xl mx-auto mb-fib-4 text-lg">
           La forma inteligente de trabajar con influencers en Latinoamérica.
         </p>
 
         <div className="flex flex-col md:flex-row justify-center gap-fib-3 mb-fib-4">
-          <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Términos y Condiciones</a>
-          <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Política de Privacidad</a>
-          <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Soporte Empresas</a>
-          <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Soporte Creadores</a>
+          <a href="#" className="text-sm text-[var(--text-main)]/70 dark:text-slate-400 hover:text-[var(--accent)] dark:hover:text-white transition-colors">Términos y Condiciones</a>
+          <a href="#" className="text-sm text-[var(--text-main)]/70 dark:text-slate-400 hover:text-[var(--accent)] dark:hover:text-white transition-colors">Política de Privacidad</a>
+          <a href="#" className="text-sm text-[var(--text-main)]/70 dark:text-slate-400 hover:text-[var(--accent)] dark:hover:text-white transition-colors">Soporte Empresas</a>
+          <a href="#" className="text-sm text-[var(--text-main)]/70 dark:text-slate-400 hover:text-[var(--accent)] dark:hover:text-white transition-colors">Soporte Creadores</a>
         </div>
 
-        <div className="text-xs text-slate-400 dark:text-slate-600">
+        <div className="text-xs text-[var(--text-main)]/50 dark:text-slate-600">
           © 2025 AND Technologies. Todos los derechos reservados.
         </div>
 

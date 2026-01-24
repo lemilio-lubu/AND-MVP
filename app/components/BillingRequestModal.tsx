@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Receipt, CheckCircle, Clock } from "@phosphor-icons/react";
 import { 
   formatCurrency,
-  canRequestBilling,
   isValidAmount
 } from "@/lib/billing";
 import { useUser } from "@/lib/context/UserContext";
+import { createFacturacionRequest } from "@/lib/api/client";
 
 interface BillingRequestModalProps {
   isOpen: boolean;
@@ -17,28 +17,22 @@ interface BillingRequestModalProps {
 }
 
 export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingRequestModalProps) {
-  const { user } = useUser();
-  const [step, setStep] = useState<"form" | "submitting" | "success">("form");
+  const { user, refreshUser } = useUser();
+  const [step, setStep] = useState<"form" | "submitting" | "success" | "error">("form");
   const [amount, setAmount] = useState<string>("");
   const [platform, setPlatform] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const platforms = [
-    { id: "Meta", name: "Meta (Facebook/Instagram)" },
-    { id: "TikTok", name: "TikTok" },
-    { id: "Google", name: "Google Ads" },
-    { id: "LinkedIn", name: "LinkedIn" },
+    { id: "meta", name: "Instagram" },
+    { id: "tiktok", name: "TikTok" },
+    { id: "google", name: "YouTube" },
+    { id: "otro", name: "UGC (User Generated Content)" },
   ];
 
   const handleSubmit = async () => {
+    // Nota: ya no requerimos validar user.empresa.id aquí porque el token maneja la empresa.
     if (!user) return;
-
-    // Validación de usuario
-    const userValidation = canRequestBilling(user);
-    if (!userValidation.isValid) {
-      setError(userValidation.error || "Error de validación");
-      return;
-    }
 
     // Validación de monto
     const numAmount = parseFloat(amount);
@@ -53,11 +47,19 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
       return;
     }
 
-    // Simular creación de solicitud
     setStep("submitting");
     setError("");
 
-    setTimeout(() => {
+    try {
+      await createFacturacionRequest({
+        plataforma: platform,
+        montoSolicitado: numAmount,
+        empresaId: user?.empresa?.id,
+      });
+
+      // Refrescar datos del usuario (o facturación) si fuera necesario
+      // await refreshUser(); // Quizá no sea necesario si no cambia el usuario, pero mal no hace.
+
       setStep("success");
       
       setTimeout(() => {
@@ -65,7 +67,10 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
         onClose();
         resetForm();
       }, 2000);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || "Error al crear solicitud");
+      setStep("error");
+    }
   };
 
   const resetForm = () => {
@@ -108,7 +113,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <div className="w-10 h-10 bg-accent/10 dark:bg-accent/20 rounded-lg flex items-center justify-center text-accent dark:text-[#4ADE80]">
                     <Receipt size={20} weight="duotone" />
                   </div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">
@@ -128,8 +133,8 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                 {step === "form" && (
                   <div className="space-y-4">
                     {/* Nota importante */}
-                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                      <p className="text-sm text-blue-800 dark:text-blue-300">
+                    <div className="bg-accent/5 dark:bg-accent/10 border border-accent/20 dark:border-accent/30 rounded-lg p-4">
+                      <p className="text-sm text-accent dark:text-[#4ADE80]">
                         <strong>Nota:</strong> Al enviar esta solicitud, nuestro equipo calculará el monto final y te enviará la factura para aprobación.
                       </p>
                     </div>
@@ -142,7 +147,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                       <select
                         value={platform}
                         onChange={(e) => setPlatform(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-accent outline-none"
                       >
                         <option value="">Selecciona plataforma</option>
                         {platforms.map(p => (
@@ -163,7 +168,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.00"
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-accent outline-none"
                       />
                       {numAmount > 0 && (
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -179,27 +184,27 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                       </h4>
                       <div className="space-y-2">
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">1.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">1.</span>
                           <span className="text-slate-600 dark:text-slate-400">Envías tu solicitud</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">2.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">2.</span>
                           <span className="text-slate-600 dark:text-slate-400">AND calcula el monto final</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">3.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">3.</span>
                           <span className="text-slate-600 dark:text-slate-400">Apruebas el valor</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">4.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">4.</span>
                           <span className="text-slate-600 dark:text-slate-400">AND emite la factura</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">5.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">5.</span>
                           <span className="text-slate-600 dark:text-slate-400">Realizas el pago</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">6.</span>
+                          <span className="text-accent dark:text-[#4ADE80]">6.</span>
                           <span className="text-slate-600 dark:text-slate-400">AND ejecuta la recarga</span>
                         </div>
                       </div>
@@ -223,7 +228,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                       <button
                         onClick={handleSubmit}
                         disabled={!platform || !amount || parseFloat(amount) <= 0}
-                        className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/30"
+                        className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-medium hover:from-accent hover:to-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-accent/30"
                       >
                         Enviar Solicitud
                       </button>
@@ -233,8 +238,22 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
 
                 {step === "submitting" && (
                   <div className="py-12 text-center">
-                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-slate-600 dark:text-slate-400">Enviando solicitud...</p>
+                  </div>
+                )}
+
+                {step === "error" && (
+                  <div className="py-8">
+                    <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
+                    </div>
+                    <button
+                      onClick={() => setStep("form")}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      Intentar de nuevo
+                    </button>
                   </div>
                 )}
 
@@ -249,7 +268,7 @@ export function BillingRequestModal({ isOpen, onClose, onSuccess }: BillingReque
                     <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                       Nuestro equipo revisará tu solicitud y te enviará el cálculo para aprobación.
                     </p>
-                    <div className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                    <div className="inline-flex items-center gap-2 text-sm text-accent dark:text-[#4ADE80]">
                       <Clock size={16} weight="duotone" />
                       <span>Estado: En revisión</span>
                     </div>
