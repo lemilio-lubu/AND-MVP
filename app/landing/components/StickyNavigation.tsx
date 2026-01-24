@@ -64,8 +64,8 @@ export function StickyNavigation() {
 
   return (
     <div className="fixed right-fib-3 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-fib-2 items-end mix-blend-difference">
-      <NavDot active={currentZone === "intro"} label="Inicio" onClick={() => scrollTo('hero')} />
       <NavDot active={currentZone === "companies"} label="Empresas" onClick={() => scrollTo('companies')} />
+      <NavDot active={currentZone === "intro"} label="Inicio" onClick={() => scrollTo('hero')} />
       <NavDot active={currentZone === "influencers"} label="Creadores" onClick={() => scrollTo('influencers')} />
       <NavDot active={currentZone === "footer"} label="Contacto" onClick={() => scrollTo('footer')} />
     </div>

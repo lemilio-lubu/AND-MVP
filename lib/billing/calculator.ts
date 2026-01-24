@@ -2,33 +2,42 @@ import { TaxCalculation } from "./types";
 
 /**
  * Motor de cálculo de facturación local
- * Calcula IVA, ISD, no deducible y ahorro real
+ * Sigue el modelo de tres etapas:
+ * 1. Cargos Directos (ISD 5% o Comisión 10%)
+ * 2. Consolidación del Subtotal (Base + Cargos)
+ * 3. Aplicación de IVA (15% sobre Subtotal)
  */
 export function calculateBillingTax(amount: number): TaxCalculation {
   // Constantes tributarias Ecuador
-  const IVA_RATE = 0.15; // 15%
-  const ISD_RATE = 0.05; // 5%
-  const NON_DEDUCTIBLE_RATE = 0.0025; // 0.25%
+  const IVA_RATE = 0.15;      // 15%
+  const ISD_RATE = 0.05;      // 5%
+  const COMMISSION_RATE = 0.10; // 10%
 
-  const iva = amount * IVA_RATE;
-  const isd = amount * ISD_RATE;
-  const nonDeductible = amount * NON_DEDUCTIBLE_RATE;
+  // --- ESCENARIO AND ---
+  const andIsd = 0; // Local no paga ISD
+  const andCommission = amount * COMMISSION_RATE;
+  const andSubtotal = amount + andCommission;
+  const andIva = andSubtotal * IVA_RATE;
+  const andTotal = andSubtotal + andIva;
 
-  // Tarjeta de crédito internacional
-  const creditCardTotal = amount + iva + isd + nonDeductible;
+  // --- ESCENARIO INFORMAL (Para comparación) ---
+  const informalIsd = amount * ISD_RATE;
+  const informalSubtotal = amount + informalIsd;
+  const informalIva = informalSubtotal * IVA_RATE; // IVA sobre base + ISD
+  const informalTotal = informalSubtotal + informalIva;
 
-  // Facturación local (sin ISD)
-  const localBillingTotal = amount + iva - nonDeductible;
-
-  const savings = creditCardTotal - localBillingTotal;
+  // El ahorro real es la diferencia entre el costo informal (total)
+  // y la inversión neta en AND (el subtotal, ya que el IVA es crédito fiscal)
+  const savings = informalTotal - andSubtotal;
 
   return {
-    iva,
-    isd,
-    nonDeductible,
-    creditCardTotal,
-    localBillingTotal,
-    savings,
+    baseAmount: amount,
+    isd: andIsd,
+    commission: andCommission,
+    subtotal: andSubtotal,
+    iva: andIva,
+    total: andTotal,
+    savings: savings,
   };
 }
 

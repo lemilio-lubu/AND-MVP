@@ -79,9 +79,9 @@ export function Calculator() {
               <p style={{ marginTop: 8 }}>
                 Total a pagar:
                 <br />
-                <b>${(amount + result.creditCardTotal).toFixed(2)}</b>
+                <b>${result.informalTotal.toFixed(2)}</b>
               </p>
-              <small>Incluye ISD + IVA + no deducible</small>
+              <small>Incluye ISD + IVA No Deducible</small>
             </div>
 
             {/* Escenario B */}
@@ -97,16 +97,19 @@ export function Calculator() {
               <p style={{ marginTop: 8 }}>
                 Total a pagar:
                 <br />
-                <b>${(amount + result.localBillingTotal).toFixed(2)}</b>
+                <b>${result.andTotal.toFixed(2)}</b>
               </p>
-              <small>IVA deducible · Sin ISD</small>
+              <small>IVA deducible (Inversión Neta: ${result.andNetInvestment.toFixed(2)})</small>
             </div>
           </div>
 
           <div style={{ marginTop: 24 }}>
             <h3 style={{ color: "var(--green)" }}>
-              Ahorro estimado: ${result.savings.toFixed(2)}
+              Ahorro anual estimado: ${(result.savings * 12).toFixed(2)}
             </h3>
+            <p style={{ fontSize: 14, color: "#666" }}>
+              Ahorro mensual: ${result.savings.toFixed(2)}
+            </p>
           </div>
         </>
       )}

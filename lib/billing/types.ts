@@ -48,11 +48,12 @@ export interface RechargeRequest {
 }
 
 export interface TaxCalculation {
-  iva: number;
+  baseAmount: number;
   isd: number;
-  nonDeductible: number;
-  creditCardTotal: number;
-  localBillingTotal: number;
+  commission: number;
+  subtotal: number;
+  iva: number;
+  total: number;
   savings: number;
 }
 
