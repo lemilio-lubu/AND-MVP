@@ -19,6 +19,17 @@ export function HeroSection() {
       ref={ref}
       className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden dark:bg-[var(--background)] transition-colors duration-500"
     >
+      {/* Brand Logo - Top Left */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1 }}
+        className="absolute top-10 left-10 z-30 flex items-center gap-2"
+      >
+        <img src="/assets/logos-01.png" alt="AND Logo" className="h-20 w-auto dark:hidden" />
+        <img src="/assets/logos-02.png" alt="AND Logo" className="h-20 w-auto hidden dark:block" />
+      </motion.div>
+
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Background Video - UHD Flow */}
@@ -61,14 +72,6 @@ export function HeroSection() {
 
       <div className="relative z-20 text-center px-4 max-w-5xl">
         <motion.div style={{ y: textY, opacity }}>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="text-xl md:text-2xl font-medium text-[var(--accent)] mb-fib-2 tracking-widest uppercase"
-          >
-            AND Ecosystem
-          </motion.h2>
           
           <motion.h1 
             initial={{ opacity: 0, scale: 0.95 }}

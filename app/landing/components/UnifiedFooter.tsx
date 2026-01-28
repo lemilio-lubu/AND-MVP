@@ -9,9 +9,10 @@ export function UnifiedFooter() {
       className="relative py-fib-5 bg-transparent border-t border-[var(--primary)]/10 dark:border-white/10 transition-colors duration-500"
     >
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-[var(--primary)] dark:text-white mb-fib-3 tracking-tight">
-          AND Ecosystem
-        </h2>
+        <div className="mb-fib-3 flex justify-center">
+          <img src="/assets/logos-01.png" alt="AND Logo" className="h-14 w-auto dark:hidden" />
+          <img src="/assets/logos-02.png" alt="AND Logo" className="h-14 w-auto hidden dark:block" />
+        </div>
         <p className="text-[var(--text-main)] dark:text-slate-400 max-w-xl mx-auto mb-fib-4 text-lg">
           La forma inteligente de trabajar con influencers en Latinoamérica.
         </p>

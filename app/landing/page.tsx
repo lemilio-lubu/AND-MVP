@@ -57,9 +57,9 @@ export default function LandingPage() {
         </button>
       </div>
       <StickyNavigation />
+      <HeroSection />
       <CompaniesSection />
       <TrustedBySection />
-      <HeroSection />
       <SmartSelector />
       <InfluencersSection />
       <UnifiedFooter />

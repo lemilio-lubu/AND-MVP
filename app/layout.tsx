@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AND Ecosystem | Infraestructura Financiera para Influencers",
+  title: "AND | Infraestructura Financiera para Influencers",
   description: "Conectamos marcas y creadores con eficiencia fiscal y cumplimiento normativo.",
 };
 
