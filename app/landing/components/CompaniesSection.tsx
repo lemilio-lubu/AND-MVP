@@ -14,7 +14,7 @@ export function CompaniesSection() {
     <section
       id="companies"
       ref={ref}
-      className="relative pt-32 pb-fib-6 dark:bg-black overflow-hidden transition-colors duration-500"
+      className="relative pt-32 pb-fib-6 dark:bg-[var(--background)] overflow-hidden transition-colors duration-500"
     >
       {/* Titanium Texture - Image 2 */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">

@@ -17,7 +17,7 @@ export function HeroSection() {
     <section
       id="hero"
       ref={ref}
-      className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden dark:bg-black transition-colors duration-500"
+      className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden dark:bg-[var(--background)] transition-colors duration-500"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -70,7 +70,7 @@ function TimelineStep({ step, index }: { step: any, index: number }) {
         >
             {/* Timeline Dot */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center justify-center w-8 h-8 z-10">
-                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-[var(--accent)] scale-150 shadow-green-900/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-[var(--accent)] scale-150 shadow-[var(--primary)]/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
             </div>
 
             <div className="flex-1 w-full">
@@ -152,7 +152,7 @@ function StepConfirmAmount() {
                     repeat: Infinity,
                     repeatDelay: 0
                 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white p-3 rounded-full shadow-xl z-30"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--primary)] text-white p-3 rounded-full shadow-xl z-30"
             >
                 <Check size={32} weight="bold" />
             </motion.div>
@@ -217,7 +217,7 @@ function StepBilling() {
                         repeat: Infinity,
                         repeatDelay: 0
                     }}
-                    className="absolute -bottom-2 -right-2 bg-green-500 text-white p-1 rounded-full shadow-lg border border-white dark:border-slate-900"
+                    className="absolute -bottom-2 -right-2 bg-[var(--primary)] text-white p-1 rounded-full shadow-lg border border-white dark:border-slate-900"
                 >
                     <Check size={12} weight="bold" />
                 </motion.div>
@@ -276,7 +276,7 @@ function StepPayment() {
                         repeat: Infinity,
                         repeatDelay: 3
                     }}
-                    className="relative z-20 bg-green-500 text-white p-2 rounded-full shadow-lg shadow-green-500/30"
+                    className="relative z-20 bg-[var(--primary)] text-white p-2 rounded-full shadow-lg shadow-[var(--primary)]/30"
                 >
                     <CurrencyDollar size={20} weight="bold" />
                 </motion.div>
@@ -315,7 +315,7 @@ function StepPayment() {
                         repeat: Infinity,
                         repeatDelay: 2.5
                     }}
-                    className="absolute -top-2 -right-2 bg-green-500 text-white p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900"
+                    className="absolute -top-2 -right-2 bg-[var(--primary)] text-white p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900"
                 >
                     <Check size={14} weight="bold" />
                 </motion.div>
@@ -351,7 +351,7 @@ function StepRecharge() {
                     }}
                     className="absolute z-0"
                 >
-                    <div className="w-1 h-8 bg-green-500/50 rounded-full blur-sm" />
+                    <div className="w-1 h-8 bg-[var(--primary)]/50 rounded-full blur-sm" />
                 </motion.div>
             ))}
 
@@ -367,7 +367,7 @@ function StepRecharge() {
                 <p className="text-slate-400 text-xs uppercase tracking-wider font-bold mb-2 z-10">Saldo Publicitario</p>
                 
                 <div className="flex items-baseline gap-1 z-10">
-                    <span className="text-2xl text-green-500 font-bold">$</span>
+                    <span className="text-2xl text-[var(--primary)] font-bold">$</span>
                     <motion.span 
                         className="text-5xl font-bold text-white tracking-tight"
                     >
@@ -385,7 +385,7 @@ function StepRecharge() {
                             repeat: Infinity,
                             ease: "easeInOut"
                         }}
-                        className="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                        className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                     />
                 </div>
 
@@ -393,7 +393,7 @@ function StepRecharge() {
                 <motion.div
                     animate={isInView ? { opacity: [0, 0, 0.5, 0] } : {}}
                     transition={{ duration: 3, times: [0, 0.6, 0.7, 1], repeat: Infinity }}
-                    className="absolute inset-0 bg-green-500 mix-blend-overlay"
+                    className="absolute inset-0 bg-[var(--primary)] mix-blend-overlay"
                 />
             </motion.div>
 
@@ -402,7 +402,7 @@ function StepRecharge() {
                 initial={{ scale: 0, rotate: -20 }}
                 animate={isInView ? { scale: 1, rotate: 10 } : {}}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="absolute -top-6 -right-6 bg-green-500 text-white p-3 rounded-xl shadow-lg z-20 border-4 border-white dark:border-slate-900"
+                className="absolute -top-6 -right-6 bg-[var(--primary)] text-white p-3 rounded-xl shadow-lg z-20 border-4 border-white dark:border-slate-900"
             >
                 <Wallet size={28} weight="fill" />
             </motion.div>
@@ -411,7 +411,7 @@ function StepRecharge() {
              <motion.div
                 animate={isInView ? { opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, 10] } : {}}
                 transition={{ duration: 3, times: [0, 0.6, 0.7, 0.9, 1], repeat: Infinity }}
-                className="absolute -bottom-12 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
+                className="absolute -bottom-12 bg-[var(--primary)]/10 dark:bg-green-900/30 text-[var(--primary)] dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
             >
                 <CheckCircle size={16} weight="fill" />
                 Acreditado
@@ -521,10 +521,10 @@ function StepStartAds() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ delay: 0.5, type: "spring" }}
-                className="absolute bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-xl hover:bg-green-600 transition-colors cursor-pointer z-30 group"
+                className="absolute bottom-6 right-6 bg-[var(--primary)] text-white p-4 rounded-full shadow-xl hover:bg-green-600 transition-colors cursor-pointer z-30 group"
             >
                 <Play size={24} weight="fill" className="group-hover:scale-110 transition-transform" />
-                <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20" />
+                <div className="absolute inset-0 rounded-full bg-[var(--primary)] animate-ping opacity-20" />
             </motion.div>
         </div>
     );

@@ -32,8 +32,8 @@ export default function LandingPage() {
 
   // Background color transitions based on scroll
   const bgColors = (mounted && theme === 'light') 
-    ? ["#ecfff4", "#fbfffc", "#ecfff4", "#fbfffc", "#fbfffc"]
-    : ["#000B05", "#000201", "#000B05", "#000201", "#000B05"];
+    ? ["#efefea", "#f5f5f0", "#efefea", "#f5f5f0", "#efefea"]
+    : ["#101318", "#0d0f13", "#101318", "#0d0f13", "#101318"];
 
   const backgroundColor = useTransform(
     scrollYProgress,

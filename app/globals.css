@@ -4,17 +4,17 @@
 
 :root {
   /* New Design System Palette (Landing Page) */
-  --primary: #045932;       /* Branding & Structure (Navbar, Footer, Headers) */
-  --accent: #03A64A;        /* Action / CTA */
-  --text-main: #01260E;     /* Body Text (The new Black) */
-  --background: #F2F2F2;    /* Page Background */
-  --surface: #FFFFFF;       /* Components / Cards */
+  --primary: #10312d;       /* Branding & Structure (Deep Forest Green) */
+  --accent: #101318;        /* Action / Dark Charcoal CTA */
+  --text-main: #101318;     /* Body Text (Charcoal) */
+  --background: #efefea;    /* Page Background (Beige) */
+  --surface: #ffffff;       /* Components / Cards */
 
   /* Mapped System Variables */
   --foreground: var(--text-main);
   
   /* Legacy / Specific Themes */
-  --green: #03A64A; /* Updated to Accent */
+  --green: #10312d; /* Updated to Match Palette */
   --gray: #6b7280;
   
   /* LocalAds Suite Color Palette - Corporate Fintech */
@@ -38,9 +38,9 @@
   --gradient-end: #818cf8;
 
   /* Hero Section Specific Colors (Light Mode) */
-  --hero-gestion-start: #002212; /* Inicio del degradado de "Gestión" */
-  --hero-gestion-end: #000000;   /* Fin del degradado de "Gestión" */
-  --hero-inteligente: #000c06;   /* Color sólido de "Inteligente" */
+  --hero-gestion-start: #10312d; 
+  --hero-gestion-end: #101318;   
+  --hero-inteligente: #101318;   
 }
 
 /* Hero Specific Gradient Class */
@@ -88,9 +88,9 @@
 }
 
 .dark {
-  --background: #000B05; /* Green Night */
-  --foreground: #f8fafc;
-  --surface: #011F10; /* Dark Green Surface */
+  --background: #101318; /* Dark Charcoal from Palette */
+  --foreground: #efefea; /* Beige for text in dark mode */
+  --surface: #10312d;    /* Deep green for surfaces in dark mode */
 }
 
 body {

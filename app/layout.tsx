@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`${montserrat.variable} ${geistMono.variable} antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300`}>
+      <body className={`${montserrat.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)] font-sans transition-colors duration-300`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
