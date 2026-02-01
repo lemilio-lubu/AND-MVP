@@ -34,7 +34,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
        prev.map((req) => (req.id === data.id ? data : req))
     );
      // Update current if selected
-    setCurrentRequest(prev => prev?.id === data.id ? data : prev);
+    setCurrentRequest((prev: any | null) => prev?.id === data.id ? data : prev);
   }, []);
 
   useEffect(() => {
