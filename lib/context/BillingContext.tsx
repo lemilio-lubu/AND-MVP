@@ -110,7 +110,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
   
   const refreshRequests = useCallback(async () => {
       try {
-           const data = await API.getMyRequests();
+           const data = await API.getMyFacturacionRequests();
            setRequests(data);
       } catch(e) { console.error(e); }
   }, []);

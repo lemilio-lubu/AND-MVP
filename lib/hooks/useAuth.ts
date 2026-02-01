@@ -19,7 +19,7 @@ export function useAuth() {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get('/api/auth/me', { withCredentials: true });
+      const res = await axios.get<{ user: User }>('/api/auth/me', { withCredentials: true });
       setUser(res.data.user);
     } catch (error) {
       setUser(null);
@@ -29,7 +29,7 @@ export function useAuth() {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await axios.post(
+    const res = await axios.post<{ tokens: { accessToken: string }, user: User }>(
       '/api/auth/login',
       { email, password },
       { withCredentials: true },
@@ -45,7 +45,7 @@ export function useAuth() {
     name: string,
     type: string,
   ) => {
-    const res = await axios.post(
+    const res = await axios.post<{ tokens: { accessToken: string }, user: User }>(
       '/api/auth/register',
       { email, password, name, type },
       { withCredentials: true },
