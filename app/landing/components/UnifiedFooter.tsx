@@ -9,12 +9,12 @@ export function UnifiedFooter() {
       className="relative py-fib-5 bg-transparent border-t border-emerald-500/10 dark:border-white/10 transition-colors duration-500"
     >
       <div className="container mx-auto px-4 text-center">
-        <div className="mb-fib-3 flex justify-center">
+        {/* <div className="mb-fib-3 flex justify-center">
           <img src="/assets/logos-01.png" alt="AND Logo" className="h-14 w-auto dark:hidden" />
           <img src="/assets/logos-02.png" alt="AND Logo" className="h-14 w-auto hidden dark:block" />
-        </div>
+        </div> */}
         <p className="text-[var(--text-main)] dark:text-slate-400 max-w-xl mx-auto mb-fib-4 text-lg">
-          La forma inteligente de trabajar con influencers en Latinoamérica.
+          Factura local, sin complicaciones. Nacionaliza tus facturas de publicidad digital y paga menos impuestos.
         </p>
 
         <div className="flex flex-col md:flex-row justify-center gap-fib-3 mb-fib-4">

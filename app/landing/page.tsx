@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
+// import { ThemeToggle } from "@/app/components/ui/ThemeToggle";
 
 // Import components
 import { StickyNavigation } from "./components/StickyNavigation";
@@ -48,7 +48,7 @@ export default function LandingPage() {
       className="relative w-full text-[var(--text-main)] dark:text-slate-100 transition-colors duration-500"
     >
       <div className="fixed top-fib-2 right-fib-3 z-50 flex items-center gap-fib-1">
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         {/* <button 
           onClick={() => router.push('/login')}
           className="px-fib-2 py-[8px] rounded-full border border-white/20 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transition-all duration-300 shadow-lg"
