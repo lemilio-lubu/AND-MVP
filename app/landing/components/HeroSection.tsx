@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { CaretRight } from "@phosphor-icons/react";
 
 export function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -26,8 +27,8 @@ export function HeroSection() {
         transition={{ duration: 1 }}
         className="absolute top-10 left-10 z-30 flex items-center gap-2"
       >
-        <img src="/assets/logos-01.png" alt="AND Logo" className="h-20 w-auto dark:hidden" />
-        <img src="/assets/logos-02.png" alt="AND Logo" className="h-20 w-auto hidden dark:block" />
+        <img src="/assets/logos-01.png" alt="AND Logo" className="h-32 w-auto dark:hidden" />
+        <img src="/assets/logos-02.png" alt="AND Logo" className="h-32 w-auto hidden dark:block" />
       </motion.div>
 
       {/* Background Elements */}
@@ -101,15 +102,10 @@ export function HeroSection() {
           >
             <button 
               onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] shadow-lg shadow-green-900/20"
+              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 group"
             >
               Soy Empresa
-            </button>
-            <button 
-              onClick={() => document.getElementById('influencers')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] dark:text-white dark:border-white font-semibold text-lg hover:bg-[var(--primary)] hover:text-white transition-colors min-w-[200px]"
-            >
-              Soy Creador
+              <CaretRight weight="bold" className="group-hover:translate-x-1 transition-transform" />
             </button>
           </motion.div>
         </motion.div>

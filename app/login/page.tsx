@@ -77,8 +77,9 @@ export default function LoginPage() {
 
         <div className="bg-[var(--surface)] dark:bg-[#011F10]/50 backdrop-blur-xl border border-slate-200 dark:border-[#04301C] rounded-2xl p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#E6F4EA] to-[#F2FBF5] dark:from-[#045932] dark:to-[#03A64A] flex items-center justify-center border border-slate-200 dark:border-white/10 text-[var(--primary)] dark:text-white mb-4 shadow-inner">
-              <SignIn size={32} weight="duotone" />
+            <div className="mb-6">
+              <img src="/assets/logos-01.png" alt="AND Logo" className="h-24 w-auto dark:hidden" />
+              <img src="/assets/logos-02.png" alt="AND Logo" className="h-24 w-auto hidden dark:block" />
             </div>
             <h2 className="text-2xl font-bold text-[var(--text-main)] dark:text-white">Bienvenido de nuevo</h2>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">Accede a tu panel de control</p>
