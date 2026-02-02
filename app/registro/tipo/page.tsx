@@ -35,7 +35,7 @@ export default function TipoUsuarioPage() {
             onClick={() => router.push("/registro/influencer")}
             className="group flex items-start gap-4 p-6 rounded-2xl border-2 border-[var(--accent)]/20 hover:border-[var(--accent)] bg-white dark:bg-[#011F10]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--accent)]/10 text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform">>
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform">
               <VideoCamera size={28} weight="duotone" />
             </div>
             <div>
