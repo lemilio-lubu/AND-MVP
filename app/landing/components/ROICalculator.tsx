@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { 
   Warning, 
   CheckCircle, 
@@ -12,7 +12,8 @@ import {
   User, 
   Buildings, 
   Envelope, 
-  Phone
+  Phone,
+  X
 } from "@phosphor-icons/react";
 
 export function ROICalculator() {
@@ -28,46 +29,9 @@ export function ROICalculator() {
     phone: "",
   });
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("submitting");
-
-    try {
-      // Reemplaza esta URL con tu Webview URL de Google Apps Script 
-      // o tu endpoint de integración (Zapier/Make/Next API)
-      const GOOGLE_SCRIPT_URL = "api/leads"; // Usaremos un API Route interna por seguridad
-
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          monthlyInvestment: investment,
-          annualSavings: scenarios.savings * 12,
-          timestamp: new Date().toISOString()
-        }),
-      });
-
-      if (response.ok) {
-        setStatus("success");
-        setFormData({ fullName: "", companyName: "", email: "", phone: "" });
-      } else {
-        setStatus("error");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setStatus("error");
-    }
-  };
+  const [showModal, setShowModal] = useState(false);
 
   // Logic from prompt - Exact Match with Excel
-
   const pauta = investment;
   const isd = pauta * 0.05;
   
@@ -96,6 +60,44 @@ export function ROICalculator() {
   const total_visible_sin = total_gasto_sin;
   const comision = comision_agencia;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("submitting");
+
+    try {
+      // Reemplaza esta URL con tu Webview URL de Google Apps Script 
+      // o tu endpoint de integración (Zapier/Make/Next API)
+      const GOOGLE_SCRIPT_URL = "api/leads"; // Usaremos un API Route interna por seguridad
+
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          monthlyInvestment: investment,
+          annualSavings: ahorro_anual,
+          timestamp: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setShowModal(true);
+        setFormData({ fullName: "", companyName: "", email: "", phone: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setStatus("error");
+    }
+  };
+
   const handleInvestmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInvestment(Number(e.target.value));
   };
@@ -104,6 +106,7 @@ export function ROICalculator() {
 
 
   return (
+    <>
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
@@ -392,6 +395,57 @@ export function ROICalculator() {
         </div>
       </div>
     </motion.div>
+
+    <AnimatePresence>
+        {showModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => window.location.reload()}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full relative shadow-2xl border border-white/10"
+            >
+              <button 
+                onClick={() => window.location.reload()}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                type="button"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle size={40} weight="fill" />
+                </div>
+                
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  ¡La mejor decisión!
+                </h3>
+                
+                <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                  Gracias por dar el primer paso hacia el ahorro inteligente. Nuestro equipo experto te contactará muy pronto para nacionalizar tus facturas.
+                </p>
+
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="w-full py-3.5 rounded-xl bg-[var(--primary)] text-white font-bold hover:bg-[var(--primary)]/90 transition-colors"
+                  type="button"
+                >
+                  Entendido
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
