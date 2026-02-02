@@ -25,7 +25,7 @@ export function InfluencersSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="text-5xl md:text-7xl font-bold text-[var(--text-main)] dark:text-white tracking-tight">
-              Tu Talento. <span className="text-[var(--primary)] dark:text-emerald-400">Tu Negocio.</span>
+              Tu Talento. <span className="text-[var(--primary)] dark:text-[var(--primary)]">Tu Negocio.</span>
             </h2>
             <p className="text-xl text-[var(--text-main)]/80 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
               Deja de ser un amateur. Te damos las herramientas para que cobres y trabajes como una empresa.
