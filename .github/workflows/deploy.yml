@@ -9,12 +9,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install and Build (En GitHub)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # O la versión que uses
+
+      # 1. CACHÉ DE NPM: Evita descargar paquetes que no han cambiado
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 2. CACHÉ DE NEXT.JS: Guarda el progreso del build anterior
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          # Se invalida si cambia el lock o cualquier archivo de código
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install and Build
         run: |
           npm install
           npm run build
 
-      - name: Deploy to EC2
+      - name: Deploy to EC2 (SCP)
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -23,13 +48,22 @@ jobs:
           source: "."
           target: "/home/ubuntu/app/frontend"
 
-      - name: Restart NextJS on EC2
+      - name: Restart NextJS on EC2 (SSH)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Entrar a la carpeta
             cd /home/ubuntu/app/frontend
+            
+            # Asegurar archivo de entorno
             cp /home/ubuntu/app/.env.front .env
-            pm2 restart next-app || pm2 start npm --name "next-app" -- start
+            
+            # Reinicio limpio con PM2 asegurando la ruta de trabajo
+            # Si ya existe lo reinicia, si no, lo crea desde cero
+            pm2 restart next-app --cwd /home/ubuntu/app/frontend || pm2 start npm --name "next-app" --cwd /home/ubuntu/app/frontend -- start
+            
+            # Guardar configuración de PM2
+            pm2 save
