@@ -64,7 +64,7 @@ export default function LoginPage() {
       {/* Background Gradients */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[20%] w-[50%] h-[50%] bg-[var(--primary)]/10 dark:bg-[var(--primary)]/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[20%] w-[50%] h-[50%] bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[20%] w-[50%] h-[50%] bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-[120px]" />
       </div>
 
       <motion.div 
@@ -139,7 +139,7 @@ export default function LoginPage() {
               />
               {userType === "empresa" && (
                 <div className="text-right">
-                  <Link href="#" className="text-xs text-slate-500 hover:text-[var(--accent)] transition-colors">
+                  <Link href="#" className="text-xs text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
@@ -168,14 +168,14 @@ export default function LoginPage() {
                 <>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿Tu empresa aún no tiene cuenta?{" "}
-                    <Link href="/registro/empresa" className="text-[var(--primary)] dark:text-[var(--accent)] hover:underline font-medium transition-colors">
+                    <Link href="/registro/empresa" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium transition-colors">
                       Regístrate aquí
                     </Link>
                   </p>
 
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿Eres influencer?{" "}
-                    <Link href="/registro/influencer" className="text-[var(--primary)] dark:text-[var(--accent)] hover:underline font-medium transition-colors">
+                    <Link href="/registro/influencer" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium transition-colors">
                       Únete aquí
                     </Link>
                   </p>

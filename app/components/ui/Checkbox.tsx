@@ -9,7 +9,7 @@ interface CheckboxProps {
 }
 
 export function Checkbox({ checked, onChange, children, theme = 'brand' }: CheckboxProps) {
-  let activeColor = 'peer-checked:bg-[var(--accent)] peer-checked:border-[var(--accent)] peer-focus:ring-[var(--accent)]/20';
+  let activeColor = 'peer-checked:bg-emerald-600 peer-checked:border-emerald-600 peer-focus:ring-emerald-500/20 dark:peer-checked:bg-emerald-500 dark:peer-checked:border-emerald-500';
   
   if (theme === 'blue') {
     activeColor = 'peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-focus:ring-blue-500/20';

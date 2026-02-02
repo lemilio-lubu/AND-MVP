@@ -45,7 +45,7 @@ export function ProcessTimeline() {
         </div>
         
         {/* Connecting Line (Desktop only) */}
-        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-[var(--primary)]/10 via-[var(--primary)]/30 to-[var(--primary)]/10 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
+        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-emerald-500/10 via-emerald-500/30 to-emerald-500/10 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
 
         <div className="space-y-24 relative z-10">
             {steps.map((step, index) => (
@@ -74,8 +74,8 @@ function TimelineStep({ step, index }: { step: any, index: number }) {
             </div>
 
             <div className="flex-1 w-full">
-                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-[var(--primary)]/10 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
+                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-emerald-500/10 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
                     {step.component}
                 </div>
             </div>
@@ -292,7 +292,7 @@ function StepPayment() {
                 <motion.div
                     animate={isInView ? { 
                         y: [0, -5, 0],
-                        color: ["#94a3b8", "#10b981", "#94a3b8"] // slate-400 to emerald-500
+                        color: ["#94a3b8", "var(--primary)", "#94a3b8"] // slate-400 to primary
                     } : {}}
                     transition={{ 
                         delay: 2.3,  

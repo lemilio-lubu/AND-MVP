@@ -32,8 +32,8 @@ export default function LandingPage() {
 
   // Background color transitions based on scroll
   const bgColors = (mounted && theme === 'light') 
-    ? ["#efefea", "#f5f5f0", "#efefea", "#f5f5f0", "#efefea"]
-    : ["#101318", "#0d0f13", "#101318", "#0d0f13", "#101318"];
+    ? ["var(--background)", "#f5f5f0", "var(--background)", "#f5f5f0", "var(--background)"]
+    : ["var(--background)", "#0d0f13", "var(--background)", "#0d0f13", "var(--background)"];
 
   const backgroundColor = useTransform(
     scrollYProgress,
@@ -51,7 +51,7 @@ export default function LandingPage() {
         <ThemeToggle />
         <button 
           onClick={() => router.push('/login')}
-          className="px-fib-2 py-[8px] rounded-full border border-white/20 bg-[var(--primary)] text-white hover:bg-[var(--accent)] transition-all duration-300 shadow-lg"
+          className="px-fib-2 py-[8px] rounded-full border border-white/20 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transition-all duration-300 shadow-lg"
         >
           Iniciar Sesión
         </button>

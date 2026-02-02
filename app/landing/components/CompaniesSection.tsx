@@ -35,7 +35,7 @@ export function CompaniesSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="text-5xl md:text-7xl font-bold text-[var(--text-main)] dark:text-white tracking-tight">
-              Ahorra más. <span className="text-[var(--primary)]">Legalmente.</span>
+              Ahorra más. <span className="text-[var(--primary)] dark:text-emerald-400">Legalmente.</span>
             </h2>
             <p className="text-xl text-[var(--text-main)]/80 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
               Haz que tu presupuesto rinda más deduciendo impuestos correctamente y sin complicaciones.
@@ -61,7 +61,7 @@ export function CompaniesSection() {
             onClick={() => router.push('/registro/empresa')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-[var(--accent)] text-white hover:bg-[var(--accent)]/90 shadow-lg shadow-green-900/20 transition-all"
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all"
           >
             Optimizar mi gestión
           </motion.button>

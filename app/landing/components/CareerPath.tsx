@@ -32,11 +32,11 @@ export function CareerPath() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: i * 0.2 }}
-            className="bg-[var(--surface)] dark:bg-white/10 border border-[var(--primary)]/10 dark:border-white/10 p-fib-3 rounded-3xl relative overflow-hidden group hover:bg-[var(--primary)]/5 dark:hover:bg-white/20 transition-colors"
+            className="bg-[var(--surface)] dark:bg-white/10 border border-emerald-500/10 dark:border-white/10 p-fib-3 rounded-3xl relative overflow-hidden group hover:bg-emerald-500/5 dark:hover:bg-white/20 transition-colors"
           >
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-[var(--primary)]/10 dark:bg-white/5 rounded-full blur-2xl group-hover:bg-[var(--primary)]/20 dark:group-hover:bg-white/10 transition-colors" />
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-emerald-500/10 dark:bg-white/5 rounded-full blur-2xl group-hover:bg-emerald-500/20 dark:group-hover:bg-white/10 transition-colors" />
             
-            <div className="w-10 h-10 bg-[var(--primary)] dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center font-bold text-sm mb-fib-2">
+            <div className="w-10 h-10 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-white rounded-full flex items-center justify-center font-bold text-sm mb-fib-2">
               {i + 1}
             </div>
             <h4 className="text-xl font-semibold text-[var(--text-main)] dark:text-white mt-[8px] mb-fib-1">{step.title}</h4>

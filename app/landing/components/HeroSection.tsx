@@ -90,7 +90,7 @@ export function HeroSection() {
             transition={{ duration: 1, delay: 0.8 }}
             className="text-xl md:text-2xl text-[var(--text-main)] dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
           >
-            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-[var(--primary)] dark:text-white font-medium">crear</span> y <span className="text-[var(--primary)] dark:text-white font-medium">crecer</span>.
+            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-[var(--primary)] dark:text-emerald-400 font-medium">crear</span> y <span className="text-[var(--primary)] dark:text-emerald-400 font-medium">crecer</span>.
           </motion.p>
 
           <motion.div
@@ -101,13 +101,13 @@ export function HeroSection() {
           >
             <button 
               onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] shadow-lg shadow-green-900/20"
+              className="px-fib-3 py-fib-1 rounded-full bg-emerald-600 text-white font-semibold text-lg hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transition-colors min-w-[200px] shadow-lg shadow-emerald-500/20"
             >
               Soy Empresa
             </button>
             <button 
               onClick={() => document.getElementById('influencers')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] dark:text-white dark:border-white font-semibold text-lg hover:bg-[var(--primary)] hover:text-white transition-colors min-w-[200px]"
+              className="px-fib-3 py-fib-1 rounded-full border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400 font-semibold text-lg hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 transition-colors min-w-[200px]"
             >
               Soy Creador
             </button>

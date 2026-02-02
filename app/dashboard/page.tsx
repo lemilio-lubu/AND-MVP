@@ -197,7 +197,7 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setShowRequestModal(true)}
-              className="bg-[var(--primary)] text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-green-900/10 hover:bg-[var(--accent)] hover:scale-105 transition-all"
+              className="bg-emerald-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/10 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 hover:scale-105 transition-all"
             >
               + Nueva Solicitud
             </button>

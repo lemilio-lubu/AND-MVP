@@ -115,7 +115,7 @@ export function ROICalculator() {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       className="max-w-5xl mx-auto mb-32"
     >
-      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl">
+      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-emerald-500/10 dark:border-white/10 shadow-2xl">
         
         {/* Input Section */}
         <div className="mb-fib-3 max-w-xl mx-auto">
@@ -129,7 +129,7 @@ export function ROICalculator() {
                 min="0"
                 value={investment}
                 onChange={(e) => setInvestment(Number(e.target.value))}
-                className="w-full bg-white dark:bg-slate-900 border border-[var(--primary)]/20 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-[var(--text-main)] dark:text-white focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-center"
+                className="w-full bg-white dark:bg-slate-900 border border-emerald-500/20 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-[var(--text-main)] dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-center"
               />
             </div>
         </div>
@@ -205,12 +205,12 @@ export function ROICalculator() {
         </div>
 
         {/* Result Section - Green Translucent */}
-        <div className="bg-[var(--primary)]/5 backdrop-blur-md border border-[var(--primary)]/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-[var(--primary)]/10 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="bg-emerald-500/5 backdrop-blur-md border border-emerald-500/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-emerald-500/10 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-fib-2">
                 <div className="text-center md:text-left">
-                    <h4 className="text-[var(--primary)] dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
+                    <h4 className="text-emerald-600 dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
                     <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-sm max-w-md">
                         Deja de perder dinero y evita problemas legales con nuestra plataforma.
                     </p>
