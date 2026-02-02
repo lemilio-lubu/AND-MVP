@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Envelope, LockKey, SignIn, Buildings, Key } from "@phosphor-icons/react";
+import { Envelope, LockKey, SignIn, Buildings, Key, Eye, EyeSlash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { InputGroup } from "@/app/components/ui/InputGroup";
 import { GradientButton } from "@/app/components/ui/GradientButton";
@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState<"empresa" | "admin">("empresa");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -128,15 +129,30 @@ export default function LoginPage() {
             />
 
             <div className="space-y-1">
-              <InputGroup 
-                label="Contraseña"
-                icon={<LockKey size={18} />}
-                placeholder="••••••••"
-                type="password"
-                theme="brand"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-[var(--text-main)] dark:text-slate-300">
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <LockKey size={18} />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[var(--text-main)] dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  >
+                    {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
               {userType === "empresa" && (
                 <div className="text-right">
                   <Link href="#" className="text-xs text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
