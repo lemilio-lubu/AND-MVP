@@ -49,12 +49,12 @@ export default function LandingPage() {
     >
       <div className="fixed top-fib-2 right-fib-3 z-50 flex items-center gap-fib-1">
         <ThemeToggle />
-        <button 
+        {/* <button 
           onClick={() => router.push('/login')}
           className="px-fib-2 py-[8px] rounded-full border border-white/20 bg-[var(--primary)] text-white hover:bg-[var(--accent)] transition-all duration-300 shadow-lg"
         >
           Iniciar Sesión
-        </button>
+        </button> */}
       </div>
       <StickyNavigation />
       <HeroSection />
