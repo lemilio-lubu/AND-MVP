@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AND | Infraestructura Financiera para Influencers",
-  description: "Conectamos marcas y creadores con eficiencia fiscal y cumplimiento normativo.",
+  title: "Factura local, sin complicaciones.",
+  description: "Nacionaliza tus facturas de publicidad digital y paga menos impuestos",
 };
 
 export default function RootLayout({

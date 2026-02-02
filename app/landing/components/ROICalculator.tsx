@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { 
   Warning, 
-  ShieldCheck, 
   CheckCircle, 
+  TrendUp,
+  CurrencyDollar,
+  ArrowRight,
+  ShieldCheck,
   User, 
   Buildings, 
   Envelope, 
-  Phone, 
-  CurrencyDollar, 
-  ArrowRight 
+  Phone
 } from "@phosphor-icons/react";
 
 export function ROICalculator() {
@@ -65,171 +66,211 @@ export function ROICalculator() {
     }
   };
 
-  // Calculate scenarios
-  const calculateScenarios = (amount: number) => {
-    // Stage 1: Direct Charges
-    const directISD = amount * 0.05; // 5% ISD
-    const andCommission = amount * 0.10; // 10% Commission
+  // Logic from prompt - Exact Match with Excel
 
-    // Stage 2: Subtotal
-    const directSubtotal = amount + directISD;
-    const andSubtotal = amount + andCommission;
+  const pauta = investment;
+  const isd = pauta * 0.05;
+  
+  // Escenario SIN Factura (Informal)
+  const base_iva_sin = pauta + isd;
+  const iva_sin = base_iva_sin * 0.15;
+  const total_gasto_sin = pauta + isd + iva_sin; // Salida Caja
+  const impuesto_renta_oculto = total_gasto_sin * 0.25; // Multa por no deducible
+  const gasto_real_sin = total_gasto_sin + impuesto_renta_oculto;
+  
+  // Escenario CON Factura (AND)
+  const comision_agencia = pauta * 0.10;
+  const base_iva_con = pauta + isd + comision_agencia;
+  const iva_con = base_iva_con * 0.15;
+  const gasto_real_con = pauta + isd + comision_agencia + iva_con;
 
-    // Stage 3: IVA (applied on subtotal)
-    const directIVA = directSubtotal * 0.15;
-    const andIVA = andSubtotal * 0.15;
+  // Totales
+  const ahorro_mensual = gasto_real_sin - gasto_real_con;
+  const ahorro_anual = ahorro_mensual * 12;
+  
+  // Equivalence calculation
+  const meses_gratis = gasto_real_sin > 0 ? (ahorro_anual / gasto_real_sin).toFixed(2) : "0.00";
+  const savingsPercent = gasto_real_sin > 0 ? (ahorro_mensual / gasto_real_sin) * 100 : 0;
+  
+  // Reuse old vars for display compatibility without breaking UI
+  const total_visible_sin = total_gasto_sin;
+  const comision = comision_agencia;
 
-    // Final Totals
-    const directTotal = directSubtotal + directIVA;
-    const andTotal = andSubtotal + andIVA;
-
-    // Savings: Informal Total Cost vs AND Net Investment (Subtotal)
-    const savings = directTotal - andSubtotal;
-    const savingsPercent = (savings / directTotal) * 100;
-
-    return {
-      direct: {
-        base: amount,
-        isd: directISD,
-        iva: directIVA,
-        total: directTotal,
-      },
-      localAds: {
-        base: amount,
-        commission: andCommission,
-        iva: andIVA,
-        subtotal: andSubtotal,
-        total: andTotal,
-      },
-      savings,
-      savingsPercent,
-    };
+  const handleInvestmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInvestment(Number(e.target.value));
   };
 
-  const scenarios = calculateScenarios(investment);
+  const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      className="max-w-5xl mx-auto mb-32"
+      className="max-w-5xl mx-auto mb-32 px-4"
     >
-      <div className="bg-glass-apple rounded-fib-3 p-8 md:p-fib-4 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl">
+      <div className="bg-white dark:bg-[#011F10]/40 backdrop-blur-xl rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-2xl">
         
+        <div className="text-center mb-10">
+          <h3 className="text-3xl font-bold text-[var(--text-main)] dark:text-white mb-2">Calculadora de Ahorro Real</h3>
+          <p className="text-slate-600 dark:text-slate-400">Descubre cuánto estás perdiendo por no nacionalizar tu pauta</p>
+        </div>
+
         {/* Input Section */}
-        <div className="mb-fib-3 max-w-xl mx-auto">
-            <label className="block text-sm font-medium text-[var(--text-main)]/60 dark:text-slate-400 mb-fib-1 uppercase tracking-wider text-center">
-              Presupuesto Mensual ($)
+        <div className="mb-12 max-w-xl mx-auto">
+            <label className="block text-sm font-medium text-[var(--text-main)] dark:text-slate-300 mb-4 text-center uppercase tracking-wider">
+              Inversión Mensual en Pauta ($)
             </label>
-            <div className="relative">
-              <span className="absolute left-fib-2 top-1/2 -translate-y-1/2 text-slate-400 text-xl">$</span>
+            <div className="relative flex items-center justify-center mb-6">
               <input
                 type="number"
                 min="0"
+                step="100"
                 value={investment}
-                onChange={(e) => setInvestment(Number(e.target.value))}
-                className="w-full bg-white dark:bg-slate-900 border border-[var(--primary)]/20 dark:border-slate-700 rounded-fib-2 py-fib-1 pl-[40px] pr-fib-2 text-3xl font-bold text-[var(--text-main)] dark:text-white focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-center"
+                onChange={handleInvestmentChange}
+                className="w-48 bg-transparent border-b-2 border-[var(--primary)] text-center text-4xl font-bold text-[var(--text-main)] dark:text-white focus:outline-none focus:border-[var(--accent)] transition-colors py-2"
               />
+            </div>
+            <input 
+              type="range" 
+              min="100" 
+              max="10000" 
+              step="100" 
+              value={investment} 
+              onChange={handleInvestmentChange}
+              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+            />
+             <div className="flex justify-between text-xs text-slate-400 mt-2 font-mono">
+              <span>$100</span>
+              <span>$10,000+</span>
             </div>
         </div>
 
         {/* Comparison Grid */}
-        <div className="grid md:grid-cols-2 gap-fib-2 mb-fib-3">
-          {/* BAD Scenario */}
-          <div className="bg-[var(--primary)]/5 dark:bg-black/40 rounded-fib-2 p-fib-2 border border-red-200 dark:border-red-900/30 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10 text-red-500">
+        <div className="grid md:grid-cols-2 gap-6 mb-8 relative">
+          
+          {/* Card Informal (Izquierda - Alerta) */}
+          <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-6 border-2 border-red-100 dark:border-red-900/30 relative overflow-hidden transition-all hover:shadow-lg hover:shadow-red-500/5">
+            <div className="absolute top-4 right-4 text-red-500/20">
               <Warning size={64} weight="fill" />
             </div>
-            <h4 className="text-lg font-semibold text-red-500 dark:text-red-400 mb-6 flex items-center gap-2">
-              Pagando por fuera / Informal
+            
+            <h4 className="text-xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
+              <Warning size={24} weight="duotone" />
+              Pago Informal
             </h4>
-            <div className="space-y-4 text-sm">
-              <div className="flex justify-between text-[var(--text-main)]/80 dark:text-slate-400">
-                <span>Costo Base</span>
-                <span>${scenarios.direct.base.toLocaleString("en-US")}</span>
+
+            <div className="space-y-3 mb-6">
+              <Row label="Inversión en Pauta" value={pauta} />
+              <Row label="ISD (5%)" value={isd} />
+              <Row label="IVA (15%)" value={iva_sin} subtitle="(No recuperable)" />
+              <div className="h-px bg-red-200 dark:bg-red-900/30 my-2" />
+              <Row label="Costo Visible" value={total_visible_sin} />
+              
+              <div className="bg-red-100 dark:bg-red-900/40 p-3 rounded-lg border border-red-200 dark:border-red-800 mt-2">
+                <div className="flex justify-between items-center text-red-700 dark:text-red-300 font-bold text-sm mb-1">
+                  <span>Gasto No Deducible (25%)</span>
+                  <span>{formatCurrency(impuesto_renta_oculto)}</span>
+                </div>
+                <p className="text-xs text-red-600/80 dark:text-red-400/80">
+                  Multa oculta del 25% sobre el gasto total
+                </p>
               </div>
-              <div className="flex justify-between text-red-500/80 dark:text-red-400/80">
-                <span>ISD (5%)</span>
-                <span>+${scenarios.direct.isd.toLocaleString("en-US")}</span>
-              </div>
-              <div className="flex justify-between text-red-500/80 dark:text-red-400/80">
-                <span>IVA (15% sobre Base+ISD)</span>
-                <span>+${scenarios.direct.iva.toLocaleString("en-US")}</span>
-              </div>
-              <div className="pt-4 border-t border-[var(--primary)]/10 dark:border-white/5 flex justify-between items-center">
-                <span className="text-[var(--text-main)]/80 dark:text-slate-400">Costo Real</span>
-                <span className="text-2xl font-bold text-red-500 dark:text-red-400">${scenarios.direct.total.toLocaleString("en-US")}</span>
-              </div>
-              <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-300 px-3 py-2 rounded-fib-1 text-xs text-center">
-                Dinero que pierdes en impuestos
+            </div>
+
+            <div className="mt-auto pt-4 border-t border-red-200 dark:border-red-900/30">
+              <div className="flex justify-between items-end">
+                <span className="text-sm font-medium text-red-600/70 dark:text-red-400/70">Gasto Real Total</span>
+                <span className="text-3xl font-bold text-red-600 dark:text-red-400">{formatCurrency(gasto_real_sin)}</span>
               </div>
             </div>
           </div>
 
-          {/* GOOD Scenario */}
-          <div className="bg-[var(--surface)] dark:bg-sky-900/10 rounded-fib-2 p-fib-2 border border-[var(--primary)]/20 dark:border-sky-500/30 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 opacity-10 text-[var(--primary)]">
-              <ShieldCheck size={64} weight="fill" />
+          {/* Card Legal (Derecha - Éxito) */}
+          <div className="bg-emerald-50 dark:bg-[#04301C] rounded-2xl p-6 border-2 border-[var(--primary)] relative overflow-hidden transition-all hover:shadow-xl hover:shadow-[var(--primary)]/10 ring-4 ring-[var(--primary)]/5">
+            <div className="absolute top-0 right-0 p-4 bg-[var(--primary)] text-white text-xs font-bold rounded-bl-xl shadow-lg">
+              RECOMENDADO
             </div>
-            <h4 className="text-lg font-semibold text-[var(--primary)] dark:text-sky-400 mb-6 flex items-center gap-2">
-              Usando AND
+            
+            <div className="absolute top-10 right-4 text-[var(--primary)]/10">
+              <ShieldCheck size={80} weight="fill" />
+            </div>
+
+            <h4 className="text-xl font-bold text-[var(--primary)] dark:text-emerald-400 mb-6 flex items-center gap-2">
+              <CheckCircle size={24} weight="duotone" />
+              Nacionalizado con AND
             </h4>
-            <div className="space-y-4 text-sm">
-              <div className="flex justify-between text-[var(--text-main)]/90 dark:text-slate-300">
-                <span>Costo Base</span>
-                <span>${scenarios.localAds.base.toLocaleString("en-US")}</span>
+
+            <div className="space-y-3 mb-6">
+              <Row label="Inversión en Pauta" value={pauta} />
+              <Row label="ISD (5%)" value={isd} />
+              <Row label="Comisión AND (10%)" value={comision} highlight />
+              <div className="h-px bg-emerald-200 dark:bg-emerald-800/30 my-2" />
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-600 dark:text-slate-300">IVA (15%)</span>
+                <div className="text-right">
+                  <span className="block font-medium dark:text-emerald-200">{formatCurrency(iva_con)}</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-900/50 px-1.5 py-0.5 rounded ml-auto w-fit mt-0.5">
+                    (Crédito Tributario)
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between text-sky-600/80 dark:text-sky-400/80">
-                <span>Comisión Gestión (10%)</span>
-                <span>+${scenarios.localAds.commission.toLocaleString("en-US")}</span>
+
+               <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 mt-2">
+                <div className="flex justify-between items-center text-emerald-800 dark:text-emerald-200 font-bold text-sm mb-1">
+                  <span>Impuesto a la Renta (Deducible)</span>
+                  <span>$0.00</span>
+                </div>
+                <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80">
+                  Gasto 100% legal y deducible
+                </p>
               </div>
-              <div className="flex justify-between text-emerald-600/80 dark:text-emerald-400/80">
-                <span>ISD (0%)</span>
-                <span>$0</span>
-              </div>
-              <div className="flex justify-between text-[var(--text-main)]/80 dark:text-slate-400">
-                <span>IVA (Crédito Fiscal)</span>
-                <span>+${scenarios.localAds.iva.toLocaleString("en-US")}</span>
-              </div>
-              <div className="pt-4 border-t border-sky-200 dark:border-sky-900/30 flex justify-between items-center">
-                <span className="text-slate-700 dark:text-slate-300">Inversión Neta</span>
-                <span className="text-2xl font-bold text-sky-600 dark:text-sky-400">${scenarios.localAds.subtotal.toLocaleString("en-US")}</span>
-              </div>
-              <div className="bg-[var(--accent)]/10 dark:bg-emerald-900/20 text-[var(--primary)] dark:text-emerald-300 px-3 py-2 rounded-fib-1 text-xs text-center border border-[var(--accent)]/20 dark:border-emerald-900/30 flex items-center justify-center gap-2">
-                <CheckCircle size={16} weight="fill" className="text-[var(--accent)]" />
-                100% Deducible y sin dolores de cabeza
+            </div>
+
+            <div className="mt-auto pt-4 border-t border-emerald-200 dark:border-emerald-800/30">
+              <div className="flex justify-between items-end">
+                <span className="text-sm font-medium text-emerald-600/70 dark:text-emerald-400/70">Gasto Real Total</span>
+                <span className="text-3xl font-bold text-[var(--primary)] dark:text-white">{formatCurrency(gasto_real_con)}</span>
               </div>
             </div>
           </div>
+          
         </div>
 
-        {/* Result Section - Green Translucent */}
-        <div className="bg-[var(--primary)]/5 backdrop-blur-md border border-[var(--primary)]/20 rounded-fib-3 p-fib-3 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[233px] h-[233px] bg-[var(--primary)]/10 rounded-full blur-fib-5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        {/* Sección de Impacto Final */}
+        <div className="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-2xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg transform hover:scale-[1.01] transition-transform">
+            <div className="absolute top-0 right-0 opacity-10">
+                <TrendUp size={150} weight="fill" />
+            </div>
             
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-fib-2">
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
-                    <h4 className="text-[var(--primary)] dark:text-emerald-400 text-lg font-medium mb-[8px]">Lo que te ahorras</h4>
-                    <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-sm max-w-md">
-                        Deja de perder dinero y evita problemas legales con nuestra plataforma.
-                    </p>
+                    <h5 className="text-emerald-100 text-sm font-semibold uppercase tracking-wider mb-1">Ahorro Mensual</h5>
+                    <div className="text-3xl md:text-4xl font-bold mb-2">{formatCurrency(ahorro_mensual)}</div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 inline-block text-sm font-medium">
+                        {pauta > 0 ? (
+                            <span>Ahorras {savingsPercent.toFixed(1)}% vs informal</span>
+                        ) : "0%"}
+                    </div>
                 </div>
 
-                <div className="flex flex-col items-center md:items-end gap-[8px]">
-                    <div className="flex items-baseline gap-fib-1">
-                        <span className="text-sm text-emerald-600/80 dark:text-emerald-400/80 uppercase tracking-wider font-semibold">Ahorro Anual</span>
-                        <span className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
-                            ${(scenarios.savings * 12).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                        </span>
+                <div className="h-12 w-px bg-white/30 hidden md:block"></div>
+
+                <div className="text-center md:text-left">
+                    <h5 className="text-emerald-100 text-sm font-semibold uppercase tracking-wider mb-1">Ahorro Anual Total</h5>
+                    <div className="text-4xl md:text-5xl font-extrabold text-white mb-2 leading-none">
+                        {formatCurrency(ahorro_anual)}
                     </div>
-                    <div className="flex items-center gap-4 mt-2">
-                         <span className="bg-[var(--accent)]/10 dark:bg-emerald-500/20 text-[var(--accent)] dark:text-emerald-300 px-fib-1 py-[5px] rounded-full text-xs font-bold">
-                            +{scenarios.savingsPercent.toFixed(1)}% Eficiencia
-                         </span>
-                         <span className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                            Mensual: <span className="font-bold text-emerald-600 dark:text-emerald-400">${scenarios.savings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                         </span>
+                </div>
+
+                <div className="bg-white/10 rounded-xl p-4 max-w-xs backdrop-blur-md border border-white/20">
+                    <div className="flex items-start gap-3">
+                        <CurrencyDollar size={32} className="shrink-0 text-emerald-200" weight="duotone" />
+                        <p className="text-sm leading-snug font-medium text-emerald-50">
+                            ¡Eso equivale a <span className="text-white font-bold text-base border-b border-white/40">{meses_gratis} meses</span> de pauta GRATIS al año!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -351,5 +392,19 @@ export function ROICalculator() {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function Row({ label, value, subtitle, highlight = false }: { label: string, value: number, subtitle?: string, highlight?: boolean }) {
+  const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+  
+  return (
+    <div className={`flex justify-between items-start text-sm ${highlight ? 'font-semibold text-[var(--accent)] dark:text-emerald-300' : 'text-slate-600 dark:text-slate-300'}`}>
+      <div className="flex flex-col">
+        <span>{label}</span>
+        {subtitle && <span className="text-[10px] text-slate-400">{subtitle}</span>}
+      </div>
+      <span>{formatCurrency(value)}</span>
+    </div>
   );
 }

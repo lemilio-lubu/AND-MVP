@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     if (GOOGLE_SHEETS_WEBHOOK_URL) {
       await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
         method: 'POST',
-        headers: {
+        headers: {  
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

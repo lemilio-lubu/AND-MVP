@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun } from "@phosphor-icons/react"
+import { Circle, Sparkle } from "@phosphor-icons/react"
 import { useTheme } from "next-themes"
 
 export function ThemeToggle() {
@@ -20,12 +20,13 @@ export function ThemeToggle() {
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className="p-2 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] hover:bg-[var(--primary)]/20 transition-colors"
-      aria-label="Toggle theme"
+      aria-label="Toggle texture mode"
+      title={theme === "dark" ? "Activar Texturas" : "Desactivar Texturas"}
     >
       {theme === "dark" ? (
-        <Sun size={20} weight="bold" />
+        <Sparkle size={20} weight="fill" />
       ) : (
-        <Moon size={20} weight="bold" />
+        <Circle size={20} weight="fill" />
       )}
     </button>
   )

@@ -27,12 +27,12 @@ export function HeroSection() {
         transition={{ duration: 1 }}
         className="absolute top-10 left-10 z-30 flex items-center gap-2"
       >
-        <img src="/assets/logos-01.png" alt="AND Logo" className="h-32 w-auto dark:hidden" />
-        <img src="/assets/logos-02.png" alt="AND Logo" className="h-32 w-auto hidden dark:block" />
+        <img src="/assets/logos-01.png" alt="AND Logo" className="h-48 w-auto dark:hidden" />
+        <img src="/assets/logos-02.png" alt="AND Logo" className="h-48 w-auto hidden dark:block" />
       </motion.div>
 
       {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden">
         {/* Background Video - UHD Flow */}
         <div className="absolute inset-0 z-0 opacity-75">
           <video 
@@ -80,9 +80,9 @@ export function HeroSection() {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="text-5xl md:text-8xl font-bold mb-fib-3 leading-tight tracking-tight"
           >
-            <span className="text-gradient-hero-gestion">Gestión.</span>
+            <span className="text-[var(--primary)] dark:text-white">Factura local,</span>
             <br />
-            <span className="text-[var(--hero-inteligente)] dark:text-white">Inteligente.</span>
+            <span className="text-[var(--hero-inteligente)] dark:text-white">sin complicaciones.</span>
           </motion.h1>
 
           <motion.p 
@@ -91,7 +91,7 @@ export function HeroSection() {
             transition={{ duration: 1, delay: 0.8 }}
             className="text-xl md:text-2xl text-[var(--text-main)] dark:text-slate-300 max-w-3xl mx-auto font-light leading-relaxed"
           >
-            La forma más fácil de conectar Marcas y Creadores. Automatizamos pagos, contratos y facturas para que tú solo te preocupes por <span className="text-[var(--primary)] dark:text-white font-medium">crear</span> y <span className="text-[var(--primary)] dark:text-white font-medium">crecer</span>.
+            Nacionaliza tus facturas de publicidad digital y paga menos impuestos
           </motion.p>
 
           <motion.div
