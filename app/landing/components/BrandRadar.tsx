@@ -15,9 +15,9 @@ export function BrandRadar() {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       className="max-w-5xl mx-auto mb-fib-6"
     >
-      <div className="bg-[var(--surface)] dark:bg-white/10 rounded-3xl p-fib-3 border border-[var(--primary)]/20 dark:border-white/10 flex flex-col md:flex-row items-center gap-fib-4">
+        <div className="bg-[var(--surface)] dark:bg-white/10 rounded-3xl p-fib-3 border border-emerald-500/20 dark:border-white/10 flex flex-col md:flex-row items-center gap-fib-4">
         <div className="flex-1">
-          <h3 className="text-3xl font-bold text-[var(--primary)] dark:text-white mb-fib-2">
+          <h3 className="text-3xl font-bold text-[var(--primary)] dark:text-emerald-400 mb-fib-2">
             Hazte Notar
           </h3>
           <p className="text-[var(--text-main)]/80 dark:text-slate-300 mb-fib-3 text-lg leading-relaxed">
@@ -50,7 +50,7 @@ export function BrandRadar() {
           {[1, 2, 3].map((ring) => (
             <div
               key={ring}
-              className="absolute inset-0 rounded-full border border-[var(--primary)]/20 dark:border-white/20"
+              className="absolute inset-0 rounded-full border border-emerald-500/20 dark:border-white/20"
               style={{
                 margin: `${ring * 15}%`,
               }}
@@ -61,12 +61,12 @@ export function BrandRadar() {
           <motion.div 
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-[var(--primary)]/40 dark:via-white/20 to-transparent"
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-emerald-500/40 dark:via-white/20 to-transparent"
             style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 50%)" }}
           />
 
           {/* Center */}
-          <div className="absolute inset-0 m-auto w-3 h-3 bg-[var(--primary)] dark:bg-white rounded-full shadow-[0_0_20px_rgba(4,89,50,0.2)] dark:shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
+          <div className="absolute inset-0 m-auto w-3 h-3 bg-emerald-500 dark:bg-white rounded-full shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
           
           {/* Blips */}
           {[
@@ -80,7 +80,7 @@ export function BrandRadar() {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
               transition={{ repeat: Infinity, duration: 4, delay: i * 1 }}
-              className="absolute w-1.5 h-1.5 bg-[var(--accent)] dark:bg-green-400 rounded-full shadow-[0_0_10px_rgba(3,166,74,0.5)]"
+              className="absolute w-1.5 h-1.5 bg-emerald-500 dark:bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
               style={{
                 top: pos.top,
                 left: pos.left,

@@ -45,7 +45,7 @@ export function ProcessTimeline() {
         </div>
         
         {/* Connecting Line (Desktop only) */}
-        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-[var(--primary)]/10 via-[var(--primary)]/30 to-[var(--primary)]/10 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
+        <div className="absolute left-4 md:left-1/2 top-40 bottom-20 w-0.5 bg-gradient-to-b from-emerald-500/10 via-emerald-500/30 to-emerald-500/10 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 -translate-x-1/2 hidden md:block" />
 
         <div className="space-y-24 relative z-10">
             {steps.map((step, index) => (
@@ -70,17 +70,17 @@ function TimelineStep({ step, index }: { step: any, index: number }) {
         >
             {/* Timeline Dot */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center justify-center w-8 h-8 z-10">
-                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-[var(--accent)] scale-150 shadow-[var(--primary)]/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
+                <div className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-lg transition-all duration-500 ${isInView ? 'bg-emerald-500 scale-150 shadow-emerald-500/50' : 'bg-slate-300 dark:bg-slate-700'}`} />
             </div>
 
             <div className="flex-1 w-full">
-                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-[var(--primary)]/10 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-[var(--primary)]/10 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
+                <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-2 border border-emerald-500/10 dark:border-white/10 shadow-2xl overflow-hidden relative h-80 flex items-center justify-center group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 dark:from-slate-800/50 dark:to-slate-900/50 -z-10" />
                     {step.component}
                 </div>
             </div>
             <div className="flex-1 text-center md:text-left">
-                <div className="inline-block px-3 py-1 mb-4 rounded-full bg-[var(--primary)]/10 dark:bg-[var(--primary)]/30 text-[var(--primary)] dark:text-emerald-400 font-bold text-sm uppercase tracking-wider">
+                <div className="inline-block px-3 py-1 mb-4 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm uppercase tracking-wider">
                     Paso {index + 1}
                 </div>
                 <h4 className="text-3xl font-bold text-[var(--text-main)] dark:text-white mb-4">{step.title.split('. ')[1]}</h4>
@@ -106,7 +106,7 @@ function StepConfirmAmount() {
                     $ 1,000
                 </div>
                 <motion.div 
-                    className="h-8 w-full bg-[var(--accent)] rounded-lg flex items-center justify-center text-white font-medium text-sm"
+                    className="h-8 w-full bg-emerald-500 rounded-lg flex items-center justify-center text-white font-medium text-sm"
                     animate={isInView ? { scale: [1, 0.95, 1, 1] } : {}}
                     transition={{ 
                         duration: 4,  
@@ -152,7 +152,7 @@ function StepConfirmAmount() {
                     repeat: Infinity,
                     repeatDelay: 0
                 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--primary)] text-white p-3 rounded-full shadow-xl z-30"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white p-3 rounded-full shadow-xl z-30"
             >
                 <Check size={32} weight="bold" />
             </motion.div>
@@ -203,7 +203,7 @@ function StepBilling() {
                 initial={{ scale: 0.8, opacity: 0.5 }}
                 animate={isInView ? { scale: [1, 1.05, 1], opacity: 1 } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="relative z-10 w-20 h-28 bg-gradient-to-b from-[var(--primary)] to-[var(--primary)]/80 rounded-lg shadow-xl flex flex-col items-center justify-center border border-[var(--accent)]/50"
+                className="relative z-10 w-20 h-28 bg-gradient-to-b from-emerald-600 to-emerald-600/80 rounded-lg shadow-xl flex flex-col items-center justify-center border border-emerald-500/50"
             >
                 <FileText size={32} weight="fill" className="text-white mb-1" />
                 <div className="w-12 h-1 bg-white/20 rounded-full mb-1" />
@@ -217,7 +217,7 @@ function StepBilling() {
                         repeat: Infinity,
                         repeatDelay: 0
                     }}
-                    className="absolute -bottom-2 -right-2 bg-[var(--primary)] text-white p-1 rounded-full shadow-lg border border-white dark:border-slate-900"
+                    className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-lg border border-white dark:border-slate-900"
                 >
                     <Check size={12} weight="bold" />
                 </motion.div>
@@ -244,14 +244,14 @@ function StepPayment() {
                 <div className="w-8 h-1 bg-slate-600 rounded-full mb-4" />
                 {/* Screen Content */}
                 <div className="w-full flex-1 bg-slate-800 dark:bg-slate-900 rounded-lg flex flex-col items-center justify-center gap-2 p-1">
-                    <div className="w-8 h-8 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
-                        <Wallet size={16} weight="fill" className="text-[var(--accent)]" />
+                    <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                        <Wallet size={16} weight="fill" className="text-emerald-500" />
                     </div>
                     <div className="w-10 h-1.5 bg-slate-600 rounded-full" />
                     <motion.div 
-                        animate={isInView ? { scale: [1, 0.9, 1], backgroundColor: ["#03A64A", "#045932", "#03A64A"] } : {}}
+                        animate={isInView ? { scale: [1, 0.9, 1] } : {}}
                         transition={{ delay: 1, duration: 0.3, repeat: Infinity, repeatDelay: 3 }}
-                        className="w-12 h-4 bg-[var(--accent)] rounded-full mt-2" 
+                        className="w-12 h-4 bg-emerald-500 rounded-full mt-2" 
                     />
                 </div>
             </motion.div>
@@ -276,7 +276,7 @@ function StepPayment() {
                         repeat: Infinity,
                         repeatDelay: 3
                     }}
-                    className="relative z-20 bg-[var(--primary)] text-white p-2 rounded-full shadow-lg shadow-[var(--primary)]/30"
+                    className="relative z-20 bg-emerald-500 text-white p-2 rounded-full shadow-lg shadow-emerald-500/30"
                 >
                     <CurrencyDollar size={20} weight="bold" />
                 </motion.div>
@@ -292,7 +292,7 @@ function StepPayment() {
                 <motion.div
                     animate={isInView ? { 
                         y: [0, -5, 0],
-                        color: ["#94a3b8", "#03A64A", "#94a3b8"] // slate-400 to accent
+                        color: ["#94a3b8", "var(--primary)", "#94a3b8"] // slate-400 to primary
                     } : {}}
                     transition={{ 
                         delay: 2.3,  
@@ -315,7 +315,7 @@ function StepPayment() {
                         repeat: Infinity,
                         repeatDelay: 2.5
                     }}
-                    className="absolute -top-2 -right-2 bg-[var(--primary)] text-white p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900"
+                    className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900"
                 >
                     <Check size={14} weight="bold" />
                 </motion.div>
@@ -351,7 +351,7 @@ function StepRecharge() {
                     }}
                     className="absolute z-0"
                 >
-                    <div className="w-1 h-8 bg-[var(--primary)]/50 rounded-full blur-sm" />
+                    <div className="w-1 h-8 bg-emerald-500/50 rounded-full blur-sm" />
                 </motion.div>
             ))}
 
@@ -367,7 +367,7 @@ function StepRecharge() {
                 <p className="text-slate-400 text-xs uppercase tracking-wider font-bold mb-2 z-10">Saldo Publicitario</p>
                 
                 <div className="flex items-baseline gap-1 z-10">
-                    <span className="text-2xl text-[var(--primary)] font-bold">$</span>
+                    <span className="text-2xl text-emerald-400 font-bold">$</span>
                     <motion.span 
                         className="text-5xl font-bold text-white tracking-tight"
                     >
@@ -385,7 +385,7 @@ function StepRecharge() {
                             repeat: Infinity,
                             ease: "easeInOut"
                         }}
-                        className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                     />
                 </div>
 
@@ -393,7 +393,7 @@ function StepRecharge() {
                 <motion.div
                     animate={isInView ? { opacity: [0, 0, 0.5, 0] } : {}}
                     transition={{ duration: 3, times: [0, 0.6, 0.7, 1], repeat: Infinity }}
-                    className="absolute inset-0 bg-[var(--primary)] mix-blend-overlay"
+                    className="absolute inset-0 bg-emerald-500 mix-blend-overlay"
                 />
             </motion.div>
 
@@ -402,7 +402,7 @@ function StepRecharge() {
                 initial={{ scale: 0, rotate: -20 }}
                 animate={isInView ? { scale: 1, rotate: 10 } : {}}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="absolute -top-6 -right-6 bg-[var(--primary)] text-white p-3 rounded-xl shadow-lg z-20 border-4 border-white dark:border-slate-900"
+                className="absolute -top-6 -right-6 bg-emerald-500 text-white p-3 rounded-xl shadow-lg z-20 border-4 border-white dark:border-slate-900"
             >
                 <Wallet size={28} weight="fill" />
             </motion.div>
@@ -411,7 +411,7 @@ function StepRecharge() {
              <motion.div
                 animate={isInView ? { opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, 10] } : {}}
                 transition={{ duration: 3, times: [0, 0.6, 0.7, 0.9, 1], repeat: Infinity }}
-                className="absolute -bottom-12 bg-[var(--primary)]/10 dark:bg-green-900/30 text-[var(--primary)] dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
+                className="absolute -bottom-12 bg-emerald-500/10 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
             >
                 <CheckCircle size={16} weight="fill" />
                 Acreditado
@@ -478,7 +478,7 @@ function StepStartAds() {
                             repeat: Infinity,
                             repeatType: "reverse"
                         }}
-                        className="w-4 md:w-6 bg-[var(--accent)] rounded-t-md"
+                        className="w-4 md:w-6 bg-emerald-500 rounded-t-md"
                     />
                 ))}
             </div>
@@ -500,7 +500,7 @@ function StepStartAds() {
                 className="absolute z-20"
             >
                 <div className="relative transform rotate-45">
-                    <RocketLaunch size={80} weight="fill" className="text-[var(--accent)] drop-shadow-2xl" />
+                    <RocketLaunch size={80} weight="fill" className="text-emerald-500 drop-shadow-2xl" />
                     
                     {/* Engine Fire */}
                     <motion.div
@@ -521,10 +521,10 @@ function StepStartAds() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ delay: 0.5, type: "spring" }}
-                className="absolute bottom-6 right-6 bg-[var(--primary)] text-white p-4 rounded-full shadow-xl hover:bg-green-600 transition-colors cursor-pointer z-30 group"
+                className="absolute bottom-6 right-6 bg-emerald-500 text-white p-4 rounded-full shadow-xl hover:bg-emerald-600 transition-colors cursor-pointer z-30 group"
             >
                 <Play size={24} weight="fill" className="group-hover:scale-110 transition-transform" />
-                <div className="absolute inset-0 rounded-full bg-[var(--primary)] animate-ping opacity-20" />
+                <div className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-20" />
             </motion.div>
         </div>
     );

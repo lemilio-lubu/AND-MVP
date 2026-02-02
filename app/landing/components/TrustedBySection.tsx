@@ -4,7 +4,7 @@ import { FacebookLogo, InstagramLogo, TiktokLogo, GoogleLogo, YoutubeLogo } from
 
 export function TrustedBySection() {
   return (
-    <section className="py-fib-4 border-b border-[var(--primary)]/10 dark:border-white/5 bg-transparent transition-colors duration-500">
+    <section className="py-fib-4 border-b border-emerald-500/10 dark:border-white/5 bg-transparent transition-colors duration-500">
       <div className="container mx-auto px-4">
         <p className="text-center text-sm font-medium text-[var(--text-main)]/60 dark:text-slate-500 uppercase tracking-widest mb-fib-3">
           Integrado con las plataformas líderes

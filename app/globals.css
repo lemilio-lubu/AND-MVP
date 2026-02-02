@@ -10,6 +10,11 @@
   --background: #efefea;    /* Page Background (Beige) */
   --surface: #ffffff;       /* Components / Cards */
 
+  /* RGB values for RGBA usage */
+  --primary-rgb: 16, 49, 45;
+  --accent-rgb: 16, 19, 24;
+  --emerald-rgb: 16, 185, 129;
+
   /* Mapped System Variables */
   --foreground: var(--text-main);
   
@@ -91,6 +96,14 @@
   --background: #101318; /* Dark Charcoal from Palette */
   --foreground: #efefea; /* Beige for text in dark mode */
   --surface: #10312d;    /* Deep green for surfaces in dark mode */
+  --primary: #10b981;    /* Emerald 500 - Verde visible en modo oscuro */
+  --accent: #059669;     /* Emerald 600 - Verde más oscuro para hover */
+  --text-main: #efefea;  /* Beige for main text in dark mode */
+  
+  /* RGB values for dark mode */
+  --primary-rgb: 16, 185, 129;
+  --accent-rgb: 5, 150, 105;
+  --emerald-rgb: 16, 185, 129;
 }
 
 body {
