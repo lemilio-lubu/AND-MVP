@@ -36,10 +36,10 @@ export function ProcessTimeline() {
   return (
     <div className="max-w-5xl mx-auto mb-fib-6 relative">
         <div className="text-center mb-24 relative z-10">
-            <h3 className="text-4xl font-bold text-[var(--text-main)] dark:text-white mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-[var(--text-main)] dark:text-white mb-4">
                 Así funciona el proceso
             </h3>
-            <p className="text-[var(--text-main)]/70 dark:text-slate-400 text-xl max-w-2xl mx-auto">
+            <p className="text-[var(--text-main)]/70 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
                 Desde la calculadora hasta tu primera campaña en 5 pasos simples.
             </p>
         </div>
@@ -83,8 +83,8 @@ function TimelineStep({ step, index }: { step: any, index: number }) {
                 <div className="inline-block px-3 py-1 mb-4 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm uppercase tracking-wider">
                     Paso {index + 1}
                 </div>
-                <h4 className="text-3xl font-bold text-[var(--text-main)] dark:text-white mb-4">{step.title.split('. ')[1]}</h4>
-                <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-lg leading-relaxed">{step.description}</p>
+                <h4 className="text-2xl md:text-3xl font-bold text-[var(--text-main)] dark:text-white mb-4">{step.title.split('. ')[1]}</h4>
+                <p className="text-[var(--text-main)]/80 dark:text-slate-300 text-base md:text-lg leading-relaxed">{step.description}</p>
             </div>
         </motion.div>
     )

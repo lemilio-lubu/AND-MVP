@@ -116,7 +116,7 @@ export function ROICalculator() {
       <div className="bg-white dark:bg-[#011F10]/40 backdrop-blur-xl rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-2xl">
         
         <div className="text-center mb-10">
-          <h3 className="text-3xl font-bold text-[var(--text-main)] dark:text-white mb-2">Calculadora de Ahorro Real</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-[var(--text-main)] dark:text-white mb-2">Calculadora de Ahorro Real</h3>
           <p className="text-slate-600 dark:text-slate-400">Descubre cuánto estás perdiendo por no nacionalizar tu pauta</p>
         </div>
 
@@ -132,7 +132,7 @@ export function ROICalculator() {
                 step="100"
                 value={investment}
                 onChange={handleInvestmentChange}
-                className="w-48 bg-transparent border-b-2 border-[var(--primary)] text-center text-4xl font-bold text-[var(--text-main)] dark:text-white focus:outline-none focus:border-[var(--accent)] transition-colors py-2"
+                className="w-48 bg-transparent border-b-2 border-[var(--primary)] text-center text-3xl sm:text-4xl font-bold text-[var(--text-main)] dark:text-white focus:outline-none focus:border-[var(--accent)] transition-colors py-2"
               />
             </div>
             <input 
@@ -159,7 +159,7 @@ export function ROICalculator() {
               <Warning size={64} weight="fill" />
             </div>
             
-            <h4 className="text-xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
+            <h4 className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
               <Warning size={24} weight="duotone" />
               Pago Informal
             </h4>
@@ -192,17 +192,17 @@ export function ROICalculator() {
 
           {/* Card Legal (Derecha - Éxito) */}
           <div className="bg-emerald-50 dark:bg-[#04301C] rounded-2xl p-6 border-2 border-[var(--primary)] relative overflow-hidden transition-all hover:shadow-xl hover:shadow-[var(--primary)]/10 ring-4 ring-[var(--primary)]/5">
-            <div className="absolute top-0 right-0 p-4 bg-[var(--primary)] text-white text-xs font-bold rounded-bl-xl shadow-lg">
-              RECOMENDADO
+            <div className="absolute top-0 right-0 px-4 py-1.5 bg-[var(--primary)] text-white text-[10px] uppercase font-bold rounded-bl-xl shadow-lg z-10">
+              Recomendado
             </div>
             
-            <div className="absolute top-10 right-4 text-[var(--primary)]/10">
+            <div className="absolute top-10 right-4 text-[var(--primary)]/5 dark:text-[var(--primary)]/10 pointer-events-none">
               <ShieldCheck size={80} weight="fill" />
             </div>
 
-            <h4 className="text-xl font-bold text-[var(--primary)] dark:text-emerald-400 mb-6 flex items-center gap-2">
-              <CheckCircle size={24} weight="duotone" />
-              Nacionalizado con AND
+            <h4 className="relative z-10 text-lg sm:text-xl font-bold text-[var(--primary)] dark:text-emerald-400 mb-6 flex items-start gap-2 pr-8">
+              <CheckCircle size={24} weight="duotone" className="shrink-0 mt-0.5" />
+              <span>Nacionalizado con AND</span>
             </h4>
 
             <div className="space-y-3 mb-6">
@@ -251,7 +251,7 @@ export function ROICalculator() {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                     <h5 className="text-emerald-100 text-sm font-semibold uppercase tracking-wider mb-1">Ahorro Mensual</h5>
-                    <div className="text-3xl md:text-4xl font-bold mb-2">{formatCurrency(ahorro_mensual)}</div>
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">{formatCurrency(ahorro_mensual)}</div>
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 inline-block text-sm font-medium">
                         {pauta > 0 ? (
                             <span>Ahorras {savingsPercent.toFixed(1)}% vs informal</span>
@@ -263,7 +263,7 @@ export function ROICalculator() {
 
                 <div className="text-center md:text-left">
                     <h5 className="text-emerald-100 text-sm font-semibold uppercase tracking-wider mb-1">Ahorro Anual Total</h5>
-                    <div className="text-4xl md:text-5xl font-extrabold text-white mb-2 leading-none">
+                    <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-2 leading-none">
                         {formatCurrency(ahorro_anual)}
                     </div>
                 </div>

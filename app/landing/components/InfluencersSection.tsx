@@ -24,10 +24,10 @@ export function InfluencersSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 className="text-5xl md:text-7xl font-bold text-[var(--text-main)] dark:text-white tracking-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold text-[var(--text-main)] dark:text-white tracking-tight">
               Tu Talento. <span className="text-[var(--primary)] dark:text-emerald-800">Tu Negocio.</span>
             </h2>
-            <p className="text-xl text-[var(--text-main)]/80 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-[var(--text-main)]/80 dark:text-slate-300 mt-fib-2 max-w-2xl mx-auto">
               Deja de ser un amateur. Te damos las herramientas para que cobres y trabajes como una empresa.
             </p>
           </motion.div>
