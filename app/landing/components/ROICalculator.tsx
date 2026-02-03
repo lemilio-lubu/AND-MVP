@@ -161,7 +161,7 @@ export function ROICalculator() {
             
             <h4 className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
               <Warning size={24} weight="duotone" />
-              Pago Informal
+              Sin Factura Nacional
             </h4>
 
             <div className="space-y-3 mb-6">
@@ -202,7 +202,7 @@ export function ROICalculator() {
 
             <h4 className="relative z-10 text-lg sm:text-xl font-bold text-[var(--primary)] dark:text-emerald-400 mb-6 flex items-start gap-2 pr-8">
               <CheckCircle size={24} weight="duotone" className="shrink-0 mt-0.5" />
-              <span>Nacionalizado con AND</span>
+              <span>Con Factura Nacional</span>
             </h4>
 
             <div className="space-y-3 mb-6">
