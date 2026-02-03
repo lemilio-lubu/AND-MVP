@@ -25,10 +25,10 @@ export function HeroSection() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1 }}
-        className="absolute top-10 left-10 z-30 flex items-center gap-2"
+        className="absolute top-4 left-4 md:top-10 md:left-10 z-30 flex items-center gap-2"
       >
-        <img src="/assets/logos-01.png" alt="AND Logo" className="h-48 w-auto dark:hidden" />
-        <img src="/assets/logos-02.png" alt="AND Logo" className="h-48 w-auto hidden dark:block" />
+        <img src="/assets/logos-01.png" alt="AND Logo" className="h-24 sm:h-32 md:h-48 w-auto dark:hidden transition-all duration-300" />
+        <img src="/assets/logos-02.png" alt="AND Logo" className="h-24 sm:h-32 md:h-48 w-auto hidden dark:block transition-all duration-300" />
       </motion.div>
 
       {/* Background Elements */}
@@ -78,7 +78,7 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="text-5xl md:text-8xl font-bold mb-fib-3 leading-tight tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-fib-3 leading-tight tracking-tight"
           >
             <span className="text-[var(--primary)] dark:text-white">Factura local,</span>
             <br />

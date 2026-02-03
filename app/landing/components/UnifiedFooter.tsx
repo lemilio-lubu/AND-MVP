@@ -40,13 +40,13 @@ export function UnifiedFooter() {
                 <img 
                     src="/images/Exodo_logo_dark.svg" 
                     alt="EXODO" 
-                    className="h-20 w-auto dark:hidden opacity-80 hover:opacity-100 transition-opacity" 
+                    className="h-12 md:h-16 lg:h-20 w-auto dark:hidden opacity-80 hover:opacity-100 transition-opacity" 
                 />
                 {/* Dark Mode: Show Light Logo (White text) */}
                 <img 
                     src="/images/Exodo_logo_light.svg" 
                     alt="EXODO" 
-                    className="h-20 w-auto hidden dark:block opacity-80 hover:opacity-100 transition-opacity drop-shadow-xl" 
+                    className="h-12 md:h-16 lg:h-20 w-auto hidden dark:block opacity-80 hover:opacity-100 transition-opacity drop-shadow-xl" 
                 />
             </motion.a>
         </div>
