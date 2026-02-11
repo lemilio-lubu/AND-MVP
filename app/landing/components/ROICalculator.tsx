@@ -48,6 +48,7 @@ export function ROICalculator() {
   const iva_con = base_iva_con * 0.15;
   const gasto_real_con = pauta + isd + comision_agencia + iva_con;
 
+  
   // Totales
   const ahorro_mensual = gasto_real_sin - gasto_real_con;
   const ahorro_anual = ahorro_mensual * 12;
@@ -59,6 +60,17 @@ export function ROICalculator() {
   // Reuse old vars for display compatibility without breaking UI
   const total_visible_sin = total_gasto_sin;
   const comision = comision_agencia;
+  // ✅ NUEVO: Disparar evento de Facebook Pixel cuando aparece el modal
+useEffect(() => {
+  if (showModal && typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('trackCustom', 'ModalConfirmation', {
+      content_name: 'Modal - La mejor decisión mostrado',
+      content_category: 'Lead Confirmation',
+      monthly_investment: investment,
+      annual_savings: ahorro_anual
+    });
+  }
+}, [showModal, investment, ahorro_anual]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
