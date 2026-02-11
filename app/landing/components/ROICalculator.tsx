@@ -61,8 +61,18 @@ export function ROICalculator() {
   const total_visible_sin = total_gasto_sin;
   const comision = comision_agencia;
   // ✅ NUEVO: Disparar evento de Facebook Pixel cuando aparece el modal
+// ✅ ACTUALIZADO: Disparar evento de Facebook Pixel cuando aparece el modal
 useEffect(() => {
   if (showModal && typeof window !== 'undefined' && (window as any).fbq) {
+    // Evento ESTÁNDAR para optimización de campañas
+    (window as any).fbq('track', 'Lead', {
+      content_name: 'Modal - La mejor decisión',
+      content_category: 'Form Success Confirmation',
+      value: ahorro_anual,
+      currency: 'USD'
+    });
+    
+    // Evento CUSTOM para tracking interno (opcional)
     (window as any).fbq('trackCustom', 'ModalConfirmation', {
       content_name: 'Modal - La mejor decisión mostrado',
       content_category: 'Lead Confirmation',
