@@ -12,6 +12,7 @@ import { HeroSection } from "./components/HeroSection";
 import { TrustedBySection } from "./components/TrustedBySection";
 import { SmartSelector } from "./components/SmartSelector";
 import { CompaniesSection } from "./components/CompaniesSection";
+import { ClientLogosCarousel } from "./components/ClientLogosCarousel";
 import { InfluencersSection } from "./components/InfluencersSection";
 import { UnifiedFooter } from "./components/UnifiedFooter";
 
@@ -60,6 +61,7 @@ export default function LandingPage() {
       <HeroSection />
       <TrustedBySection />
       <CompaniesSection />
+      <ClientLogosCarousel />
       <SmartSelector />
       <InfluencersSection />
       <UnifiedFooter />
