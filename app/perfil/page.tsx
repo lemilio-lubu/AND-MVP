@@ -19,6 +19,15 @@ export default function PerfilPage() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [customName, setCustomName] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCustomName(localStorage.getItem("and_custom_name") || "");
+      setLogoUrl(localStorage.getItem("and_custom_logo") || "");
+    }
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -65,6 +74,23 @@ export default function PerfilPage() {
     );
   }
 
+  const handleSaveCustomProfile = () => {
+    localStorage.setItem("and_custom_name", customName);
+    localStorage.setItem("and_custom_logo", logoUrl);
+    alert("Perfil actualizado correctamente. Los cambios se reflejarán en la barra lateral.");
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[var(--background)] dark:bg-[#000B05] flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-500">
        {/* Background Gradients */}
@@ -80,7 +106,7 @@ export default function PerfilPage() {
         className="w-full max-w-2xl relative z-10"
       >
         <BackButton 
-          href={user.type === 'admin' ? "/admin" : "/wallet/nueva-capacidad"} 
+          href={user.type === 'admin' ? "/admin" : "/inicio/wallet"} 
           label="Volver al Panel" 
         />
 
@@ -237,6 +263,61 @@ export default function PerfilPage() {
                     theme="brand"
                   >
                     {updating ? "Actualizando..." : "Actualizar Contraseña"}
+                  </GradientButton>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-slate-200 dark:bg-slate-800" />
+
+            {/* Customization Section */}
+            <div className="space-y-4 pt-4">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <User size={18} />
+                Personalización
+              </h3>
+
+              <div className="space-y-4 max-w-md">
+                <InputGroup
+                  label="Nombre a mostrar"
+                  icon={<Buildings size={18} />}
+                  type="text"
+                  placeholder="Ej. Mi Agencia"
+                  theme="brand"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                />
+
+                <div className="space-y-1">
+                  <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    Logo de la empresa
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
+                      {logoUrl ? (
+                        <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <Buildings size={24} className="text-slate-400" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input 
+                        type="file" 
+                        accept="image/png, image/jpeg"
+                        onChange={handleLogoUpload}
+                        className="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary)]/90 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Sube un archivo PNG o JPG (máx. 2MB)</p>
+                </div>
+
+                <div className="pt-2">
+                  <GradientButton 
+                    onClick={handleSaveCustomProfile}
+                    theme="brand"
+                  >
+                    Guardar Personalización
                   </GradientButton>
                 </div>
               </div>

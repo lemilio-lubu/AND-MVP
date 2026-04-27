@@ -79,7 +79,7 @@ export default function InfluencerRegistro() {
 
             <GradientButton 
               disabled={!accepted}
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/inicio/wallet")}
               theme="brand"
             >
               Unirme como Creador

@@ -22,7 +22,7 @@ export interface PostAuthResolution {
 // - El destino post-auth para empresa es wallet.
 // - Se permite configuración de ruta interna para wallet, con fallback seguro a /wallet/nueva-capacidad.
 const ADMIN_DEFAULT_ROUTE = "/admin";
-const EMPRESA_DEFAULT_ROUTE = "/wallet/nueva-capacidad";
+const EMPRESA_DEFAULT_ROUTE = "/inicio/wallet";
 const GLOBAL_FALLBACK_ROUTE = "/";
 
 function isValidInternalRoute(route?: string): boolean {
