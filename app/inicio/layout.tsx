@@ -44,8 +44,8 @@ export default function InicioLayout({ children }: { children: ReactNode }) {
       <aside className="w-64 border-r border-[#1E2322] flex flex-col justify-between bg-[#0E1111] flex-shrink-0">
         <div>
           {/* Logo Area */}
-          <div className="h-20 flex items-center px-6 border-b border-[#1E2322]">
-            <img src="/assets/logos-02.png" alt="AND Local Ads" className="h-8 object-contain" />
+          <div className="h-24 flex items-center justify-center px-4 border-b border-[#1E2322]">
+            <img src="/assets/localadspng-11.png" alt="AND Local Ads" className="w-full h-full object-contain p-2" />
           </div>
 
           {/* Navigation */}
