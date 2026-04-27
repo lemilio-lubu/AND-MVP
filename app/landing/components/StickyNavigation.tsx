@@ -13,7 +13,7 @@ export function StickyNavigation() {
           if (entry.isIntersecting) {
             if (entry.target.id === "hero") setCurrentZone("intro");
             if (entry.target.id === "companies") setCurrentZone("companies");
-            if (entry.target.id === "influencers") setCurrentZone("influencers");
+            if (entry.target.id === "billing-start") setCurrentZone("billing-start");
           }
         });
       },
@@ -30,9 +30,9 @@ export function StickyNavigation() {
           if (entry.isIntersecting) {
             setCurrentZone("footer");
           } else {
-             // When footer leaves (scrolling up), revert to influencers
+             // When footer leaves (scrolling up), revert to billing section
              if (entry.boundingClientRect.top > 0) {
-                 setCurrentZone("influencers");
+                 setCurrentZone("billing-start");
              }
           }
         });
@@ -43,7 +43,7 @@ export function StickyNavigation() {
       }
     );
 
-    const sections = ["hero", "companies", "influencers"];
+    const sections = ["hero", "companies", "billing-start"];
     sections.forEach((id) => {
       const el = document.getElementById(id);
       if (el) mainObserver.observe(el);
@@ -66,7 +66,7 @@ export function StickyNavigation() {
     <div className="hidden md:flex fixed right-fib-3 top-1/2 -translate-y-1/2 z-50 flex-col gap-fib-2 items-end mix-blend-difference">
       <NavDot active={currentZone === "intro"} label="Inicio" onClick={() => scrollTo('hero')} />
       <NavDot active={currentZone === "companies"} label="Empresas" onClick={() => scrollTo('companies')} />
-      <NavDot active={currentZone === "influencers"} label="Creadores" onClick={() => scrollTo('influencers')} />
+      <NavDot active={currentZone === "billing-start"} label="Facturar" onClick={() => scrollTo('billing-start')} />
       <NavDot active={currentZone === "footer"} label="Contacto" onClick={() => scrollTo('footer')} />
     </div>
   );
