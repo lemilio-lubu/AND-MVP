@@ -39,7 +39,7 @@ import {
   Area
 } from 'recharts';
 import { GlobalWorld } from "@/app/components/ui/GlobalWorld";
-import { getDashboardStats, DashboardStats, approveFacturacionRequest, payFacturacionRequest, downloadInvoice } from "@/lib/api/client";
+import { getDashboardStats, DashboardStats, approveFacturacionRequest, payFacturacionRequest, downloadInvoice, hasToken } from "@/lib/api/client";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -77,6 +77,14 @@ export default function DashboardPage() {
     }
 
     console.log('✅ Dashboard: Usuario válido, cargando datos...');
+
+    if (!hasToken()) {
+      console.log('ℹ️ Dashboard: Sesión mock activa, omitiendo carga de backend');
+      setLoading(false);
+      setError("Modo demo: métricas no disponibles sin backend");
+      return;
+    }
+
     // Determinar si mostrar gamificación
     const shouldShow = user.isNew && !user.hasEmittedFirstInvoice;
     setShowGamification(shouldShow);
@@ -93,7 +101,7 @@ export default function DashboardPage() {
       const data = await getDashboardStats();
       console.log("Datos recibidos:", data);
       setStats(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error loading dashboard stats:", error);
       setError("No se pudieron cargar los datos.");
     } finally {

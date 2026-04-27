@@ -9,7 +9,8 @@ import { Checkbox } from "@/app/components/ui/Checkbox";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
 import { useUser } from "@/lib/context/UserContext";
-import { registerCompany } from "@/lib/api/client";
+import { MockAuthError } from "@/lib/auth/types";
+import { getPostAuthFeatureConfig, resolvePostAuthRoute } from "@/lib/auth/postAuthRouting";
 
 export default function EmpresaRegistro() {
   const [accepted, setAccepted] = useState(false);
@@ -23,7 +24,12 @@ export default function EmpresaRegistro() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { login } = useUser();
+  const { registerMockCompany } = useUser();
+
+  const getErrorMessage = (value: unknown, fallback: string) => {
+    if (value instanceof Error) return value.message;
+    return fallback;
+  };
 
   const handleRegister = async () => {
     setError("");
@@ -41,23 +47,30 @@ export default function EmpresaRegistro() {
     setLoading(true);
 
     try {
-      // 1. Registro unificado
-      const authResponse = await registerCompany({
-        razonSocial: companyName,
-        correoCorporativo: email,
+      await registerMockCompany({
+        companyName,
+        email,
         ruc,
         telefono,
         ciudad,
         password,
       });
 
-      // 2. Login automático
-      await login(authResponse.access_token);
+      const featureConfig = getPostAuthFeatureConfig();
+      const resolution = resolvePostAuthRoute({
+        userType: "empresa",
+        source: "registro_empresa",
+        newCapabilityEnabled: featureConfig.newCapabilityEnabled,
+        newCapabilityRoute: featureConfig.newCapabilityRoute,
+      });
 
-      // 3. Redirigir a dashboard
-      router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Error al registrar empresa");
+      router.push(resolution.route);
+    } catch (err: unknown) {
+      if (err instanceof MockAuthError) {
+        setError(err.message);
+      } else {
+        setError(getErrorMessage(err, "Error al registrar empresa"));
+      }
     } finally {
       setLoading(false);
     }

@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
     }
 
     if (user.type !== "admin") {
-      router.push("/dashboard");
+      router.push("/wallet/nueva-capacidad");
       return;
     }
 

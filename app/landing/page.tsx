@@ -10,7 +10,6 @@ import { useTheme } from "next-themes";
 import { StickyNavigation } from "./components/StickyNavigation";
 import { HeroSection } from "./components/HeroSection";
 import { TrustedBySection } from "./components/TrustedBySection";
-import { SmartSelector } from "./components/SmartSelector";
 import { CompaniesSection } from "./components/CompaniesSection";
 import { ClientLogosCarousel } from "./components/ClientLogosCarousel";
 import { InfluencersSection } from "./components/InfluencersSection";
@@ -62,7 +61,6 @@ export default function LandingPage() {
       <TrustedBySection />
       <CompaniesSection />
       <ClientLogosCarousel />
-      <SmartSelector />
       <InfluencersSection />
       <UnifiedFooter />
     </motion.div>

@@ -3,23 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Envelope, LockKey, SignIn, Buildings, Key, Eye, EyeSlash } from "@phosphor-icons/react";
+import { Envelope, LockKey, Buildings, Key, Eye, EyeSlash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { InputGroup } from "@/app/components/ui/InputGroup";
 import { GradientButton } from "@/app/components/ui/GradientButton";
 import { BackButton } from "@/app/components/ui/BackButton";
 import { useUser } from "@/lib/context/UserContext";
 import { login as apiLogin, getMe } from "@/lib/api/client";
+import { MockAuthError } from "@/lib/auth/types";
+import { getPostAuthFeatureConfig, resolvePostAuthRoute } from "@/lib/auth/postAuthRouting";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, user } = useUser();
+  const { login, loginMockCompany } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState<"empresa" | "admin">("empresa");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const getErrorMessage = (value: unknown, fallback: string) => {
+    if (value instanceof Error) return value.message;
+    return fallback;
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -31,6 +38,19 @@ export default function LoginPage() {
     setError("");
 
     try {
+      if (userType === "empresa") {
+        await loginMockCompany(email, password);
+        const featureConfig = getPostAuthFeatureConfig();
+        const resolution = resolvePostAuthRoute({
+          userType: "empresa",
+          source: "login",
+          newCapabilityEnabled: featureConfig.newCapabilityEnabled,
+          newCapabilityRoute: featureConfig.newCapabilityRoute,
+        });
+        router.push(resolution.route);
+        return;
+      }
+
       console.log('🔑 Login: Intentando iniciar sesión...', { email });
       const response = await apiLogin({ email, password });
       console.log('✅ Login: Respuesta del backend recibida');
@@ -43,18 +63,25 @@ export default function LoginPage() {
       console.log('✅ Login: Perfil obtenido:', profile);
       
       // Normalizar el rol a mayúsculas para evitar errores de case-sensitivity
-      const role = profile.role?.toUpperCase() || '';
-      
-      if (role === 'ADMIN') {
-        console.log('🔀 Login: Redirigiendo a /admin');
-        router.push("/admin");
-      } else {
-        console.log('🔀 Login: Redirigiendo a /dashboard');
-        router.push("/dashboard");
-      }
-    } catch (err: any) {
+      const role = profile.role?.toLowerCase() || '';
+      const normalizedRole = role === "admin" ? "admin" : "empresa";
+      const featureConfig = getPostAuthFeatureConfig();
+      const resolution = resolvePostAuthRoute({
+        userType: normalizedRole,
+        source: "login",
+        newCapabilityEnabled: featureConfig.newCapabilityEnabled,
+        newCapabilityRoute: featureConfig.newCapabilityRoute,
+      });
+
+      console.log(`🔀 Login: Redirigiendo a ${resolution.route} (${resolution.reason})`);
+      router.push(resolution.route);
+    } catch (err: unknown) {
       console.error('❌ Login: Error:', err);
-      setError(err.message || "Error al iniciar sesión");
+      if (err instanceof MockAuthError) {
+        setError(err.message);
+      } else {
+        setError(getErrorMessage(err, "Error al iniciar sesión"));
+      }
     } finally {
       setLoading(false);
     }

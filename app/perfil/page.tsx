@@ -80,7 +80,7 @@ export default function PerfilPage() {
         className="w-full max-w-2xl relative z-10"
       >
         <BackButton 
-          href={user.type === 'admin' ? "/admin" : "/dashboard"} 
+          href={user.type === 'admin' ? "/admin" : "/wallet/nueva-capacidad"} 
           label="Volver al Panel" 
         />
 
