@@ -74,8 +74,8 @@ jobs:
             # Entrar a la carpeta
             cd /home/ubuntu/app/frontend
             
-            # Instalar dependencias en el servidor (solo producción para ser más rápido)
-            npm install --omit=dev
+            # Instalar dependencias en el servidor
+            npm install
             
             # Asegurar archivo de entorno
             cp /home/ubuntu/app/.env.front .env
