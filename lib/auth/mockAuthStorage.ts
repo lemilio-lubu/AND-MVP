@@ -201,6 +201,32 @@ export async function loginCompanyMock(email: string, password: string): Promise
     throw new MockAuthError("VALIDATION_ERROR", "Ingresa email y contraseña");
   }
 
+  // --- USUARIO QUEMADO ---
+  if (normalizedEmail === "lorena.lopez@minegocio.com.ec" && password === "Negocio1891") {
+    const hardcodedId = "mock_company_hardcoded_1";
+    const users = getUsers();
+    if (!users.some((u) => u.id === hardcodedId)) {
+      const user: MockCompanyUser = {
+        id: hardcodedId,
+        role: "empresa",
+        companyName: "Mi negocio",
+        email: "lorena.lopez@minegocio.com.ec",
+        ruc: "1891759106001",
+        telefono: "0999999999",
+        ciudad: "Ambato",
+        passwordHash: "bypass",
+        passwordSalt: "bypass",
+        createdAt: nowIso(),
+      };
+      users.push(user);
+      setUsers(users);
+    }
+    clearLockout(normalizedEmail);
+    createSession(hardcodedId);
+    return { userId: hardcodedId };
+  }
+  // -----------------------
+
   assertNotLocked(normalizedEmail);
 
   const users = getUsers();
