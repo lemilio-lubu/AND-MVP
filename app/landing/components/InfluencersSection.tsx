@@ -65,15 +65,24 @@ export function InfluencersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-center mt-fib-6"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-fib-6"
         >
+          <motion.button
+            onClick={() => router.push('/login')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-transparent border-2 border-emerald-600 text-[var(--text-main)] hover:bg-emerald-50 dark:border-emerald-500 dark:text-slate-200 dark:hover:bg-emerald-900/30 transition-all w-full sm:w-auto"
+          >
+            Facturar
+          </motion.button>
+
           <motion.button
             onClick={() => router.push('/registro/empresa')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all"
+            className="px-fib-3 py-fib-2 text-lg font-medium rounded-full bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all w-full sm:w-auto"
           >
-            Iniciar
+            Comenzar
           </motion.button>
         </motion.div>
       </div>
