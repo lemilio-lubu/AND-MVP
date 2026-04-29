@@ -110,35 +110,35 @@ export default function PerfilPage() {
           label="Volver al Panel" 
         />
 
-        <div className="bg-[var(--surface)] dark:bg-[#011F10]/50 backdrop-blur-xl border border-slate-200 dark:border-[#04301C] rounded-2xl padding-8 shadow-2xl overflow-hidden">
+        <div className="bg-[var(--surface)] dark:bg-[#011F10]/50 backdrop-blur-xl border border-slate-200 dark:border-[#04301C] rounded-2xl shadow-2xl overflow-hidden">
           
           {/* Header */}
-          <div className="px-8 py-6 border-b border-slate-200 dark:border-[#04301C] bg-slate-50/50 dark:bg-[#04301C]/30 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#E6F4EA] to-[#F2FBF5] dark:from-[#045932] dark:to-[#03A64A] flex items-center justify-center border border-slate-200 dark:border-white/10 text-[var(--primary)] dark:text-white shadow-inner">
+          <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-200 dark:border-[#04301C] bg-slate-50/50 dark:bg-[#04301C]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#E6F4EA] to-[#F2FBF5] dark:from-[#045932] dark:to-[#03A64A] flex items-center justify-center border border-slate-200 dark:border-white/10 text-[var(--primary)] dark:text-white shadow-inner flex-shrink-0">
                 <User size={24} weight="duotone" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[var(--text-main)] dark:text-white">Mi Perfil</h2>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">Gestiona tu información personal</p>
+                <h2 className="text-lg sm:text-xl font-bold text-[var(--text-main)] dark:text-white">Mi Perfil</h2>
+                <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm">Gestiona tu información personal</p>
               </div>
             </div>
             
-            <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase">
+            <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 uppercase self-start sm:self-auto">
               {user.type}
             </div>
           </div>
 
-          <div className="p-8 space-y-8">
+          <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
             
             {/* Info Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-2 sm:mb-4 flex items-center gap-2">
                 <IdentificationCard size={18} />
                 Información de Cuenta
               </h3>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                    {/* Using readOnly input for display */}
                    <InputGroup

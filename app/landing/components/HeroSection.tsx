@@ -98,11 +98,11 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.2 }}
-            className="mt-fib-4 flex flex-col md:flex-row gap-fib-2 justify-center"
+            className="mt-fib-4 flex flex-col md:flex-row gap-fib-2 justify-center px-4 md:px-0"
           >
             <button 
               onClick={() => document.getElementById('companies')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 group"
+              className="px-fib-3 py-fib-1 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:bg-[var(--primary)] transition-colors min-w-[200px] w-full md:w-auto shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 group"
             >
               Soy Empresa
               <CaretRight weight="bold" className="group-hover:translate-x-1 transition-transform" />

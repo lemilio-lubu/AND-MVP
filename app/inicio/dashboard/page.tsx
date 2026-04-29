@@ -41,8 +41,8 @@ export default function DashboardPage() {
         ></div>
 
         {/* Top Input Bar */}
-        <div className="flex items-center gap-4 p-6 border-b border-[#1E2322] relative z-10">
-          <div className="relative flex-1">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 md:p-6 border-b border-[#1E2322] relative z-10">
+          <div className="relative w-full md:flex-1">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5F6D68]">
               <Globe size={20} />
             </div>
@@ -51,20 +51,22 @@ export default function DashboardPage() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCargar()}
-              placeholder="Pega el enlace de tu dashboard (Looker Studio, Metabase, Grafana...)"
+              placeholder="Pega el enlace de tu dashboard..."
               className="w-full bg-[#131716] border border-[#1E2322] text-white text-sm rounded-lg pl-11 pr-4 py-3 focus:outline-none focus:border-[#4ADE80] transition-colors placeholder:text-[#5F6D68]"
             />
           </div>
-          <button
-            onClick={handleCargar}
-            className="bg-[#4ADE80] hover:bg-[#34D399] text-[#0E1111] font-bold text-sm px-6 py-3 rounded-lg transition-colors"
-          >
-            Cargar
-          </button>
-          <div className="flex items-center bg-[#131716] border border-[#1E2322] rounded-lg p-1 ml-4">
-            <button className="px-3 py-1.5 text-[#5F6D68] text-xs font-bold hover:text-white transition-colors">7D</button>
-            <button className="px-3 py-1.5 bg-[#183626] text-[#4ADE80] rounded-md text-xs font-bold shadow-sm">30D</button>
-            <button className="px-3 py-1.5 text-[#5F6D68] text-xs font-bold hover:text-white transition-colors">90D</button>
+          <div className="flex w-full md:w-auto items-center justify-between md:justify-start gap-4">
+            <button
+              onClick={handleCargar}
+              className="bg-[#4ADE80] hover:bg-[#34D399] text-[#0E1111] font-bold text-sm px-6 py-3 rounded-lg transition-colors flex-1 md:flex-none text-center"
+            >
+              Cargar
+            </button>
+            <div className="flex items-center bg-[#131716] border border-[#1E2322] rounded-lg p-1">
+              <button className="px-3 py-1.5 text-[#5F6D68] text-xs font-bold hover:text-white transition-colors">7D</button>
+              <button className="px-3 py-1.5 bg-[#183626] text-[#4ADE80] rounded-md text-xs font-bold shadow-sm">30D</button>
+              <button className="px-3 py-1.5 text-[#5F6D68] text-xs font-bold hover:text-white transition-colors">90D</button>
+            </div>
           </div>
         </div>
 

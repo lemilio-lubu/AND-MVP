@@ -4,7 +4,7 @@ import { ArrowUp, ArrowDown, TiktokLogo, FacebookLogo } from "@phosphor-icons/re
 
 export default function WalletPage() {
   return (
-    <div className="p-8 max-w-[1600px] mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-6">
       
       {/* Top Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
