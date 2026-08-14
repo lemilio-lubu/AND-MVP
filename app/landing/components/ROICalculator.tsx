@@ -12,7 +12,6 @@ import {
   User, 
   Buildings, 
   Envelope, 
-  Phone,
   X
 } from "@phosphor-icons/react";
 
@@ -27,9 +26,12 @@ export function ROICalculator() {
     companyName: "",
     email: "",
     phone: "",
+    countryCode: "+593",
+    consent: false,
   });
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Logic from prompt - Exact Match with Excel
   const pauta = investment;
@@ -83,19 +85,24 @@ useEffect(() => {
 }, [showModal, investment, ahorro_anual]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }));
+  };
+
+  const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData((prev) => ({ ...prev, countryCode: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("submitting");
+    setErrorMessage("");
 
     try {
-      // Reemplaza esta URL con tu Webview URL de Google Apps Script 
-      // o tu endpoint de integración (Zapier/Make/Next API)
-      const GOOGLE_SCRIPT_URL = "api/leads"; // Usaremos un API Route interna por seguridad
-
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,19 +110,21 @@ useEffect(() => {
           ...formData,
           monthlyInvestment: investment,
           annualSavings: ahorro_anual,
-          timestamp: new Date().toISOString()
         }),
       });
 
       if (response.ok) {
         setStatus("success");
         setShowModal(true);
-        setFormData({ fullName: "", companyName: "", email: "", phone: "" });
+        setFormData({ fullName: "", companyName: "", email: "", phone: "", countryCode: "+593", consent: false });
       } else {
+        const result = await response.json().catch(() => null);
+        setErrorMessage(result?.error || "Hubo un error al enviar tus datos. Por favor intenta de nuevo.");
         setStatus("error");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      setErrorMessage("Hubo un error al enviar tus datos. Por favor intenta de nuevo.");
       setStatus("error");
     }
   };
@@ -361,17 +370,36 @@ useEffect(() => {
                         <div className="group">
                             <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1 block">Teléfono</label>
                             <div className="relative">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={20} />
-                                <input 
-                                    type="tel"
+                                <div className="flex overflow-hidden bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
+                                  <select
+                                    aria-label="País del teléfono"
+                                    value={formData.countryCode}
+                                    onChange={handleCountryCodeChange}
+                                    className="w-[76px] shrink-0 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2 text-xs text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
+                                  >
+                                    <option value="+593">EC +593</option>
+                                    <option value="+57">CO +57</option>
+                                    <option value="+51">PE +51</option>
+                                    <option value="+52">MX +52</option>
+                                    <option value="+56">CL +56</option>
+                                    <option value="+54">AR +54</option>
+                                    <option value="+1">US +1</option>
+                                    <option value="+34">ES +34</option>
+                                  </select>
+                                  <input
+                                    type="text"
                                     name="phone"
                                     required
                                     value={formData.phone}
-                                    onChange={handleInputChange}
-                                    placeholder="+593..."
-                                    className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all dark:text-white"
-                                />
+                                    onChange={handlePhoneChange}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    placeholder="Número"
+                                    className="w-full min-w-0 bg-transparent py-3.5 px-3 text-sm outline-none dark:text-white"
+                                  />
+                                </div>
                             </div>
+                            <p className="mt-1 text-[10px] text-slate-400">Ingresa solo el número, sin prefijo.</p>
                         </div>
                          <div className="group">
                             <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 ml-1 block">Pauta mensual</label>
@@ -391,7 +419,7 @@ useEffect(() => {
                 <div className="md:col-span-2 mt-4">
                     <button 
                         type="submit"
-                        disabled={status === "submitting" || status === "success"}
+                        disabled={status === "submitting" || status === "success" || !formData.consent}
                         className={`w-full font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 group ${
                             status === "success" 
                             ? "bg-emerald-100 text-emerald-700 cursor-default" 
@@ -405,13 +433,21 @@ useEffect(() => {
                     
                     {status === "error" && (
                         <p className="text-xs text-red-500 text-center mt-2 font-medium">
-                            Hubo un error al enviar tus datos. Por favor intenta de nuevo.
+                            {errorMessage}
                         </p>
                     )}
 
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center mt-4 uppercase tracking-widest">
-                        Garantizamos la privacidad de tus datos profesionales
-                    </p>
+                    <label className="flex items-start justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 text-center mt-4 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="consent"
+                          checked={formData.consent}
+                          onChange={handleInputChange}
+                          className="mt-0.5 h-4 w-4 accent-emerald-600"
+                          required
+                        />
+                        <span>Acepto el tratamiento de mis datos para ser contactado por AND Local Ads.</span>
+                    </label>
                 </div>
             </form>
         </div>
