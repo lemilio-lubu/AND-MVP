@@ -110,14 +110,15 @@ export async function POST(request: Request) {
           Last_Name: lastName,
           Email: email,
           Home_Phone: `${countryCode}${phone}`,
+
+          // Campo personalizado, ya no usamos Account_Name
+          Nombre_Empresa: companyName,
+
           Pauta_Mensual: monthlyInvestment,
           Ahorro_Anual: annualSavings,
           Fecha_Captura: biginDateTime(),
           Consentimientos_de_datos: true,
           Origen_Formularios: "Landing Page ROI Calculator",
-          // Account_Name is a Company lookup. Keep the raw form value until the
-          // Company creation/search workflow is implemented.
-          Description: `Empresa indicada en formulario: ${companyName}`,
         }],
         trigger: ["workflow"],
       }),
